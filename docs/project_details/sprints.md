@@ -1,7 +1,7 @@
 # Sprints
 During this project, we have 3 sprints (single week). The goal is to split up and delegate tasks to reach the end goal of completing the app.
 
-## First Sprint - Environment Setup
+## First Sprint - Environment Setup 👾
 During the first sprint the following tasks must be completed:
 - Set up Flutter
 - Set up Supabase
@@ -9,7 +9,7 @@ During the first sprint the following tasks must be completed:
 - Set up Auth
 - Set up caching with Isar
 
-## Second Sprint - Users
+## Second Sprint - Users 👥
 During the second sprint the following tasks must be completed:
 - Head of house
   - Create household
@@ -22,7 +22,7 @@ During the second sprint the following tasks must be completed:
   - Update roommate
   - Delete roommate
 
-## Third Sprint - Expenses
+## Third Sprint - Expenses 💸
 During the third sprint the following tasks must be completed:
 - Expenses
   - Create expenses
