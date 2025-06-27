@@ -83,6 +83,4 @@ As a roommate...
 
 ---
 
-Would you like me to convert these into a **prioritized backlog** or **UI wireframes** based on the user stories?
-
 
