@@ -40,7 +40,6 @@ extension Create on {{ object_name }}Repository {
   {% endif %}
   Future<{{model | snake_to_pascal}}> create{{ model | snake_to_pascal }}({
     {% if table_key_info and table_key_info.not_null %}
-    {% if needs_winery_id and "winery_id" != nn %}required String wineryId,{% endif %}
     {% for nn in table_key_info.not_null %}
     required String {{ nn | snake_to_camel }},
     {% endfor %}
@@ -121,7 +120,6 @@ extension Read on {{ object_name }}Repository {
   ///
   /// Return data if exists, or an empty list
   Future<List<{{model | snake_to_pascal}}>> fetchAll{{model | snake_to_pascal}}({
-    {% if needs_winery_id %}required String wineryId,{% endif %}
     required String token,
     required String orderBy,
     required bool ascending,
@@ -194,7 +192,6 @@ extension Read on {{ object_name }}Repository {
   ///
   /// Requires the [{{ pk | snake_to_camel }}] for lookup
   Future<{{model | snake_to_pascal}}> fetch{{model | snake_to_pascal}}With{{ pk | snake_to_pascal }}({
-    {% if needs_winery_id and pk != "winery_id" %}required String wineryId,{% endif %}
     required String {{ pk | snake_to_camel }},
     required String token,
     bool forceRefresh = false, // Added parameter to force API call
@@ -261,7 +258,6 @@ extension Read on {{ object_name }}Repository {
   ///
   /// Requires the [{{ fk | snake_to_camel }}] for lookup
   Future<List<{{model | snake_to_pascal}}>> fetchAll{{model | snake_to_pascal}}With{{ fk | snake_to_pascal }}({
-    {% if needs_winery_id and fk != "winery_id" %}required String wineryId,{% endif %}
     required String {{ fk | snake_to_camel }},
     required String token,
     required String orderBy,
@@ -335,7 +331,6 @@ extension Read on {{ object_name }}Repository {
   ///
   /// Requires the [{{ unique_key | snake_to_camel }}] for lookup
   Future<{{model | snake_to_pascal}}> fetch{{model | snake_to_pascal}}With{{ unique_key | snake_to_pascal }}({
-    {% if needs_winery_id and unique_key != "winery_id" %}required String wineryId,{% endif %}
     required String {{ unique_key | snake_to_camel }},
     required String token,
     bool forceRefresh = false,
@@ -421,7 +416,6 @@ extension Update on {{ object_name }}Repository {
   ///
   /// Requires the [{{ pk | snake_to_camel }}] to update the object
   Future<{{model | snake_to_pascal}}> update{{model | snake_to_pascal}}({
-    {% if needs_winery_id and pk != "winery_id" %}required String wineryId,{% endif %}
     required String {{ pk | snake_to_camel }},
     required {{model | snake_to_pascal}} new{{model | snake_to_pascal}}Data,
     required String token,
@@ -491,7 +485,6 @@ extension Delete on {{ object_name }}Repository {
   ///
   /// Requires the [{{ pk | snake_to_camel }}] to delete the object
   Future<String> delete{{model | snake_to_pascal}}({
-    {% if needs_winery_id and pk != "winery_id" %}required String wineryId,{% endif %}
     required String {{ pk | snake_to_camel }},
     required String token,
   }) async {

@@ -10,7 +10,7 @@ import 'package:app_core/app_core.dart';
 //  is regenerated. If you need to modify behavior, update the source     //
 //                         template instead.                              //
 //                                                                        //
-//                Generated on: 2025-07-01 17:04:52 UTC                   //
+//                Generated on: 2025-07-01 18:50:34 UTC                   //
 //                                                                        //
 ////////////////////////////////////////////////////////////////////////////
 
@@ -184,66 +184,6 @@ class RecurringExpenses extends Equatable {
       if (updatedAt != null) updatedAtConverter: updatedAt,
     };
   }
-
-  // helper function for inserting data into a given SQL table
-  static Map<String, dynamic> insert({
-    String? recurringExpenseId,
-    String? houseId,
-    String? houseMemberId,
-    String? descriptionTemplate,
-    double? amountTemplate,
-    String? frequency,
-    DateTime? startDate,
-    DateTime? endDate,
-    DateTime? nextDueDate,
-    bool? isActive,
-    DateTime? createdAt,
-    DateTime? updatedAt,
-  }) =>
-      _generateMap(
-        recurringExpenseId: recurringExpenseId,
-        houseId: houseId,
-        houseMemberId: houseMemberId,
-        descriptionTemplate: descriptionTemplate,
-        amountTemplate: amountTemplate,
-        frequency: frequency,
-        startDate: startDate,
-        endDate: endDate,
-        nextDueDate: nextDueDate,
-        isActive: isActive,
-        createdAt: createdAt,
-        updatedAt: updatedAt,
-      );
-
-  // helper function for updating data for a given SQL table
-  static Map<String, dynamic> update({
-    String? recurringExpenseId,
-    String? houseId,
-    String? houseMemberId,
-    String? descriptionTemplate,
-    double? amountTemplate,
-    String? frequency,
-    DateTime? startDate,
-    DateTime? endDate,
-    DateTime? nextDueDate,
-    bool? isActive,
-    DateTime? createdAt,
-    DateTime? updatedAt,
-  }) =>
-      _generateMap(
-        recurringExpenseId: recurringExpenseId,
-        houseId: houseId,
-        houseMemberId: houseMemberId,
-        descriptionTemplate: descriptionTemplate,
-        amountTemplate: amountTemplate,
-        frequency: frequency,
-        startDate: startDate,
-        endDate: endDate,
-        nextDueDate: nextDueDate,
-        isActive: isActive,
-        createdAt: createdAt,
-        updatedAt: updatedAt,
-      );
 
   // Helper function to safely parse boolean values, handling various input types
   static bool _parseBool(dynamic value) {

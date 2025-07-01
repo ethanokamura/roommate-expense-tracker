@@ -10,7 +10,7 @@ import 'package:app_core/app_core.dart';
 //  is regenerated. If you need to modify behavior, update the source     //
 //                         template instead.                              //
 //                                                                        //
-//                Generated on: 2025-07-01 17:04:52 UTC                   //
+//                Generated on: 2025-07-01 18:50:34 UTC                   //
 //                                                                        //
 ////////////////////////////////////////////////////////////////////////////
 
@@ -148,54 +148,6 @@ class HouseMembers extends Equatable {
       if (updatedAt != null) updatedAtConverter: updatedAt,
     };
   }
-
-  // helper function for inserting data into a given SQL table
-  static Map<String, dynamic> insert({
-    String? houseMemberId,
-    String? userId,
-    String? houseId,
-    bool? isAdmin,
-    DateTime? joinedAt,
-    String? nickname,
-    bool? isActive,
-    DateTime? createdAt,
-    DateTime? updatedAt,
-  }) =>
-      _generateMap(
-        houseMemberId: houseMemberId,
-        userId: userId,
-        houseId: houseId,
-        isAdmin: isAdmin,
-        joinedAt: joinedAt,
-        nickname: nickname,
-        isActive: isActive,
-        createdAt: createdAt,
-        updatedAt: updatedAt,
-      );
-
-  // helper function for updating data for a given SQL table
-  static Map<String, dynamic> update({
-    String? houseMemberId,
-    String? userId,
-    String? houseId,
-    bool? isAdmin,
-    DateTime? joinedAt,
-    String? nickname,
-    bool? isActive,
-    DateTime? createdAt,
-    DateTime? updatedAt,
-  }) =>
-      _generateMap(
-        houseMemberId: houseMemberId,
-        userId: userId,
-        houseId: houseId,
-        isAdmin: isAdmin,
-        joinedAt: joinedAt,
-        nickname: nickname,
-        isActive: isActive,
-        createdAt: createdAt,
-        updatedAt: updatedAt,
-      );
 
   // Helper function to safely parse boolean values, handling various input types
   static bool _parseBool(dynamic value) {

@@ -13,7 +13,7 @@ final class {{feature | snake_to_pascal}}State extends Equatable {
   /// Private constructor for creating [{{feature | snake_to_pascal}}State] instances.
   const {{feature | snake_to_pascal}}State._({
     this.status = {{feature | snake_to_pascal}}Status.initial,
-    {% for model in models %}
+    {% for model in models_to_generate %}
     this.{{model | snake_to_camel}} = {{model | snake_to_pascal}}.empty,
     this.{{model | snake_to_camel}}List = const [],
     {% endfor %}
@@ -24,7 +24,7 @@ final class {{feature | snake_to_pascal}}State extends Equatable {
   const {{feature | snake_to_pascal}}State.initial() : this._();
 
   final {{feature | snake_to_pascal}}Status status;
-  {% for model in models %}
+  {% for model in models_to_generate %}
   final {{ model | snake_to_pascal }} {{model | snake_to_camel}};
   final List<{{ model | snake_to_pascal }}> {{model | snake_to_camel}}List;
   {% endfor %}
@@ -34,7 +34,7 @@ final class {{feature | snake_to_pascal}}State extends Equatable {
   @override
   List<Object?> get props => [
         status,
-        {% for model in models %}
+        {% for model in models_to_generate %}
         {{model | snake_to_camel}},
         {{model | snake_to_camel}}List,
         {% endfor %}
@@ -45,7 +45,7 @@ final class {{feature | snake_to_pascal}}State extends Equatable {
   /// Any parameter that is not provided will retain its current value.
   {{feature | snake_to_pascal}}State copyWith({
     {{feature | snake_to_pascal}}Status? status,
-    {% for model in models %}
+    {% for model in models_to_generate %}
     {{ model | snake_to_pascal }}? {{model | snake_to_camel}},
     List<{{ model | snake_to_pascal }}>? {{model | snake_to_camel}}List,
     {% endfor %}
@@ -53,7 +53,7 @@ final class {{feature | snake_to_pascal}}State extends Equatable {
   }) {
     return {{feature | snake_to_pascal}}State._(
       status: status ?? this.status,
-      {% for model in models %}
+      {% for model in models_to_generate %}
       {{model | snake_to_camel}}: {{model | snake_to_camel}} ?? this.{{model | snake_to_camel}},
       {{model | snake_to_camel}}List: {{model | snake_to_camel}}List ?? this.{{model | snake_to_camel}}List,
       {% endfor %}
@@ -72,8 +72,8 @@ extension {{feature | snake_to_pascal}}StateExtensions on {{feature | snake_to_p
 /// Extension methods for creating new [{{feature | snake_to_pascal}}State] instances.
 extension _{{feature | snake_to_pascal}}StateExtensions on {{feature | snake_to_pascal}}State {
   {{feature | snake_to_pascal}}State fromLoading() => copyWith(status: {{feature | snake_to_pascal}}Status.loading);
-  
-  {% for model in models %}
+  {{feature | snake_to_pascal}}State fromLoaded() => copyWith(status: {{feature | snake_to_pascal}}Status.loaded);
+  {% for model in models_to_generate %}
   {{feature | snake_to_pascal}}State from{{model | snake_to_pascal}}Loaded({required {{model | snake_to_pascal}} {{model | snake_to_camel}}}) => copyWith(
         status: {{feature | snake_to_pascal}}Status.loaded,
         {{model | snake_to_camel}}: {{model | snake_to_camel}},
@@ -84,7 +84,7 @@ extension _{{feature | snake_to_pascal}}StateExtensions on {{feature | snake_to_
       );
   {% endfor %}
 
-  {{feature | snake_to_pascal}}State fromFailure({{feature | snake_to_pascal}}Failure failure) => copyWith(
+  {{feature | snake_to_pascal}}State from{{feature | snake_to_pascal}}Failure({{feature | snake_to_pascal}}Failure failure) => copyWith(
         status: {{feature | snake_to_pascal}}Status.failure,
         failure: failure,
       );

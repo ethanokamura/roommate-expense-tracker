@@ -10,7 +10,7 @@ import 'package:app_core/app_core.dart';
 //  is regenerated. If you need to modify behavior, update the source     //
 //                         template instead.                              //
 //                                                                        //
-//                Generated on: 2025-07-01 17:04:52 UTC                   //
+//                Generated on: 2025-07-01 18:50:34 UTC                   //
 //                                                                        //
 ////////////////////////////////////////////////////////////////////////////
 
@@ -120,42 +120,6 @@ class Receipts extends Equatable {
       if (updatedAt != null) updatedAtConverter: updatedAt,
     };
   }
-
-  // helper function for inserting data into a given SQL table
-  static Map<String, dynamic> insert({
-    String? receiptId,
-    String? expenseId,
-    String? imageUrl,
-    String? userId,
-    DateTime? createdAt,
-    DateTime? updatedAt,
-  }) =>
-      _generateMap(
-        receiptId: receiptId,
-        expenseId: expenseId,
-        imageUrl: imageUrl,
-        userId: userId,
-        createdAt: createdAt,
-        updatedAt: updatedAt,
-      );
-
-  // helper function for updating data for a given SQL table
-  static Map<String, dynamic> update({
-    String? receiptId,
-    String? expenseId,
-    String? imageUrl,
-    String? userId,
-    DateTime? createdAt,
-    DateTime? updatedAt,
-  }) =>
-      _generateMap(
-        receiptId: receiptId,
-        expenseId: expenseId,
-        imageUrl: imageUrl,
-        userId: userId,
-        createdAt: createdAt,
-        updatedAt: updatedAt,
-      );
 }
 
 // Extensions to the object allowing a public getters

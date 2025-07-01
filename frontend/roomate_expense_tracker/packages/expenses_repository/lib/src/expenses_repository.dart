@@ -50,7 +50,6 @@ extension Create on ExpensesRepository {
   /// Requires the [totalAmount] to create the object
   /// Requires the [isSettled] to create the object
   Future<Expenses> createExpenses({
-    required String wineryId,
     required String houseId,
     required String houseMemberId,
     required String description,
@@ -135,7 +134,6 @@ extension Create on ExpensesRepository {
   /// Requires the [amountOwed] to create the object
   /// Requires the [isPaid] to create the object
   Future<ExpenseSpits> createExpenseSpits({
-    required String wineryId,
     required String expenseId,
     required String houseMemberId,
     required String amountOwed,
@@ -219,7 +217,6 @@ extension Create on ExpensesRepository {
   /// Requires the [frequency] to create the object
   /// Requires the [isActive] to create the object
   Future<RecurringExpenses> createRecurringExpenses({
-    required String wineryId,
     required String houseId,
     required String houseMemberId,
     required String descriptionTemplate,
@@ -306,7 +303,6 @@ extension Create on ExpensesRepository {
   /// Requires the [imageUrl] to create the object
   /// Requires the [userId] to create the object
   Future<Receipts> createReceipts({
-    required String wineryId,
     required String expenseId,
     required String imageUrl,
     required String userId,
@@ -382,7 +378,6 @@ extension Read on ExpensesRepository {
   ///
   /// Return data if exists, or an empty list
   Future<List<Expenses>> fetchAllExpenses({
-    required String wineryId,
     required String token,
     required String orderBy,
     required bool ascending,
@@ -453,7 +448,6 @@ extension Read on ExpensesRepository {
   ///
   /// Requires the [expenseId] for lookup
   Future<Expenses> fetchExpensesWithExpenseId({
-    required String wineryId,
     required String expenseId,
     required String token,
     bool forceRefresh = false, // Added parameter to force API call
@@ -517,7 +511,6 @@ extension Read on ExpensesRepository {
   ///
   /// Requires the [houseMemberId] for lookup
   Future<List<Expenses>> fetchAllExpensesWithHouseMemberId({
-    required String wineryId,
     required String houseMemberId,
     required String token,
     required String orderBy,
@@ -589,7 +582,6 @@ extension Read on ExpensesRepository {
   ///
   /// Requires the [houseId] for lookup
   Future<List<Expenses>> fetchAllExpensesWithHouseId({
-    required String wineryId,
     required String houseId,
     required String token,
     required String orderBy,
@@ -661,7 +653,6 @@ extension Read on ExpensesRepository {
   ///
   /// Return data if exists, or an empty list
   Future<List<ExpenseSpits>> fetchAllExpenseSpits({
-    required String wineryId,
     required String token,
     required String orderBy,
     required bool ascending,
@@ -734,7 +725,6 @@ extension Read on ExpensesRepository {
   ///
   /// Requires the [expenseSplitId] for lookup
   Future<ExpenseSpits> fetchExpenseSpitsWithExpenseSplitId({
-    required String wineryId,
     required String expenseSplitId,
     required String token,
     bool forceRefresh = false, // Added parameter to force API call
@@ -798,7 +788,6 @@ extension Read on ExpensesRepository {
   ///
   /// Requires the [expenseId] for lookup
   Future<List<ExpenseSpits>> fetchAllExpenseSpitsWithExpenseId({
-    required String wineryId,
     required String expenseId,
     required String token,
     required String orderBy,
@@ -871,7 +860,6 @@ extension Read on ExpensesRepository {
   ///
   /// Requires the [houseMemberId] for lookup
   Future<List<ExpenseSpits>> fetchAllExpenseSpitsWithHouseMemberId({
-    required String wineryId,
     required String houseMemberId,
     required String token,
     required String orderBy,
@@ -944,7 +932,6 @@ extension Read on ExpensesRepository {
   ///
   /// Return data if exists, or an empty list
   Future<List<RecurringExpenses>> fetchAllRecurringExpenses({
-    required String wineryId,
     required String token,
     required String orderBy,
     required bool ascending,
@@ -1017,7 +1004,6 @@ extension Read on ExpensesRepository {
   ///
   /// Requires the [recurringExpenseId] for lookup
   Future<RecurringExpenses> fetchRecurringExpensesWithRecurringExpenseId({
-    required String wineryId,
     required String recurringExpenseId,
     required String token,
     bool forceRefresh = false, // Added parameter to force API call
@@ -1082,7 +1068,6 @@ extension Read on ExpensesRepository {
   ///
   /// Requires the [houseId] for lookup
   Future<List<RecurringExpenses>> fetchAllRecurringExpensesWithHouseId({
-    required String wineryId,
     required String houseId,
     required String token,
     required String orderBy,
@@ -1155,7 +1140,6 @@ extension Read on ExpensesRepository {
   ///
   /// Requires the [houseMemberId] for lookup
   Future<List<RecurringExpenses>> fetchAllRecurringExpensesWithHouseMemberId({
-    required String wineryId,
     required String houseMemberId,
     required String token,
     required String orderBy,
@@ -1228,7 +1212,6 @@ extension Read on ExpensesRepository {
   ///
   /// Return data if exists, or an empty list
   Future<List<Receipts>> fetchAllReceipts({
-    required String wineryId,
     required String token,
     required String orderBy,
     required bool ascending,
@@ -1299,7 +1282,6 @@ extension Read on ExpensesRepository {
   ///
   /// Requires the [receiptId] for lookup
   Future<Receipts> fetchReceiptsWithReceiptId({
-    required String wineryId,
     required String receiptId,
     required String token,
     bool forceRefresh = false, // Added parameter to force API call
@@ -1363,7 +1345,6 @@ extension Read on ExpensesRepository {
   ///
   /// Requires the [expenseId] for lookup
   Future<List<Receipts>> fetchAllReceiptsWithExpenseId({
-    required String wineryId,
     required String expenseId,
     required String token,
     required String orderBy,
@@ -1435,7 +1416,6 @@ extension Read on ExpensesRepository {
   ///
   /// Requires the [userId] for lookup
   Future<List<Receipts>> fetchAllReceiptsWithUserId({
-    required String wineryId,
     required String userId,
     required String token,
     required String orderBy,
@@ -1509,7 +1489,6 @@ extension Read on ExpensesRepository {
   ///
   /// Requires the [expenseId] for lookup
   Future<Receipts> fetchReceiptsWithExpenseId({
-    required String wineryId,
     required String expenseId,
     required String token,
     bool forceRefresh = false,
@@ -1586,7 +1565,6 @@ extension Update on ExpensesRepository {
   ///
   /// Requires the [expenseId] to update the object
   Future<Expenses> updateExpenses({
-    required String wineryId,
     required String expenseId,
     required Expenses newExpensesData,
     required String token,
@@ -1648,7 +1626,6 @@ extension Update on ExpensesRepository {
   ///
   /// Requires the [expenseSplitId] to update the object
   Future<ExpenseSpits> updateExpenseSpits({
-    required String wineryId,
     required String expenseSplitId,
     required ExpenseSpits newExpenseSpitsData,
     required String token,
@@ -1710,7 +1687,6 @@ extension Update on ExpensesRepository {
   ///
   /// Requires the [recurringExpenseId] to update the object
   Future<RecurringExpenses> updateRecurringExpenses({
-    required String wineryId,
     required String recurringExpenseId,
     required RecurringExpenses newRecurringExpensesData,
     required String token,
@@ -1772,7 +1748,6 @@ extension Update on ExpensesRepository {
   ///
   /// Requires the [receiptId] to update the object
   Future<Receipts> updateReceipts({
-    required String wineryId,
     required String receiptId,
     required Receipts newReceiptsData,
     required String token,
@@ -1834,7 +1809,6 @@ extension Delete on ExpensesRepository {
   ///
   /// Requires the [expenseId] to delete the object
   Future<String> deleteExpenses({
-    required String wineryId,
     required String expenseId,
     required String token,
   }) async {
@@ -1868,7 +1842,6 @@ extension Delete on ExpensesRepository {
   ///
   /// Requires the [expenseSplitId] to delete the object
   Future<String> deleteExpenseSpits({
-    required String wineryId,
     required String expenseSplitId,
     required String token,
   }) async {
@@ -1902,7 +1875,6 @@ extension Delete on ExpensesRepository {
   ///
   /// Requires the [recurringExpenseId] to delete the object
   Future<String> deleteRecurringExpenses({
-    required String wineryId,
     required String recurringExpenseId,
     required String token,
   }) async {
@@ -1936,7 +1908,6 @@ extension Delete on ExpensesRepository {
   ///
   /// Requires the [receiptId] to delete the object
   Future<String> deleteReceipts({
-    required String wineryId,
     required String receiptId,
     required String token,
   }) async {
