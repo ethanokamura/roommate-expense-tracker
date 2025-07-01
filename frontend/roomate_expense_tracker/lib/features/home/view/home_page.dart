@@ -4,6 +4,7 @@ import 'package:roommate_expense_tracker/features/expenses/pages/expenses_dashbo
 import 'package:roommate_expense_tracker/features/home/view/bottom_nav_bar.dart';
 import 'package:roommate_expense_tracker/features/houses/pages/pages.dart';
 import 'package:roommate_expense_tracker/features/users/pages/user_dashboard.dart';
+import 'package:roommate_expense_tracker/theme/theme_button.dart';
 // import 'package:users_repository/users_repository.dart';
 
 class HomePage extends StatelessWidget {
@@ -13,11 +14,13 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    debugPrint('home pages');
     return ListenableProvider(
       create: (_) => NavBarController(),
       child: const DefaultPageView(
         title: 'RET',
         body: HomeBody(),
+        actions: [ThemeButton()],
         bottomNavigationBar: BottomNavBar(),
       ),
     );

@@ -1,4 +1,3 @@
-export 'data/data.dart';
 export 'buttons.dart';
 export 'button_styles.dart';
 export 'colors.dart';

@@ -53,47 +53,6 @@ class CustomText extends StatelessWidget {
   }
 }
 
-class WarningText extends StatelessWidget {
-  const WarningText({
-    required this.text,
-    required this.style,
-    required this.value,
-    this.maxLines,
-    this.alignment,
-    this.bold = false,
-    this.autoSize = false,
-    super.key,
-  });
-
-  final int value;
-  final String text;
-  final TextStyle style;
-  final int? maxLines;
-  final TextAlign? alignment;
-  final bool bold;
-  final bool autoSize;
-
-  @override
-  Widget build(BuildContext context) {
-    final textStyle = style.copyWith(
-      color: context.theme.dangerLevelColors[value],
-    );
-    return autoSize
-        ? AutoSizeText(
-            text,
-            style: textStyle,
-            maxLines: maxLines,
-            textAlign: alignment,
-          )
-        : Text(
-            text,
-            style: textStyle,
-            maxLines: maxLines,
-            textAlign: alignment,
-          );
-  }
-}
-
 class AppTextStyles {
   static const appBar = TextStyle(
     fontWeight: FontWeight.bold,

@@ -23,8 +23,6 @@ import 'package:roommate_expense_tracker/config/di_setup.dart';
 //                                                                        //
 ////////////////////////////////////////////////////////////////////////////
 
-
-
 Future<Isar> openIsar() async {
   final dir = await getApplicationSupportDirectory();
   return Isar.open(
@@ -40,25 +38,29 @@ Future<void> main() async {
       init: () async {
         try {
           // Perform any necessary setup here
-          await dotenv.load();
+          // await dotenv.load();
           // Initialize Isar
           final isar = await openIsar();
+          debugPrint('Initialized Isar');
           // Setup Dependency Injection
           setupDependencies(isar);
+          debugPrint('Setup Dependency Injection');
           // Trigger initial cache cleanup (optional, but good practice)
           // You might want to control how often this runs (e.g., once a day)
           // using SharedPreferences to store the last cleanup timestamp.
           await getIt<CacheManager>().cleanupAllCaches();
+          debugPrint('Cleaned Caches');
         } catch (e) {
           throw Exception('Database initialization error: $e');
         }
       },
       builder: () async {
         final credentialsRepository = CredentialsRepository();
-        await credentialsRepository.checkAuthAndAdmin();
+        // await credentialsRepository.checkAuthAndAdmin();
         final usersRepository = UsersRepository();
         final housesRepository = HousesRepository();
         final expensesRepository = ExpensesRepository();
+        debugPrint('Initialized Repositories');
         return App(
           credentialsRepository: credentialsRepository,
           usersRepository: usersRepository,

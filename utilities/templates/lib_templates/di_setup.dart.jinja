@@ -12,11 +12,12 @@ void setupDependencies(Isar isarInstance) {
   // Register Isar if not already done. Pass the instance from openIsar().
   // This is typically called from main.dart after Isar.open().
   getIt.registerLazySingleton<Isar>(() => isarInstance);
-
+  // Register CacheManager, which depends on Isar
+  getIt.registerLazySingleton<CacheManager>(() => CacheManager(getIt<Isar>()));
   // Register all your repositories as lazy singletons
 {% for repo in repositories %}
   getIt.registerLazySingleton<{{repo | snake_to_pascal}}Repository>(
-      () => {{repo | snake_to_pascal}}Repository(cacheManager: getIt<CacheManager>(),),);
+      () => {{repo | snake_to_pascal}}Repository(cacheManager: getIt<CacheManager>()),);
 {% endfor %}
   getIt.registerLazySingleton<CredentialsRepository>(
     () => CredentialsRepository(

@@ -26,7 +26,7 @@ Icon defaultIconStyle(
 Icon appBarIconStyle(BuildContext context, IconData icon, {double size = 24}) {
   return Icon(
     icon,
-    color: context.theme.inverseTextColor,
+    color: context.theme.textColor,
     size: size,
   );
 }
@@ -51,7 +51,7 @@ class AppIcons {
   static const IconData notificationBell = FontAwesomeIcons.bell;
   static const IconData paw = FontAwesomeIcons.paw;
 
-  static const IconData money = FontAwesomeIcons.moneyBill;
+  static const IconData money = FontAwesomeIcons.moneyBillTransfer;
   static const IconData person = FontAwesomeIcons.person;
   static const IconData sort = Icons.sort_sharp;
   static const IconData letters = FontAwesomeIcons.a;
@@ -59,4 +59,6 @@ class AppIcons {
   static const IconData cancel = FontAwesomeIcons.xmark;
   static const IconData copy = FontAwesomeIcons.copy;
   static const IconData house = FontAwesomeIcons.house;
+  static const IconData darkMode = FontAwesomeIcons.moon;
+  static const IconData lightMode = FontAwesomeIcons.sun;
 }
