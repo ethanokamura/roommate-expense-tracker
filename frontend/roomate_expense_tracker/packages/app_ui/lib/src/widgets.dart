@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:app_ui/src/app_ui.dart';
 import 'package:app_ui/src/constants.dart';
 import 'package:app_ui/src/theme.dart';
 import 'package:app_ui/src/extensions.dart';
