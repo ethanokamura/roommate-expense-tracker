@@ -8,7 +8,6 @@ ButtonStyle defaultStyle(BuildContext context, int color) {
     context.theme.surfaceColor,
     context.theme.primaryColor,
     context.theme.accentColor,
-    context.theme.secondaryColor,
   ];
   return ElevatedButton.styleFrom(
     padding: const EdgeInsets.symmetric(
@@ -26,7 +25,6 @@ ButtonStyle textFormButtonStyle(BuildContext context, int color) {
     context.theme.surfaceColor,
     context.theme.primaryColor,
     context.theme.accentColor,
-    context.theme.secondaryColor,
   ];
   return ElevatedButton.styleFrom(
     padding: const EdgeInsets.symmetric(

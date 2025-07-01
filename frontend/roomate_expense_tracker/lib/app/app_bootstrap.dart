@@ -21,9 +21,12 @@ Future<void> bootstrap({
       BindingBase.debugZoneErrorsAreFatal = true;
       // Ensure Flutter bindings are initialized
       WidgetsFlutterBinding.ensureInitialized();
-      // Run optional initialization
-      await init?.call();
-
+      try {
+        // Run optional initialization
+        await init?.call();
+      } catch (e) {
+        debugPrint('Failure to run optional initialization: $e');
+      }
       // Set up global error handlers
       FlutterError.onError = (details) {
         log(details.exceptionAsString(), stackTrace: details.stack);
@@ -51,9 +54,13 @@ Future<void> bootstrap({
       // Build the app widget
       final app = await builder();
       // Set preferred device orientation to portrait
-      await SystemChrome.setPreferredOrientations(
-        [DeviceOrientation.portraitUp],
-      ).then((value) => runApp(app));
+      try {
+        await SystemChrome.setPreferredOrientations(
+          [DeviceOrientation.portraitUp],
+        ).then((value) => runApp(app));
+      } catch (e) {
+        debugPrint('Failure to Run App: $e');
+      }
     },
     // Log any errors that occur during app execution
     (error, stackTrace) => log(error.toString(), stackTrace: stackTrace),

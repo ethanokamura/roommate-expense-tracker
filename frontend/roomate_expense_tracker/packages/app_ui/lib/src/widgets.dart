@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:app_ui/src/app_ui.dart';
 import 'package:app_ui/src/constants.dart';
 import 'package:app_ui/src/theme.dart';
 import 'package:app_ui/src/extensions.dart';
@@ -71,20 +72,16 @@ class DefaultPageView extends StatelessWidget {
       appBar: appBar
           ? AppBar(
               centerTitle: centerTitle,
-              backgroundColor: context.theme.accentColor,
+              backgroundColor: context.theme.surfaceColor,
               title: title.isNotEmpty
                   ? CustomText(
                       style: AppTextStyles.appBar,
-                      color: 3,
+                      color: 0,
                       text: title,
                       fontSize: fontSize,
                     )
                   : null,
               actions: actions.isEmpty ? null : actions,
-              iconTheme: IconThemeData(
-                color: context.theme.inverseTextColor,
-                size: 28,
-              ),
             )
           : null,
       drawer: drawer,

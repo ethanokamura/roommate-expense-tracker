@@ -4,15 +4,11 @@ class HouseDashboard extends StatelessWidget {
   const HouseDashboard({super.key});
   @override
   Widget build(BuildContext context) {
-    return const Column(
-      children: [
-        Center(
-          child: CustomText(
-            text: 'House Dashboard',
-            style: AppTextStyles.title,
-          ),
-        )
-      ],
+    return const Center(
+      child: CustomText(
+        text: 'House Dashboard',
+        style: AppTextStyles.title,
+      ),
     );
   }
 }

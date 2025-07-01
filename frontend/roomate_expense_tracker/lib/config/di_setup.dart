@@ -18,22 +18,24 @@ import 'package:expenses_repository/expenses_repository.dart';
 //                                                                        //
 ////////////////////////////////////////////////////////////////////////////
 
-
-
 final getIt = GetIt.instance;
 
 void setupDependencies(Isar isarInstance) {
   // Register Isar if not already done. Pass the instance from openIsar().
   // This is typically called from main.dart after Isar.open().
   getIt.registerLazySingleton<Isar>(() => isarInstance);
-
+  // Register CacheManager, which depends on Isar
+  getIt.registerLazySingleton<CacheManager>(() => CacheManager(getIt<Isar>()));
   // Register all your repositories as lazy singletons
   getIt.registerLazySingleton<UsersRepository>(
-      () => UsersRepository(cacheManager: getIt<CacheManager>(),),);
+    () => UsersRepository(cacheManager: getIt<CacheManager>()),
+  );
   getIt.registerLazySingleton<HousesRepository>(
-      () => HousesRepository(cacheManager: getIt<CacheManager>(),),);
+    () => HousesRepository(cacheManager: getIt<CacheManager>()),
+  );
   getIt.registerLazySingleton<ExpensesRepository>(
-      () => ExpensesRepository(cacheManager: getIt<CacheManager>(),),);
+    () => ExpensesRepository(cacheManager: getIt<CacheManager>()),
+  );
   getIt.registerLazySingleton<CredentialsRepository>(
     () => CredentialsRepository(
       cacheManager: getIt<CacheManager>(),
