@@ -29,7 +29,6 @@ extension Create on HousesRepository {
   /// Requires the [name] to create the object
   /// Requires the [inviteCode] to create the object
   Future<Houses> createHouses({
-    required String wineryId,
     required String name,
     required String inviteCode,
     required String token,
@@ -101,7 +100,6 @@ extension Read on HousesRepository {
   ///
   /// Return data if exists, or an empty list
   Future<List<Houses>> fetchAllHouses({
-    required String wineryId,
     required String token,
     required String orderBy,
     required bool ascending,
@@ -171,7 +169,6 @@ extension Read on HousesRepository {
   ///
   /// Requires the [houseId] for lookup
   Future<Houses> fetchHousesWithHouseId({
-    required String wineryId,
     required String houseId,
     required String token,
     bool forceRefresh = false, // Added parameter to force API call
@@ -236,7 +233,6 @@ extension Read on HousesRepository {
   ///
   /// Requires the [inviteCode] for lookup
   Future<Houses> fetchHousesWithInviteCode({
-    required String wineryId,
     required String inviteCode,
     required String token,
     bool forceRefresh = false,
@@ -312,7 +308,6 @@ extension Update on HousesRepository {
   ///
   /// Requires the [houseId] to update the object
   Future<Houses> updateHouses({
-    required String wineryId,
     required String houseId,
     required Houses newHousesData,
     required String token,
@@ -374,7 +369,6 @@ extension Delete on HousesRepository {
   ///
   /// Requires the [houseId] to delete the object
   Future<String> deleteHouses({
-    required String wineryId,
     required String houseId,
     required String token,
   }) async {

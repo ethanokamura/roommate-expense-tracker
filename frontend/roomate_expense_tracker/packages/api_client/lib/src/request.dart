@@ -19,6 +19,17 @@ class BackendException implements Exception {
   }
 }
 
+/// Define a typedef for your dioRequest function signature.
+/// This is crucial for mocking the function itself.
+typedef DioRequestFunction = Future<Map<String, dynamic>> Function({
+  required Dio dio,
+  required String apiEndpoint,
+  required String method,
+  String? contentType,
+  Map<String, String> headers,
+  Map<String, dynamic>? payload,
+});
+
 /// Executes an HTTP request to the backend using Dio.
 ///
 /// Throws:
@@ -35,16 +46,10 @@ Future<Map<String, dynamic>> dioRequest({
   required String method,
   required String apiEndpoint,
   String? contentType,
-  Map<String, String> headers = const {}, // Renamed from 'head' for clarity
-  Map<String, dynamic>?
-      payload, // Made nullable as payload might not always be needed (e.g. GET without params)
+  Map<String, String> headers = const {},
+  Map<String, dynamic>? payload,
 }) async {
-  // Use 'required' for payload if it's strictly needed for all methods.
-  // For GET, queryParameters handles it; for POST/DELETE, 'data' handles it.
-  // Using const {} for default payload can cause issues if it's modified.
-  // It's better to default to null and handle it.
-  payload ??=
-      {}; // Initialize if null for safety, especially with queryParameters
+  payload ??= {};
 
   const host = String.fromEnvironment('HOST', defaultValue: 'localhost:3001');
   final url =
@@ -72,32 +77,32 @@ Future<Map<String, dynamic>> dioRequest({
       case 'GET':
         response = await dio.get(
           url,
-          queryParameters: payload, // GET uses queryParameters
+          queryParameters: payload,
           options: requestOptions,
         );
-        break; // Added break
+        break;
       case 'POST':
         response = await dio.post(
           url,
-          data: payload, // POST uses data
+          data: payload,
           options: requestOptions,
         );
-        break; // Added break
+        break;
       case 'DELETE':
         response = await dio.delete(
           url,
-          data: payload, // DELETE often uses data for body
+          data: payload,
           options: requestOptions,
         );
-        break; // Added break
-      case 'PUT': // Added PUT for completeness, often used in REST
+        break;
+      case 'PUT':
         response = await dio.put(
           url,
           data: payload,
           options: requestOptions,
         );
         break;
-      case 'PATCH': // Added PATCH for completeness
+      case 'PATCH':
         response = await dio.patch(
           url,
           data: payload,
@@ -108,26 +113,17 @@ Future<Map<String, dynamic>> dioRequest({
         throw ArgumentError('Unsupported HTTP method: $method');
     }
 
-    // Dio typically throws for non-2xx status codes by default.
-    // If it reaches here, it implies a 2xx status code.
     if (response.data is Map<String, dynamic>) {
-      // You can add a check here if your backend always returns {'success': true, ...} for 2xx responses
-      // and {'success': false, 'error': ...} for specific application-level errors even with 200 OK.
-      // If your backend *can* return a success status (e.g., 200) but indicate an *application error*
-      // within the body (e.g., {'success': false, 'message': 'Validation failed'}),
-      // you should handle that here and throw a BackendException.
       if (response.data.containsKey('success') &&
           response.data['success'] == false) {
         throw BackendException(
           response.data['message'] ?? 'An unknown backend error occurred.',
           statusCode: response.statusCode,
-          code: response.data['code']
-              as String?, // Assuming 'code' might be a key
+          code: response.data['code'] as String?,
         );
       }
       return response.data as Map<String, dynamic>;
     } else {
-      // Handle cases where response.data is not a Map (e.g., String, List, null)
       throw DioException(
         requestOptions: response.requestOptions,
         response: response,
@@ -137,7 +133,6 @@ Future<Map<String, dynamic>> dioRequest({
       );
     }
   } on DioException catch (e) {
-    // --- Specific Dio error handling ---
     String errorMessage;
     if (e.response != null) {
       // Server responded with a status code other than 2xx
@@ -186,14 +181,8 @@ Future<Map<String, dynamic>> dioRequest({
           break;
       }
     }
-    // Re-throw the original DioException or a custom exception wrapping it
-    // so the caller can handle it specifically.
-    // If you want all errors to be `BackendException` and hide `DioException`:
-    // throw BackendException(errorMessage, statusCode: e.response?.statusCode);
-    // Otherwise, rethrow the DioException
-    rethrow; // Re-throwing the DioException for specific handling by the caller
+    rethrow;
   } catch (e) {
-    // Catch any other unexpected errors (e.g., Dart runtime errors)
     debugPrint('Unhandled error in dioRequest: $e');
     throw Exception('An unexpected error occurred: $e');
   }

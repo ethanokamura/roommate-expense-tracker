@@ -25,7 +25,7 @@ SCHEMA_KEY_MAPPING_FILE = Path("../data/table_keys.json")
 FEATURE_TEMPLATE_DIR = Path("../templates/feature_template")
 
 # Output root for all generated packages (reusing from repository script)
-OUTPUT_PACKAGES_ROOT = ROOT_DIR / "packages"
+OUTPUT_PACKAGES_ROOT = ROOT_DIR / "lib" / "features"
 
 # --- Jinja2 Environment Setup ---
 feature_env = Environment(
@@ -41,7 +41,7 @@ feature_env.filters['snake_to_camel'] = utils.snake_to_camel
 def create_dart_feature_from_template(
     feature_base_name: str,
     output_dir: Path,
-    models_for_feature: list, # List of model (table) names associated with this feature
+    models_for_feature: list,
     schema_key_mapping: dict,
 ):
     """
@@ -54,7 +54,7 @@ def create_dart_feature_from_template(
                                    to this specific feature's cubit and state.
         schema_key_mapping (dict): The dictionary containing primary and foreign keys for all tables.
     """
-    full_feature_folder_name = f'{feature_base_name}_feature' # e.g., 'customer_feature'
+    full_feature_folder_name = feature_base_name # e.g., 'customer_feature'
     feature_object_name = utils.snake_to_pascal(feature_base_name) # e.g., 'CustomerFeature'
 
     target_feature_path = output_dir / full_feature_folder_name
@@ -63,21 +63,14 @@ def create_dart_feature_from_template(
     needs_winery_id = False
     for model in models_for_feature:
         model_keys = schema_key_mapping.get(model, {})
-        # If any model does NOT have 'winery_id' as a primary or foreign key,
-        # it implies the general case for 'needs_winery_id' might be true for the feature.
-        # Simplification: If 'winery' is NOT the feature_base_name, assume it needs wineryId for API calls.
-        if feature_base_name != 'winery':
-            needs_winery_id = True
-            break
-
 
     feature_render_context = {
         "feature": feature_base_name,
         "feature_pascal": feature_object_name,
         "feature_camel": utils.snake_to_camel(feature_base_name),
         "full_feature_folder_name": full_feature_folder_name,
-        "object_name": feature_object_name, # Used for {{object_name}}Failure in cubit/state
-        "models": models_for_feature, # Models relevant to this feature's cubit/state
+        "object_name": feature_object_name,
+        "models_to_generate": models_for_feature,
         "schema_key_mapping": schema_key_mapping,
         "needs_winery_id": needs_winery_id,
         "header": HEADER,
@@ -86,10 +79,10 @@ def create_dart_feature_from_template(
     if target_feature_path.exists():
         print(f"\n--- Feature '{full_feature_folder_name}' already exists. Skipping structure generation. ---")
         # Ensure subdirectories exist for rendering templates in place
-        (target_feature_path / "lib" / "src" / "cubit").mkdir(parents=True, exist_ok=True)
-        (target_feature_path / "lib" / "src" / "page_data").mkdir(parents=True, exist_ok=True)
-        (target_feature_path / "lib" / "src" / "pages").mkdir(parents=True, exist_ok=True)
-        (target_feature_path / "lib" / "src" / "widgets").mkdir(parents=True, exist_ok=True)
+        (target_feature_path / "cubit").mkdir(parents=True, exist_ok=True)
+        (target_feature_path / "page_data").mkdir(parents=True, exist_ok=True)
+        (target_feature_path / "pages").mkdir(parents=True, exist_ok=True)
+        (target_feature_path / "widgets").mkdir(parents=True, exist_ok=True)
     else:
         print(f"\n--- Creating new Feature: '{full_feature_folder_name}' ---")
         target_feature_path.mkdir(parents=True, exist_ok=True)
@@ -154,7 +147,7 @@ def create_dart_feature_from_template(
     
     # Cubit file
     cubit_template_path = "cubit/{{ feature }}_cubit.dart.jinja"
-    cubit_output_path = target_feature_path / "lib" / "src" / "cubit" / f"{feature_base_name}_cubit.dart"
+    cubit_output_path = target_feature_path / "cubit" / f"{feature_base_name}_cubit.dart"
     cubit_output_path.parent.mkdir(parents=True, exist_ok=True) # Ensure cubit directory exists
     cubit_template = feature_env.get_template(cubit_template_path)
     rendered_cubit = cubit_template.render(feature_render_context)
@@ -163,7 +156,7 @@ def create_dart_feature_from_template(
 
     # State file
     state_template_path = "cubit/{{ feature }}_state.dart.jinja"
-    state_output_path = target_feature_path / "lib" / "src" / "cubit" / f"{feature_base_name}_state.dart"
+    state_output_path = target_feature_path / "cubit" / f"{feature_base_name}_state.dart"
     state_output_path.parent.mkdir(parents=True, exist_ok=True) # Ensure cubit directory exists
     state_template = feature_env.get_template(state_template_path)
     rendered_state = state_template.render(feature_render_context)

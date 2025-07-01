@@ -1,0 +1,40 @@
+{
+  "house_members": [
+    {
+      "house_member_id": "alpha1234-beta5678-gamma9012-delta3456",
+      "user_id": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+      "house_id": "11223344-5566-7788-9900-aabbccddeeff",
+      "is_admin": true,
+      "joined_at": "2024-02-01T09:00:00Z",
+      "nickname": "Wonder Alice",
+      "is_active": true
+    },
+    {
+      "house_member_id": "epsilon7890-zeta1234-eta5678-theta9012",
+      "user_id": "b2c3d4e5-f6a7-8901-2345-67890abcdef0",
+      "house_id": "11223344-5566-7788-9900-aabbccddeeff",
+      "is_admin": false,
+      "joined_at": "2024-02-02T10:15:00Z",
+      "nickname": "Bobbie",
+      "is_active": true
+    },
+    {
+      "house_member_id": "iota3456-kappa7890-lambda1234-mu5678",
+      "user_id": "b2c3d4e5-f6a7-8901-2345-67890abcdef0",
+      "house_id": "22334455-6677-8899-00aa-bbccddeeff00",
+      "is_admin": true,
+      "joined_at": "2024-02-05T14:30:00Z",
+      "nickname": "Tech Bob",
+      "is_active": true
+    },
+    {
+      "house_member_id": "nu9012-xi3456-omicron7890-pi1234",
+      "user_id": "c3d4e5f6-a7b8-9012-3456-7890abcdef12",
+      "house_id": "22334455-6677-8899-00aa-bbccddeeff00",
+      "is_admin": false,
+      "joined_at": "2024-02-06T11:00:00Z",
+      "nickname": "Char",
+      "is_active": true
+    }
+  ]
+}

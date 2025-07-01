@@ -34,7 +34,6 @@ extension Create on UsersRepository {
   ///
   /// Requires the [email] to create the object
   Future<Users> createUsers({
-    required String wineryId,
     required String email,
     required String token,
     bool forceRefresh = true,
@@ -106,7 +105,6 @@ extension Create on UsersRepository {
   /// Requires the [isAdmin] to create the object
   /// Requires the [isActive] to create the object
   Future<HouseMembers> createHouseMembers({
-    required String wineryId,
     required String userId,
     required String houseId,
     required String isAdmin,
@@ -185,7 +183,6 @@ extension Read on UsersRepository {
   ///
   /// Return data if exists, or an empty list
   Future<List<Users>> fetchAllUsers({
-    required String wineryId,
     required String token,
     required String orderBy,
     required bool ascending,
@@ -255,7 +252,6 @@ extension Read on UsersRepository {
   ///
   /// Requires the [userId] for lookup
   Future<Users> fetchUsersWithUserId({
-    required String wineryId,
     required String userId,
     required String token,
     bool forceRefresh = false, // Added parameter to force API call
@@ -320,7 +316,6 @@ extension Read on UsersRepository {
   ///
   /// Requires the [email] for lookup
   Future<Users> fetchUsersWithEmail({
-    required String wineryId,
     required String email,
     required String token,
     bool forceRefresh = false,
@@ -392,7 +387,6 @@ extension Read on UsersRepository {
   ///
   /// Return data if exists, or an empty list
   Future<List<HouseMembers>> fetchAllHouseMembers({
-    required String wineryId,
     required String token,
     required String orderBy,
     required bool ascending,
@@ -465,7 +459,6 @@ extension Read on UsersRepository {
   ///
   /// Requires the [houseMemberId] for lookup
   Future<HouseMembers> fetchHouseMembersWithHouseMemberId({
-    required String wineryId,
     required String houseMemberId,
     required String token,
     bool forceRefresh = false, // Added parameter to force API call
@@ -529,7 +522,6 @@ extension Read on UsersRepository {
   ///
   /// Requires the [userId] for lookup
   Future<List<HouseMembers>> fetchAllHouseMembersWithUserId({
-    required String wineryId,
     required String userId,
     required String token,
     required String orderBy,
@@ -602,7 +594,6 @@ extension Read on UsersRepository {
   ///
   /// Requires the [houseId] for lookup
   Future<List<HouseMembers>> fetchAllHouseMembersWithHouseId({
-    required String wineryId,
     required String houseId,
     required String token,
     required String orderBy,
@@ -677,7 +668,6 @@ extension Read on UsersRepository {
   ///
   /// Requires the [userId] for lookup
   Future<HouseMembers> fetchHouseMembersWithUserId({
-    required String wineryId,
     required String userId,
     required String token,
     bool forceRefresh = false,
@@ -752,7 +742,6 @@ extension Read on UsersRepository {
   ///
   /// Requires the [houseId] for lookup
   Future<HouseMembers> fetchHouseMembersWithHouseId({
-    required String wineryId,
     required String houseId,
     required String token,
     bool forceRefresh = false,
@@ -829,7 +818,6 @@ extension Update on UsersRepository {
   ///
   /// Requires the [userId] to update the object
   Future<Users> updateUsers({
-    required String wineryId,
     required String userId,
     required Users newUsersData,
     required String token,
@@ -891,7 +879,6 @@ extension Update on UsersRepository {
   ///
   /// Requires the [houseMemberId] to update the object
   Future<HouseMembers> updateHouseMembers({
-    required String wineryId,
     required String houseMemberId,
     required HouseMembers newHouseMembersData,
     required String token,
@@ -953,7 +940,6 @@ extension Delete on UsersRepository {
   ///
   /// Requires the [userId] to delete the object
   Future<String> deleteUsers({
-    required String wineryId,
     required String userId,
     required String token,
   }) async {
@@ -987,7 +973,6 @@ extension Delete on UsersRepository {
   ///
   /// Requires the [houseMemberId] to delete the object
   Future<String> deleteHouseMembers({
-    required String wineryId,
     required String houseMemberId,
     required String token,
   }) async {

@@ -10,7 +10,7 @@ import 'package:app_core/app_core.dart';
 //  is regenerated. If you need to modify behavior, update the source     //
 //                         template instead.                              //
 //                                                                        //
-//                Generated on: 2025-07-01 17:04:52 UTC                   //
+//                Generated on: 2025-07-01 18:50:34 UTC                   //
 //                                                                        //
 ////////////////////////////////////////////////////////////////////////////
 
@@ -169,62 +169,6 @@ class Expenses extends Equatable {
       if (updatedAt != null) updatedAtConverter: updatedAt,
     };
   }
-
-  // helper function for inserting data into a given SQL table
-  static Map<String, dynamic> insert({
-    String? expenseId,
-    String? houseId,
-    String? houseMemberId,
-    String? description,
-    double? totalAmount,
-    DateTime? expenseDate,
-    String? category,
-    bool? isSettled,
-    DateTime? settledAt,
-    DateTime? createdAt,
-    DateTime? updatedAt,
-  }) =>
-      _generateMap(
-        expenseId: expenseId,
-        houseId: houseId,
-        houseMemberId: houseMemberId,
-        description: description,
-        totalAmount: totalAmount,
-        expenseDate: expenseDate,
-        category: category,
-        isSettled: isSettled,
-        settledAt: settledAt,
-        createdAt: createdAt,
-        updatedAt: updatedAt,
-      );
-
-  // helper function for updating data for a given SQL table
-  static Map<String, dynamic> update({
-    String? expenseId,
-    String? houseId,
-    String? houseMemberId,
-    String? description,
-    double? totalAmount,
-    DateTime? expenseDate,
-    String? category,
-    bool? isSettled,
-    DateTime? settledAt,
-    DateTime? createdAt,
-    DateTime? updatedAt,
-  }) =>
-      _generateMap(
-        expenseId: expenseId,
-        houseId: houseId,
-        houseMemberId: houseMemberId,
-        description: description,
-        totalAmount: totalAmount,
-        expenseDate: expenseDate,
-        category: category,
-        isSettled: isSettled,
-        settledAt: settledAt,
-        createdAt: createdAt,
-        updatedAt: updatedAt,
-      );
 
   // Helper function to safely parse boolean values, handling various input types
   static bool _parseBool(dynamic value) {
