@@ -1,0 +1,59 @@
+import 'package:api_client/api_client.dart';
+import 'package:app_core/app_core.dart';
+import 'package:flutter/foundation.dart';
+import 'package:credentials_repository/credentials_repository.dart';
+{% for repo in repositories %}
+import 'package:{{ repo }}_repository/{{ repo }}_repository.dart';
+{% endfor %}
+import 'package:roommate_expense_tracker/app/app.dart';
+// Your DI setup
+import 'package:roommate_expense_tracker/config/di_setup.dart';
+
+{{ header }}
+
+Future<Isar> openIsar() async {
+  final dir = await getApplicationSupportDirectory();
+  return Isar.open(
+    [CachedHttpResponseSchema],
+    directory: dir.path,
+    inspector: kDebugMode, // Only enable Isar Inspector in debug mode
+  );
+}
+
+Future<void> main() async {
+  try {
+    await bootstrap(
+      init: () async {
+        try {
+          // Perform any necessary setup here
+          await dotenv.load();
+          // Initialize Isar
+          final isar = await openIsar();
+          // Setup Dependency Injection
+          setupDependencies(isar);
+          // Trigger initial cache cleanup (optional, but good practice)
+          // You might want to control how often this runs (e.g., once a day)
+          // using SharedPreferences to store the last cleanup timestamp.
+          await getIt<CacheManager>().cleanupAllCaches();
+        } catch (e) {
+          throw Exception('Database initialization error: $e');
+        }
+      },
+      builder: () async {
+        final credentialsRepository = CredentialsRepository();
+        await credentialsRepository.checkAuthAndAdmin();
+        {% for repo in repositories %}
+        final {{ repo | snake_to_camel }}Repository = {{ repo | snake_to_pascal }}Repository();
+        {% endfor %}
+        return App(
+          credentialsRepository: credentialsRepository,
+          {% for repo in repositories %}
+          {{ repo | snake_to_camel }}Repository: {{ repo | snake_to_camel }}Repository,
+          {% endfor %}
+        );
+      },
+    );
+  } catch (e) {
+    throw Exception('Fatal error during bootstrap: $e');
+  }
+}

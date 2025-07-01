@@ -1,0 +1,117 @@
+import 'package:app_core/app_core.dart';
+import 'package:app_ui/app_ui.dart';
+import 'package:roommate_expense_tracker/features/home/view/home_page.dart';
+import 'package:roommate_expense_tracker/app/cubit/app_cubit.dart';
+import 'package:roommate_expense_tracker/features/authentication/authentication.dart';
+import 'package:roommate_expense_tracker/theme/theme_cubit.dart';
+import 'package:credentials_repository/credentials_repository.dart';
+{% for repo in repositories %}
+import 'package:{{ repo }}_repository/{{ repo }}_repository.dart';
+{% endfor %}
+
+{{ header }}
+
+/// Generate pages based on AppStatus
+List<Page<dynamic>> onGenerateAppPages(
+  AppStatus status,
+  List<Page<dynamic>> pages,
+) {
+  if (status.isUnauthenticated) {
+    return [CognitoSignInScreen.page()];
+  }
+  if (status.isAuthenticated) {
+    return [HomePage.page()];
+  }
+  return pages;
+}
+
+class App extends StatelessWidget {
+  const App({
+    required this.credentialsRepository,
+    {% for repo in repositories %}
+    required this.{{ repo | snake_to_camel }}Repository,
+    {% endfor %}
+    super.key,
+  });
+
+  final CredentialsRepository credentialsRepository;
+  {% for repo in repositories %}
+  final {{ repo | snake_to_pascal }}Repository {{ repo | snake_to_camel }}Repository;
+  {% endfor %}
+
+  // This widget is the root of your application.
+  @override
+  Widget build(BuildContext context) {
+    return MultiRepositoryProvider(
+      providers: [
+        RepositoryProvider<CredentialsRepository>.value(
+          value: credentialsRepository,
+        ),
+        {% for repo in repositories %}
+        RepositoryProvider<{{ repo | snake_to_pascal }}Repository>.value(
+          value: {{ repo | snake_to_camel }}Repository,
+        ),
+        {% endfor %}
+      ],
+
+      /// Initialize top level providers
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider<ThemeCubit>(
+            create: (_) => ThemeCubit(),
+          ),
+          BlocProvider<AppCubit>(
+            create: (_) => AppCubit(credentialsRepository: credentialsRepository),
+          ),
+        ],
+
+        /// Return AppView
+        child: const AppView(),
+      ),
+    );
+  }
+}
+
+class AppView extends StatelessWidget {
+  const AppView({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<ThemeCubit, ThemeState>(
+      builder: (context, themeState) {
+        return MaterialApp(
+          title: 'Roommate Expense Tracker',
+          // onGenerateTitle: (context) => context.l10n.appTitle,
+          // localizationsDelegates: const [
+          //   AppLocalizations.delegate,
+          //   GlobalMaterialLocalizations.delegate,
+          //   GlobalWidgetsLocalizations.delegate,
+          //   // GlobalCupertinoLocalizations.delegate
+          // ],
+          // supportedLocales: AppLocalizations.supportedLocales,
+          debugShowCheckedModeBanner: false,
+          theme: context.read<ThemeCubit>().themeData,
+          home: BlocListener<AppCubit, AppState>(
+            listenWhen: (_, current) => current.isFailure,
+            listener: (context, state) {
+              return switch (state.failure) {
+                AuthChangesFailure() =>
+                  context.showSnackBar("Failure to authenticate"),
+                SignOutFailure() => context.showSnackBar("Failure to sign out"),
+                _ => context.showSnackBar("Unknown failure occured"),
+              };
+            },
+            child: BlocBuilder<AppCubit, AppState>(
+              builder: (context, state) {
+                return FlowBuilder(
+                  onGeneratePages: onGenerateAppPages,
+                  state: state.status,
+                );
+              },
+            ),
+          ),
+        );
+      },
+    );
+  }
+}

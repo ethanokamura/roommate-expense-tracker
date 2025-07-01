@@ -1,0 +1,15 @@
+{
+  "users" : [
+    "users",
+    "house_members"
+  ],
+  "houses": [
+    "houses"
+  ],
+  "expenses": [
+    "expenses",
+    "expense_spits",
+    "recurring_expenses",
+    "receipts"
+  ]
+}

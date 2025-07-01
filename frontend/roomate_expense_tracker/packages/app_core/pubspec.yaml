@@ -1,0 +1,26 @@
+name: app_core
+description: "Core package for CV Admin App"
+version: 1.0.0+1
+publish_to: none
+
+environment:
+  sdk: '>=3.6.0 <5.0.0'
+
+dependencies:
+  bloc: ^8.1.4
+  equatable: ^2.0.5
+  flow_builder: ^0.1.0
+  flutter:
+    sdk: flutter
+  flutter_bloc: ^8.1.6
+  flutter_dotenv: ^5.1.0
+  json_annotation: ^4.9.0
+  shared_preferences: ^2.0.6
+  provider: ^6.1.2
+  rxdart: ^0.28.0
+
+dev_dependencies:
+  very_good_analysis: ^6.0.0
+
+flutter:
+  generate: true

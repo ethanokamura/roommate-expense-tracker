@@ -1,0 +1,7 @@
+library {{ full_repository_folder_name }};
+
+export 'src/failures.dart';
+export 'src/{{ full_repository_folder_name }}.dart';
+{% for model in models_to_generate %}
+export 'src/models/{{ model }}.dart';
+{% endfor %}

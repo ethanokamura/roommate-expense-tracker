@@ -1,0 +1,34 @@
+import 'package:app_core/app_core.dart';
+
+{{ header }}
+
+class {{ object_name }}Failure extends Failure {
+  const {{ object_name }}Failure._();
+
+  factory {{ object_name }}Failure.fromCreate() => const CreateFailure();
+  factory {{ object_name }}Failure.fromGet() => const ReadFailure();
+  factory {{ object_name }}Failure.fromUpdate() => const UpdateFailure();
+  factory {{ object_name }}Failure.fromDelete() => const DeleteFailure();
+
+  static const empty = EmptyFailure();
+}
+
+class CreateFailure extends {{ object_name }}Failure {
+  const CreateFailure() : super._();
+}
+
+class ReadFailure extends {{ object_name }}Failure {
+  const ReadFailure() : super._();
+}
+
+class UpdateFailure extends {{ object_name }}Failure {
+  const UpdateFailure() : super._();
+}
+
+class DeleteFailure extends {{ object_name }}Failure {
+  const DeleteFailure() : super._();
+}
+
+class EmptyFailure extends {{ object_name }}Failure {
+  const EmptyFailure() : super._();
+}

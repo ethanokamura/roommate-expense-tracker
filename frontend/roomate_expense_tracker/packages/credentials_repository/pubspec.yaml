@@ -1,0 +1,20 @@
+name: credentials_repository
+description: Custom package for the app's credentials 
+version: 1.0.0+1
+publish_to: none
+
+environment:
+  sdk: '>=3.6.0 <5.0.0'
+
+dependencies:
+  api_client:
+    path: ../api_client
+  app_core:
+    path: ../app_core
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  analyzer: ^5.13.0
+  very_good_analysis: ^6.0.0
+  build_runner: ^2.4.7

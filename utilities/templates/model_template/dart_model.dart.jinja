@@ -1,0 +1,130 @@
+import 'package:app_core/app_core.dart';
+
+{{ header }}
+
+/// Object mapping for [{{ class_name }}]
+/// Defines helper functions to help with bidirectional mapping
+class {{ class_name }} extends Equatable {
+  /// Constructor for [{{ class_name }}]
+  /// Requires default values for non-nullable data
+  const {{ class_name }}({
+    {% for field in fields %}
+    this.{{ field.camel_name }}{{ field.default_value_part }},{% if field.is_foreign_key %}  // FK{% endif %}{% if field.is_primary_key %}  // PK{% endif %}
+
+    {% endfor %}
+  });
+
+  // Helper function that converts a single SQL object to our dart object
+  factory {{ class_name }}.converterSingle(Map<String, dynamic> data) {
+    return {{ class_name }}.fromJson(data);
+  }
+
+  // Helper function that converts a JSON object to our dart object
+  factory {{ class_name }}.fromJson(Map<String, dynamic> json) {
+    return {{ class_name }}(
+{% for field in fields %}
+      {{ field.camel_name }}: {{ field.json_parse_logic }},
+{% endfor %}
+    );
+  }
+
+  // JSON string equivalent for our data
+{% for field in fields %}
+  static String get {{ field.camel_name }}Converter => '{{ field.column }}';
+{% endfor %}
+
+  // Defines the empty state for the {{ class_name }}
+  static const empty = {{ class_name }}(
+{% for field in fields %}
+  {% if field.is_not_null %}{{ field.camel_name }}{{ field.default_value_part_colon }},{% endif %}
+{% endfor %}
+  );
+
+  // Data for {{ class_name }}
+{% for field in fields %}
+  final {{ field.dart_type }} {{ field.camel_name }};{% if field.is_foreign_key %}  // FK{% endif %}{% if field.is_primary_key %}  // PK{% endif %}
+
+{% endfor %}
+
+  // Defines object properties
+  @override
+  List<Object?> get props => [
+{% for field in fields %}
+        {{ field.camel_name }},{% if not loop.last %}{% endif %}
+{% endfor %}
+      ];
+
+  // Helper function that converts a list of SQL objects to a list of our dart objects
+  static List<{{ class_name }}> converter(List<Map<String, dynamic>> data) {
+    return data.map({{ class_name }}.fromJson).toList();
+  }
+
+  // Generic function to map our dart object to a JSON object
+  Map<String, dynamic> toJson() {
+    return _generateMap(
+{% for field in fields %}
+      {{ field.camel_name }}: {{ field.camel_name }},{% if not loop.last %}
+{% endif %}{% endfor %}
+    );
+  }
+
+  // Generic function to generate a generic mapping between objects
+  static Map<String, dynamic> _generateMap({
+{% for field in fields %}
+    {{ field.dart_type_clean }}? {{ field.camel_name }},{% if not loop.last %}
+{% endif %}{% endfor %}
+  }) {
+    return {
+{% for field in fields %}
+      if ({{ field.camel_name }} != null) {{ field.camel_name }}Converter: {{ field.camel_name }},{% if not loop.last %}
+{% endif %}{% endfor %}
+    };
+  }
+
+  // helper function for inserting data into a given SQL table
+  static Map<String, dynamic> insert({
+{% for field in fields %}
+    {{ field.dart_type_clean }}? {{ field.camel_name }},{% if not loop.last %}
+{% endif %}{% endfor %}
+  }) => _generateMap(
+{% for field in fields %}
+      {{ field.camel_name }}: {{ field.camel_name }},{% if not loop.last %}
+{% endif %}{% endfor %}
+  );
+
+  // helper function for updating data for a given SQL table
+  static Map<String, dynamic> update({
+{% for field in fields %}
+    {{ field.dart_type_clean }}? {{ field.camel_name }},{% if not loop.last %}
+{% endif %}{% endfor %}
+  }) => _generateMap(
+{% for field in fields %}
+      {{ field.camel_name }}: {{ field.camel_name }},{% if not loop.last %}
+{% endif %}{% endfor %}
+  );
+
+{% if has_bool %}
+  // Helper function to safely parse boolean values, handling various input types
+  static bool _parseBool(dynamic value) {
+    if (value == null) {
+      return false;
+    }
+    if (value is bool) {
+      return value;
+    }
+    if (value is String) {
+      return value.toLowerCase() == 'true';
+    }
+    if (value is int) {
+      return value != 0;
+    }
+    return false;
+  }
+{% endif %}
+}
+
+// Extensions to the object allowing a public getters
+extension {{ class_name }}Extensions on {{ class_name }} {
+  // Check if object is currently empty
+  bool get isEmpty => this == {{ class_name }}.empty;
+}

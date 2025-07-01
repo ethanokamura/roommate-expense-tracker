@@ -1,0 +1,275 @@
+import 'package:app_core/app_core.dart';
+import 'package:flutter/foundation.dart';
+import 'package:{{feature}}_repository/{{feature}}_repository.dart';
+
+part '{{feature}}_state.dart';
+
+class {{feature | snake_to_pascal}}Cubit extends Cubit<{{feature | snake_to_pascal}}State> {
+  /// Creates a new instance of [{{feature | snake_to_pascal}}Cubit].
+  ///
+  /// Requires a [{{feature | snake_to_pascal}}Repository] to handle data operations.
+  {{feature | snake_to_pascal}}Cubit({
+    required {{feature | snake_to_pascal}}Repository {{feature | snake_to_camel}}Repository,
+  })  : _{{feature | snake_to_camel}}Repository = {{feature | snake_to_camel}}Repository,
+        super(const {{feature | snake_to_pascal}}State.initial());
+
+  final {{feature | snake_to_pascal}}Repository _{{feature | snake_to_camel}}Repository;
+
+  {% for model in models_to_generate %}
+  /// --- Create Operations for {{ model | snake_to_pascal }} ---
+
+  /// Insert [{{model | snake_to_pascal}}] object to Rds via the repository.
+  ///
+  /// Emits [Loading] state, then [Success] if successful, or [Failure] on error.
+  {% set table_key_info = schema_key_mapping.get(model) %}
+  {% if table_key_info and table_key_info.not_null %}
+  {% for nn in table_key_info.not_null %}
+  /// Requires the [{{ nn | snake_to_camel }}] to create the object.
+  {% endfor %}
+  {% endif %}
+  Future<void> create{{ model | snake_to_pascal }}({
+    {% if needs_winery_id %}required String wineryId,{% endif %}
+    {% if table_key_info and table_key_info.not_null %}
+    {% for nn in table_key_info.not_null %}
+    required String {{ nn | snake_to_camel }},
+    {% endfor %}
+    {% endif %}
+    required String token,
+    bool forceRefresh = true,
+  }) async {
+    emit(state.fromLoading());
+    try {
+      final new{{model | snake_to_pascal}} = await _{{feature | snake_to_camel}}Repository.create{{ model | snake_to_pascal }}(
+        {% if needs_winery_id %}wineryId: wineryId,{% endif %}
+        {% if table_key_info and table_key_info.not_null %}
+        {% for nn in table_key_info.not_null %}
+        {{ nn | snake_to_camel }}: {{ nn | snake_to_camel }},
+        {% endfor %}
+        {% endif %}
+        token: token,
+        forceRefresh: forceRefresh,
+      );
+      // Emit state with the newly created object, or a general success
+      emit(state.from{{model | snake_to_pascal}}Loaded({{model | snake_to_camel}}: new{{model | snake_to_pascal}}));
+    } on {{feature | snake_to_pascal}}Failure catch (failure) {
+      emit(state.fromFailure(failure));
+    } catch (e) {
+      debugPrint('Error creating {{model | snake_to_camel}}: $e');
+      emit(state.fromFailure({{ object_name }}Failure.fromCreate()));
+    }
+  }
+
+  /// --- Read Operations for {{ model | snake_to_pascal }} ---
+
+  /// Fetch list of all [{{model | snake_to_pascal}}] objects from Rds via the repository.
+  ///
+  /// Emits [Loading] state, then [{{model | snake_to_pascal}}ListLoaded] if successful, or [Failure] on error.
+  Future<void> fetchAll{{model | snake_to_pascal}}({
+    {% if needs_winery_id %}required String wineryId,{% endif %}
+    required String token,
+    required String orderBy,
+    required bool ascending,
+    bool forceRefresh = false,
+  }) async {
+    emit(state.fromLoading());
+    try {
+      final {{model | snake_to_camel}}List = await _{{feature | snake_to_camel}}Repository.fetchAll{{model | snake_to_pascal}}(
+        {% if needs_winery_id %}wineryId: wineryId,{% endif %}
+        token: token,
+        orderBy: orderBy,
+        ascending: ascending,
+        forceRefresh: forceRefresh,
+      );
+      emit(state.from{{model | snake_to_pascal}}ListLoaded({{model | snake_to_camel}}List: {{model | snake_to_camel}}List));
+    } on {{feature | snake_to_pascal}}Failure catch (failure) {
+      emit(state.fromFailure(failure));
+    } catch (e) {
+      debugPrint('Error fetching all {{model | snake_to_camel}}: $e');
+      emit(state.fromFailure({{ object_name }}Failure.fromGet()));
+    }
+  }
+
+  {% set table_key_info = schema_key_mapping.get(model) %}
+  {% if table_key_info %}
+  {% if table_key_info.primary %}
+  {% for pk in table_key_info.primary %}
+
+  /// Fetch single [{{model | snake_to_pascal}}] object from [{{feature | snake_to_pascal}}Repository].
+  ///
+  /// Return data if exists, or an empty instance of [{{model | snake_to_pascal}}].
+  ///
+  /// Requires the [{{ pk | snake_to_camel }}] for lookup
+  Future<void> fetch{{model | snake_to_pascal}}With{{ pk | snake_to_pascal }}({
+    {% if needs_winery_id and pk != "winery_id" %}required String wineryId,{% endif %}
+    required String {{ pk | snake_to_camel }},
+    required String token,
+    bool forceRefresh = false,
+  }) async {
+    // Set default state
+    emit(state.fromLoading());
+    try {
+      // Try to fetch data from {{feature | snake_to_pascal}}Repository
+      final {{model | snake_to_camel}} = await _{{feature | snake_to_camel}}Repository.fetch{{model | snake_to_pascal}}With{{ pk | snake_to_pascal }}(
+        {% if needs_winery_id and pk != "winery_id" %}wineryId: wineryId,{% endif %}
+        {{pk | snake_to_camel}}: {{pk | snake_to_camel}},
+        token: token,
+        forceRefresh: forceRefresh,
+      );
+      emit(state.from{{model | snake_to_pascal}}Loaded({{model | snake_to_camel}}: {{model | snake_to_camel}}));
+    } on {{feature | snake_to_pascal}}Failure catch (failure) {
+      // Handle {{feature | snake_to_pascal}}Failure
+      emit(state.fromFailure(failure));
+    } catch (e) {
+      // Handle unknown failure
+      debugPrint('Error fetching {{model | snake_to_camel}} with {{pk | snake_to_camel}}: $e');
+      emit(state.fromFailure({{ object_name }}Failure.fromGet()));
+    }
+  }
+
+  {% endfor %}
+  {% endif %}
+  {% if table_key_info.foreign %}
+  {% for fk in table_key_info.foreign %}
+
+  /// Fetch a list of [{{model | snake_to_pascal}}] objects from [{{feature | snake_to_pascal}}Repository].
+  ///
+  /// Return data if exists, or an empty list.
+  ///
+  /// Requires the [{{fk | snake_to_camel}}] for lookup
+  Future<void> fetchAll{{model | snake_to_pascal}}With{{fk | snake_to_pascal}}({
+    {% if needs_winery_id and fk != "winery_id" %}required String wineryId,{% endif %}
+    required String {{fk | snake_to_camel}},
+    required String token,
+    required String orderBy,
+    required bool ascending,
+    bool forceRefresh = false,
+  }) async {
+    // Set default state
+    emit(state.fromLoading());
+    try {
+      // Try to fetch data from {{feature | snake_to_pascal}}Repository
+      final {{model | snake_to_camel}}List = await _{{feature | snake_to_camel}}Repository.fetchAll{{model | snake_to_pascal}}With{{ fk | snake_to_pascal }}(
+        {% if needs_winery_id and fk != "winery_id" %}wineryId: wineryId,{% endif %}
+        {{fk | snake_to_camel}}: {{fk | snake_to_camel}},
+        token: token,
+        orderBy: orderBy,
+        ascending: ascending,
+        forceRefresh: forceRefresh,
+      );
+      emit(state.from{{model | snake_to_pascal}}ListLoaded({{model | snake_to_camel}}List: {{model | snake_to_camel}}List));
+    } on {{feature | snake_to_pascal}}Failure catch (failure) {
+      // Handle {{feature | snake_to_pascal}}Failure
+      emit(state.fromFailure(failure));
+    } catch (e) {
+      // Handle unknown failure
+      debugPrint('Error fetching all {{model | snake_to_camel}} with {{fk | snake_to_camel}}: $e');
+      emit(state.fromFailure({{ object_name }}Failure.fromGet()));
+    }
+  }
+  {% endfor %}
+  {% endif %}
+  {% if table_key_info.unique %}
+  {% for unique_key in table_key_info.unique %}
+
+  /// Fetch single [{{model | snake_to_pascal}}] object by unique key from Rds via the repository.
+  ///
+  /// Emits [Loading] state, then [{{model | snake_to_pascal}}Loaded] if successful, or [Failure] on error.
+  ///
+  /// Requires the [{{ unique_key | snake_to_camel }}] for lookup.
+  Future<void> fetch{{model | snake_to_pascal}}With{{ unique_key | snake_to_pascal }}({
+    {% if needs_winery_id and unique_key != "winery_id" %}required String wineryId,{% endif %}
+    required String {{ unique_key | snake_to_camel }},
+    required String token,
+    bool forceRefresh = false,
+  }) async {
+    emit(state.fromLoading());
+    try {
+      final {{model | snake_to_camel}} = await _{{feature | snake_to_camel}}Repository.fetch{{model | snake_to_pascal}}With{{ unique_key | snake_to_pascal }}(
+        {% if needs_winery_id and unique_key != "winery_id" %}wineryId: wineryId,{% endif %}
+        {{ unique_key | snake_to_camel }}: {{ unique_key | snake_to_camel }},
+        token: token,
+        forceRefresh: forceRefresh,
+      );
+      emit(state.from{{model | snake_to_pascal}}Loaded({{model | snake_to_camel}}: {{model | snake_to_camel}}));
+    } on {{feature | snake_to_pascal}}Failure catch (failure) {
+      emit(state.fromFailure(failure));
+    } catch (e) {
+      debugPrint('Error fetching {{model | snake_to_camel}} with unique key {{unique_key | snake_to_camel}}: $e');
+      emit(state.fromFailure({{ object_name }}Failure.fromGet()));
+    }
+  }
+
+  {% endfor %}
+  {% endif %}
+  {% endif %}
+
+  /// --- Update Operations for {{ model | snake_to_pascal }} ---
+
+  /// Update the given [{{model | snake_to_pascal}}] in Rds via the repository.
+  ///
+  /// Emits [Loading] state, then [Success] if successful, or [Failure] on error.
+  {% set table_key_info = schema_key_mapping.get(model) %}
+  {% if table_key_info and table_key_info.primary %}
+  {% for pk in table_key_info.primary %}
+  /// Requires the [{{ pk | snake_to_camel }}] to update the object.
+  Future<void> update{{model | snake_to_pascal}}({
+    {% if needs_winery_id and pk != "winery_id" %}required String wineryId,{% endif %}
+    required String {{ pk | snake_to_camel }},
+    required {{model | snake_to_pascal}} new{{model | snake_to_pascal}}Data,
+    required String token,
+  }) async {
+    emit(state.fromLoading());
+    try {
+      final updated{{model | snake_to_pascal}} = await _{{feature | snake_to_camel}}Repository.update{{model | snake_to_pascal}}(
+        {% if needs_winery_id and pk != "winery_id" %}wineryId: wineryId,{% endif %}
+        {{ pk | snake_to_camel }}: {{ pk | snake_to_camel }},
+        new{{model | snake_to_pascal}}Data: new{{model | snake_to_pascal}}Data,
+        token: token,
+      );
+      // Emit state with the updated object, or a general success
+      emit(state.from{{model | snake_to_pascal}}Loaded({{model | snake_to_camel}}: updated{{model | snake_to_pascal}}));
+    } on {{feature | snake_to_pascal}}Failure catch (failure) {
+      emit(state.fromFailure(failure));
+    } catch (e) {
+      debugPrint('Error updating {{model | snake_to_camel}}: $e');
+      emit(state.fromFailure({{ object_name }}Failure.fromUpdate()));
+    }
+  }
+
+  {% endfor %}
+  {% endif %}
+
+  /// --- Delete Operations for {{ model | snake_to_pascal }} ---
+
+  /// Delete the given [{{model | snake_to_pascal}}] from Rds via the repository.
+  ///
+  /// Emits [Loading] state, then [Success] if successful, or [Failure] on error.
+  {% set table_key_info = schema_key_mapping.get(model) %}
+  {% if table_key_info and table_key_info.primary %}
+  {% for pk in table_key_info.primary %}
+  /// Requires the [{{ pk | snake_to_camel }}] to delete the object.
+  Future<void> delete{{model | snake_to_pascal}}({
+    {% if needs_winery_id and pk != "winery_id" %}required String wineryId,{% endif %}
+    required String {{ pk | snake_to_camel }},
+    required String token,
+  }) async {
+    emit(state.fromLoading());
+    try {
+      await _{{feature | snake_to_camel}}Repository.delete{{model | snake_to_pascal}}(
+        {% if needs_winery_id and pk != "winery_id" %}wineryId: wineryId,{% endif %}
+        {{ pk | snake_to_camel }}: {{ pk | snake_to_camel }},
+        token: token,
+      );
+      emit(const {{feature | snake_to_pascal}}State.success()); // General success state for delete
+    } on {{feature | snake_to_pascal}}Failure catch (failure) {
+      emit(state.fromFailure(failure));
+    } catch (e) {
+      debugPrint('Error deleting {{model | snake_to_camel}}: $e');
+      emit(state.fromFailure({{ object_name }}Failure.fromDelete()));
+    }
+  }
+
+  {% endfor %}
+  {% endif %}
+  {% endfor %}
+}

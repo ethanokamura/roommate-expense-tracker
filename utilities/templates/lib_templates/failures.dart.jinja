@@ -1,0 +1,40 @@
+import 'package:app_core/app_core.dart';
+import 'package:app_ui/app_ui.dart';
+import 'package:{{ repository }}_repository/{{ repository }}_repository.dart';
+
+{{ header }}
+
+/// Failure controller for [{{ repository | snake_to_pascal }}Repository]
+/// Handles failures from the [{{ repository | snake_to_pascal }}Repository]
+/// Requires a [failureSelector] to handle the specifc failure correctly
+/// Takes in the [S] state of the cubit
+/// Wrapper for the given [child] widget
+BlocListener<C, S> listenFor{{ repository | snake_to_pascal }}Failures<C extends Cubit<S>, S>({
+  required {{ repository | snake_to_pascal }}Failure Function(S state) failureSelector,
+  required bool Function(S state) isFailureSelector,
+  required Widget child,
+}) {
+  // Listens for failures
+  return BlocListener<C, S>(
+    listenWhen: (previous, current) =>
+        !isFailureSelector(previous) && isFailureSelector(current),
+    listener: (context, state) {
+      if (isFailureSelector(state)) {
+        final failure = failureSelector(state);
+        // Build failure message
+        final message = switch (failure) {
+          EmptyFailure() => '{{ repository | snake_to_pascal }}Failure: Empty',
+          CreateFailure() => '{{ repository | snake_to_pascal }}Failure: Create',
+          ReadFailure() => '{{ repository | snake_to_pascal }}Failure: Read',
+          UpdateFailure() => '{{ repository | snake_to_pascal }}Failure: Update',
+          DeleteFailure() => '{{ repository | snake_to_pascal }}Failure: Delete',
+          _ => '{{ repository | snake_to_pascal }}Failure: Unknown',
+        };
+        // Display snackbar message
+        context.showSnackBar(message);
+      }
+    },
+    // Display child widget
+    child: child,
+  );
+}

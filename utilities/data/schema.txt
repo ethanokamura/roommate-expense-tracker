@@ -1,0 +1,57 @@
+users	user_id	UUID	PK
+users	display_name	VARCHAR(100)
+users	email	VARCHAR(255)
+users	created_at	TIMESTAMP
+users	updated_at	TIMESTAMP
+houses	house_id	UUID	PK
+houses	name	VARCHAR(255)
+houses	invite_code	VARCHAR(50)
+houses	user_id	UUID
+houses	created_at	TIMESTAMP
+houses	updated_at	TIMESTAMP
+house_members	house_member_id	UUID	PK
+house_members	user_id	UUID	FK
+house_members	house_id	UUID	FK
+house_members	is_admin	BOOLEAN
+house_members	joined_at	TIMESTAMP
+house_members	nickname	VARCHAR(100)
+house_members	is_active	BOOLEAN
+house_members	created_at	TIMESTAMP
+house_members	updated_at	TIMESTAMP
+expenses	expense_id	UUID	PK
+expenses	house_id	UUID	FK
+expenses	house_member_id	UUID	FK
+expenses	description	TEXT
+expenses	total_amount	DECIMAL(10, 2)
+expenses	expense_date	TIMESTAMP
+expenses	category	VARCHAR(100)
+expenses	is_settled	BOOLEAN
+expenses	settled_at	TIMESTAMP
+expenses	created_at	TIMESTAMP
+expenses	updated_at	TIMESTAMP
+expense_spits	expense_split_id	UUID	PK
+expense_spits	expense_id	UUID	FK
+expense_spits	house_member_id	UUID	FK
+expense_spits	amount_owed	DECIMAL(10, 2)
+expense_spits	is_paid	BOOLEAN
+expense_spits	paid_at	TIMESTAMP
+expense_spits	created_at	TIMESTAMP
+expense_spits	updated_at	TIMESTAMP
+receipts	receipt_id	UUID	PK
+receipts	expense_id	UUID	FK
+receipts	image_url	TEXT
+receipts	user_id	UUID
+receipts	created_at	TIMESTAMP
+receipts	updated_at	TIMESTAMP
+recurring_expenses	recurring_expense_id	UUID	PK
+recurring_expenses	house_id	UUID	FK
+recurring_expenses	house_member_id	UUID	FK
+recurring_expenses	description_template	TEXT
+recurring_expenses	amount_template	DECIMAL(10, 2)
+recurring_expenses	frequency	VARCHAR(50)
+recurring_expenses	start_date	TIMESTAMP
+recurring_expenses	end_date	TIMESTAMP
+recurring_expenses	next_due_date	TIMESTAMP
+recurring_expenses	is_active	BOOLEAN
+recurring_expenses	created_at	TIMESTAMP
+recurring_expenses	updated_at	TIMESTAMP

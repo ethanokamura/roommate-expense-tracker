@@ -1,0 +1,91 @@
+part of '{{feature}}_cubit.dart';
+
+/// Represents the different states a post can be in.
+enum {{feature | snake_to_pascal}}Status {
+  initial,
+  loading,
+  loaded,
+  failure,
+}
+
+/// Represents the state of post-related operations.
+final class {{feature | snake_to_pascal}}State extends Equatable {
+  /// Private constructor for creating [{{feature | snake_to_pascal}}State] instances.
+  const {{feature | snake_to_pascal}}State._({
+    this.status = {{feature | snake_to_pascal}}Status.initial,
+    {% for model in models %}
+    this.{{model | snake_to_camel}} = {{model | snake_to_pascal}}.empty,
+    this.{{model | snake_to_camel}}List = const [],
+    {% endfor %}
+    this.failure = {{feature | snake_to_pascal}}Failure.empty,
+  });
+
+  /// Creates an initial [{{feature | snake_to_pascal}}State].
+  const {{feature | snake_to_pascal}}State.initial() : this._();
+
+  final {{feature | snake_to_pascal}}Status status;
+  {% for model in models %}
+  final {{ model | snake_to_pascal }} {{model | snake_to_camel}};
+  final List<{{ model | snake_to_pascal }}> {{model | snake_to_camel}}List;
+  {% endfor %}
+  final {{feature | snake_to_pascal}}Failure failure;
+
+  // Rebuilds the widget when the props change
+  @override
+  List<Object?> get props => [
+        status,
+        {% for model in models %}
+        {{model | snake_to_camel}},
+        {{model | snake_to_camel}}List,
+        {% endfor %}
+        failure,
+      ];
+
+  /// Creates a new [{{feature | snake_to_pascal}}State] with updated fields.
+  /// Any parameter that is not provided will retain its current value.
+  {{feature | snake_to_pascal}}State copyWith({
+    {{feature | snake_to_pascal}}Status? status,
+    {% for model in models %}
+    {{ model | snake_to_pascal }}? {{model | snake_to_camel}},
+    List<{{ model | snake_to_pascal }}>? {{model | snake_to_camel}}List,
+    {% endfor %}
+    {{feature | snake_to_pascal}}Failure? failure,
+  }) {
+    return {{feature | snake_to_pascal}}State._(
+      status: status ?? this.status,
+      {% for model in models %}
+      {{model | snake_to_camel}}: {{model | snake_to_camel}} ?? this.{{model | snake_to_camel}},
+      {{model | snake_to_camel}}List: {{model | snake_to_camel}}List ?? this.{{model | snake_to_camel}}List,
+      {% endfor %}
+      failure: failure ?? this.failure,
+    );
+  }
+}
+
+/// Extension methods for convenient state checks.
+extension {{feature | snake_to_pascal}}StateExtensions on {{feature | snake_to_pascal}}State {
+  bool get isLoaded => status == {{feature | snake_to_pascal}}Status.loaded;
+  bool get isLoading => status == {{feature | snake_to_pascal}}Status.loading;
+  bool get isFailure => status == {{feature | snake_to_pascal}}Status.failure;
+}
+
+/// Extension methods for creating new [{{feature | snake_to_pascal}}State] instances.
+extension _{{feature | snake_to_pascal}}StateExtensions on {{feature | snake_to_pascal}}State {
+  {{feature | snake_to_pascal}}State fromLoading() => copyWith(status: {{feature | snake_to_pascal}}Status.loading);
+  
+  {% for model in models %}
+  {{feature | snake_to_pascal}}State from{{model | snake_to_pascal}}Loaded({required {{model | snake_to_pascal}} {{model | snake_to_camel}}}) => copyWith(
+        status: {{feature | snake_to_pascal}}Status.loaded,
+        {{model | snake_to_camel}}: {{model | snake_to_camel}},
+      );
+  {{feature | snake_to_pascal}}State from{{model | snake_to_pascal}}ListLoaded({required List<{{model | snake_to_pascal}}> {{model | snake_to_camel}}List}) => copyWith(
+        status: {{feature | snake_to_pascal}}Status.loaded,
+        {{model | snake_to_camel}}List: {{model | snake_to_camel}}List,
+      );
+  {% endfor %}
+
+  {{feature | snake_to_pascal}}State fromFailure({{feature | snake_to_pascal}}Failure failure) => copyWith(
+        status: {{feature | snake_to_pascal}}Status.failure,
+        failure: failure,
+      );
+}
