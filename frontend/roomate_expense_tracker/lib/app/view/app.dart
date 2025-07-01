@@ -2,7 +2,7 @@ import 'package:app_core/app_core.dart';
 import 'package:app_ui/app_ui.dart';
 import 'package:roommate_expense_tracker/features/home/view/home_page.dart';
 import 'package:roommate_expense_tracker/app/cubit/app_cubit.dart';
-import 'package:roommate_expense_tracker/features/authentication/authentication.dart';
+// import 'package:roommate_expense_tracker/features/authentication/authentication.dart';
 import 'package:roommate_expense_tracker/theme/theme_cubit.dart';
 import 'package:credentials_repository/credentials_repository.dart';
 import 'package:users_repository/users_repository.dart';
@@ -23,20 +23,19 @@ import 'package:expenses_repository/expenses_repository.dart';
 //                                                                        //
 ////////////////////////////////////////////////////////////////////////////
 
-
-
 /// Generate pages based on AppStatus
 List<Page<dynamic>> onGenerateAppPages(
   AppStatus status,
   List<Page<dynamic>> pages,
 ) {
-  if (status.isUnauthenticated) {
-    return [CognitoSignInScreen.page()];
-  }
-  if (status.isAuthenticated) {
-    return [HomePage.page()];
-  }
-  return pages;
+  return [HomePage.page()];
+  // if (status.isUnauthenticated) {
+  //   return [CognitoSignInScreen.page()];
+  // }
+  // if (status.isAuthenticated) {
+  //   return [HomePage.page()];
+  // }
+  // return pages;
 }
 
 class App extends StatelessWidget {
@@ -79,7 +78,8 @@ class App extends StatelessWidget {
             create: (_) => ThemeCubit(),
           ),
           BlocProvider<AppCubit>(
-            create: (_) => AppCubit(credentialsRepository: credentialsRepository),
+            create: (_) =>
+                AppCubit(credentialsRepository: credentialsRepository),
           ),
         ],
 

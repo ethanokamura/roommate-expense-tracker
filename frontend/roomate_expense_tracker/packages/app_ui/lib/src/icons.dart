@@ -58,4 +58,5 @@ class AppIcons {
   static const IconData link = FontAwesomeIcons.link;
   static const IconData cancel = FontAwesomeIcons.xmark;
   static const IconData copy = FontAwesomeIcons.copy;
+  static const IconData house = FontAwesomeIcons.house;
 }
