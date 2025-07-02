@@ -1,13 +1,13 @@
 import 'package:api_client/api_client.dart';
 import 'package:app_core/app_core.dart';
 import 'package:flutter/foundation.dart';
-import 'package:credentials_repository/credentials_repository.dart';
 {% for repo in repositories %}
 import 'package:{{ repo }}_repository/{{ repo }}_repository.dart';
 {% endfor %}
 import 'package:roommate_expense_tracker/app/app.dart';
 // Your DI setup
 import 'package:roommate_expense_tracker/config/di_setup.dart';
+import 'firebase_options.dart';
 
 {{ header }}
 
@@ -29,8 +29,21 @@ Future<void> main() async {
           await dotenv.load();
           // Initialize Isar
           final isar = await openIsar();
+          // Initialize Firebase
+          await Firebase.initializeApp(
+            options: DefaultFirebaseOptions.currentPlatform,
+          );
+          // Init Google Auth
+          final googleSignIn = GoogleSignIn.instance;
+          await googleSignIn.initialize();
+          // Init Firebase Auth
+          final firebaseAuth = FirebaseAuth.instance;
           // Setup Dependency Injection
-          setupDependencies(isar);
+          await setupDependencies(
+            isarInstance: isar,
+            googleSignIn: googleSignIn,
+            firebaseAuth: firebaseAuth,
+          );
           // Trigger initial cache cleanup (optional, but good practice)
           // You might want to control how often this runs (e.g., once a day)
           // using SharedPreferences to store the last cleanup timestamp.
@@ -40,13 +53,10 @@ Future<void> main() async {
         }
       },
       builder: () async {
-        final credentialsRepository = CredentialsRepository();
-        await credentialsRepository.checkAuthAndAdmin();
         {% for repo in repositories %}
         final {{ repo | snake_to_camel }}Repository = {{ repo | snake_to_pascal }}Repository();
         {% endfor %}
         return App(
-          credentialsRepository: credentialsRepository,
           {% for repo in repositories %}
           {{ repo | snake_to_camel }}Repository: {{ repo | snake_to_camel }}Repository,
           {% endfor %}

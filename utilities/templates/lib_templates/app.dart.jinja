@@ -1,10 +1,9 @@
 import 'package:app_core/app_core.dart';
 import 'package:app_ui/app_ui.dart';
-import 'package:roommate_expense_tracker/features/home/view/home_page.dart';
+import 'package:roommate_expense_tracker/features/auth/auth.dart';
+import 'package:roommate_expense_tracker/features/home/home.dart';
 import 'package:roommate_expense_tracker/app/cubit/app_cubit.dart';
-import 'package:roommate_expense_tracker/features/authentication/authentication.dart';
 import 'package:roommate_expense_tracker/theme/theme_cubit.dart';
-import 'package:credentials_repository/credentials_repository.dart';
 {% for repo in repositories %}
 import 'package:{{ repo }}_repository/{{ repo }}_repository.dart';
 {% endfor %}
@@ -17,7 +16,7 @@ List<Page<dynamic>> onGenerateAppPages(
   List<Page<dynamic>> pages,
 ) {
   if (status.isUnauthenticated) {
-    return [CognitoSignInScreen.page()];
+    return [SignInPage.page()];
   }
   if (status.isAuthenticated) {
     return [HomePage.page()];
@@ -27,14 +26,12 @@ List<Page<dynamic>> onGenerateAppPages(
 
 class App extends StatelessWidget {
   const App({
-    required this.credentialsRepository,
     {% for repo in repositories %}
     required this.{{ repo | snake_to_camel }}Repository,
     {% endfor %}
     super.key,
   });
 
-  final CredentialsRepository credentialsRepository;
   {% for repo in repositories %}
   final {{ repo | snake_to_pascal }}Repository {{ repo | snake_to_camel }}Repository;
   {% endfor %}
@@ -44,9 +41,6 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiRepositoryProvider(
       providers: [
-        RepositoryProvider<CredentialsRepository>.value(
-          value: credentialsRepository,
-        ),
         {% for repo in repositories %}
         RepositoryProvider<{{ repo | snake_to_pascal }}Repository>.value(
           value: {{ repo | snake_to_camel }}Repository,
@@ -61,7 +55,7 @@ class App extends StatelessWidget {
             create: (_) => ThemeCubit(),
           ),
           BlocProvider<AppCubit>(
-            create: (_) => AppCubit(credentialsRepository: credentialsRepository),
+            create: (_) => AppCubit(usersRepository: usersRepository),
           ),
         ],
 
@@ -95,7 +89,7 @@ class AppView extends StatelessWidget {
             listenWhen: (_, current) => current.isFailure,
             listener: (context, state) {
               return switch (state.failure) {
-                AuthChangesFailure() =>
+                SignInFailure() =>
                   context.showSnackBar("Failure to authenticate"),
                 SignOutFailure() => context.showSnackBar("Failure to sign out"),
                 _ => context.showSnackBar("Unknown failure occured"),

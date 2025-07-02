@@ -1,5 +1,4 @@
 import 'package:api_client/api_client.dart';
-import 'package:credentials_repository/credentials_repository.dart';
 {% for repo in repositories %}
 import 'package:{{ repo }}_repository/{{ repo }}_repository.dart';
 {% endfor %}
@@ -8,21 +7,28 @@ import 'package:{{ repo }}_repository/{{ repo }}_repository.dart';
 
 final getIt = GetIt.instance;
 
-void setupDependencies(Isar isarInstance) {
-  // Register Isar if not already done. Pass the instance from openIsar().
-  // This is typically called from main.dart after Isar.open().
+Future<void> setupDependencies({
+  required Isar isarInstance,
+  required GoogleSignIn googleSignIn,
+  required FirebaseAuth firebaseAuth,
+}) async {
+  // Register Dependencies
   getIt.registerLazySingleton<Isar>(() => isarInstance);
+  getIt.registerLazySingleton<GoogleSignIn>(() => googleSignIn);
+  getIt.registerLazySingleton<FirebaseAuth>(() => firebaseAuth);
   // Register CacheManager, which depends on Isar
   getIt.registerLazySingleton<CacheManager>(() => CacheManager(getIt<Isar>()));
   // Register all your repositories as lazy singletons
 {% for repo in repositories %}
-  getIt.registerLazySingleton<{{repo | snake_to_pascal}}Repository>(
-      () => {{repo | snake_to_pascal}}Repository(cacheManager: getIt<CacheManager>()),);
-{% endfor %}
-  getIt.registerLazySingleton<CredentialsRepository>(
-    () => CredentialsRepository(
-      cacheManager: getIt<CacheManager>(),
-      dio: Dio(),
-    ),
+  getIt.registerSingletonWithDependencies<{{repo | snake_to_pascal}}Repository>(
+      () => {{repo | snake_to_pascal}}Repository(
+        cacheManager: getIt<CacheManager>(),
+        {% if repo == "users_repository" %}
+        googleSignIn: getIt<GoogleSignIn>(),
+        firebaseAuth: getIt<FirebaseAuth>(),
+        {%endif%}
+      ),
+    dependsOn: [CacheManager {% if repo == "users_repository" %}, GoogleSignIn, FirebaseAuth {%endif%}],
   );
+{% endfor %}
 }

@@ -1,13 +1,13 @@
 import 'package:api_client/api_client.dart';
 import 'package:app_core/app_core.dart';
 import 'package:flutter/foundation.dart';
-import 'package:credentials_repository/credentials_repository.dart';
 import 'package:users_repository/users_repository.dart';
 import 'package:houses_repository/houses_repository.dart';
 import 'package:expenses_repository/expenses_repository.dart';
 import 'package:roommate_expense_tracker/app/app.dart';
 // Your DI setup
 import 'package:roommate_expense_tracker/config/di_setup.dart';
+import 'firebase_options.dart';
 
 ////////////////////////////////////////////////////////////////////////////
 //                                                                        //
@@ -19,9 +19,11 @@ import 'package:roommate_expense_tracker/config/di_setup.dart';
 //  is regenerated. If you need to modify behavior, update the source     //
 //                         template instead.                              //
 //                                                                        //
-//                Generated on: 2025-07-01 17:10:50 UTC                   //
+//                Generated on: 2025-07-02 02:59:11 UTC                   //
 //                                                                        //
 ////////////////////////////////////////////////////////////////////////////
+
+
 
 Future<Isar> openIsar() async {
   final dir = await getApplicationSupportDirectory();
@@ -38,31 +40,37 @@ Future<void> main() async {
       init: () async {
         try {
           // Perform any necessary setup here
-          // await dotenv.load();
+          await dotenv.load();
           // Initialize Isar
           final isar = await openIsar();
-          debugPrint('Initialized Isar');
+          // Initialize Firebase
+          await Firebase.initializeApp(
+            options: DefaultFirebaseOptions.currentPlatform,
+          );
+          // Init Google Auth
+          final googleSignIn = GoogleSignIn.instance;
+          await googleSignIn.initialize();
+          // Init Firebase Auth
+          final firebaseAuth = FirebaseAuth.instance;
           // Setup Dependency Injection
-          setupDependencies(isar);
-          debugPrint('Setup Dependency Injection');
+          await setupDependencies(
+            isarInstance: isar,
+            googleSignIn: googleSignIn,
+            firebaseAuth: firebaseAuth,
+          );
           // Trigger initial cache cleanup (optional, but good practice)
           // You might want to control how often this runs (e.g., once a day)
           // using SharedPreferences to store the last cleanup timestamp.
           await getIt<CacheManager>().cleanupAllCaches();
-          debugPrint('Cleaned Caches');
         } catch (e) {
           throw Exception('Database initialization error: $e');
         }
       },
       builder: () async {
-        final credentialsRepository = CredentialsRepository();
-        // await credentialsRepository.checkAuthAndAdmin();
         final usersRepository = UsersRepository();
         final housesRepository = HousesRepository();
         final expensesRepository = ExpensesRepository();
-        debugPrint('Initialized Repositories');
         return App(
-          credentialsRepository: credentialsRepository,
           usersRepository: usersRepository,
           housesRepository: housesRepository,
           expensesRepository: expensesRepository,
