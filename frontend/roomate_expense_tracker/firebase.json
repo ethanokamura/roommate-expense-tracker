@@ -1,0 +1,30 @@
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "ret-roommate-expense-tracker",
+          "appId": "1:673110359622:android:363e0db3d7298298c5d447",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "ios": {
+        "default": {
+          "projectId": "ret-roommate-expense-tracker",
+          "appId": "1:673110359622:ios:30b6f34753084c3ac5d447",
+          "uploadDebugSymbols": false,
+          "fileOutput": "ios/Runner/GoogleService-Info.plist"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "ret-roommate-expense-tracker",
+          "configurations": {
+            "android": "1:673110359622:android:363e0db3d7298298c5d447",
+            "ios": "1:673110359622:ios:30b6f34753084c3ac5d447"
+          }
+        }
+      }
+    }
+  }
+}

@@ -12,7 +12,7 @@ import 'package:houses_repository/houses_repository.dart';
 //  is regenerated. If you need to modify behavior, update the source     //
 //                         template instead.                              //
 //                                                                        //
-//                Generated on: 2025-07-01 17:10:50 UTC                   //
+//                Generated on: 2025-07-02 02:59:11 UTC                   //
 //                                                                        //
 ////////////////////////////////////////////////////////////////////////////
 

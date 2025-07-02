@@ -1,10 +1,9 @@
 import 'package:app_core/app_core.dart';
 import 'package:app_ui/app_ui.dart';
-import 'package:roommate_expense_tracker/features/home/view/home_page.dart';
+import 'package:roommate_expense_tracker/features/auth/auth.dart';
+import 'package:roommate_expense_tracker/features/home/home.dart';
 import 'package:roommate_expense_tracker/app/cubit/app_cubit.dart';
-// import 'package:roommate_expense_tracker/features/authentication/authentication.dart';
 import 'package:roommate_expense_tracker/theme/theme_cubit.dart';
-import 'package:credentials_repository/credentials_repository.dart';
 import 'package:users_repository/users_repository.dart';
 import 'package:houses_repository/houses_repository.dart';
 import 'package:expenses_repository/expenses_repository.dart';
@@ -19,7 +18,7 @@ import 'package:expenses_repository/expenses_repository.dart';
 //  is regenerated. If you need to modify behavior, update the source     //
 //                         template instead.                              //
 //                                                                        //
-//                Generated on: 2025-07-01 17:10:50 UTC                   //
+//                Generated on: 2025-07-02 02:59:11 UTC                   //
 //                                                                        //
 ////////////////////////////////////////////////////////////////////////////
 
@@ -28,26 +27,23 @@ List<Page<dynamic>> onGenerateAppPages(
   AppStatus status,
   List<Page<dynamic>> pages,
 ) {
-  return [HomePage.page()];
-  // if (status.isUnauthenticated) {
-  //   return [CognitoSignInScreen.page()];
-  // }
-  // if (status.isAuthenticated) {
-  //   return [HomePage.page()];
-  // }
-  // return pages;
+  if (status.isUnauthenticated) {
+    return [SignInPage.page()];
+  }
+  if (status.isAuthenticated) {
+    return [HomePage.page()];
+  }
+  return pages;
 }
 
 class App extends StatelessWidget {
   const App({
-    required this.credentialsRepository,
     required this.usersRepository,
     required this.housesRepository,
     required this.expensesRepository,
     super.key,
   });
 
-  final CredentialsRepository credentialsRepository;
   final UsersRepository usersRepository;
   final HousesRepository housesRepository;
   final ExpensesRepository expensesRepository;
@@ -57,9 +53,6 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiRepositoryProvider(
       providers: [
-        RepositoryProvider<CredentialsRepository>.value(
-          value: credentialsRepository,
-        ),
         RepositoryProvider<UsersRepository>.value(
           value: usersRepository,
         ),
@@ -78,8 +71,7 @@ class App extends StatelessWidget {
             create: (_) => ThemeCubit(),
           ),
           BlocProvider<AppCubit>(
-            create: (_) =>
-                AppCubit(credentialsRepository: credentialsRepository),
+            create: (_) => AppCubit(usersRepository: usersRepository),
           ),
         ],
 
@@ -113,7 +105,7 @@ class AppView extends StatelessWidget {
             listenWhen: (_, current) => current.isFailure,
             listener: (context, state) {
               return switch (state.failure) {
-                AuthChangesFailure() =>
+                SignInFailure() =>
                   context.showSnackBar("Failure to authenticate"),
                 SignOutFailure() => context.showSnackBar("Failure to sign out"),
                 _ => context.showSnackBar("Unknown failure occured"),

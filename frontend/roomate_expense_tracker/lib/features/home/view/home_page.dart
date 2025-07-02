@@ -5,6 +5,7 @@ import 'package:roommate_expense_tracker/features/home/view/bottom_nav_bar.dart'
 import 'package:roommate_expense_tracker/features/houses/pages/pages.dart';
 import 'package:roommate_expense_tracker/features/users/pages/user_dashboard.dart';
 import 'package:roommate_expense_tracker/theme/theme_button.dart';
+import 'package:users_repository/users_repository.dart';
 // import 'package:users_repository/users_repository.dart';
 
 class HomePage extends StatelessWidget {
@@ -31,7 +32,7 @@ class HomeBody extends StatelessWidget {
   const HomeBody({super.key});
   @override
   Widget build(BuildContext context) {
-    // final userId = context.read<UsersRepository>().users.userId;
+    final userEmail = context.read<UsersRepository>().currentUser!.email;
     final pageController = context.watch<NavBarController>();
 
     return PageView(

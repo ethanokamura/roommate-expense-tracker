@@ -11,9 +11,20 @@ class UsersRepository {
   /// Constructor for UsersRepository.
   UsersRepository({
     CacheManager? cacheManager,
-  }) : _cacheManager = cacheManager ?? GetIt.instance<CacheManager>();
+    GoogleSignIn? googleSignIn,
+    FirebaseAuth? firebaseAuth,
+    Dio? dio,
+  })  : _cacheManager = cacheManager ?? GetIt.instance<CacheManager>(),
+        _googleSignIn = googleSignIn ?? GetIt.instance<GoogleSignIn>(),
+        _firebaseAuth = firebaseAuth ?? GetIt.instance<FirebaseAuth>();
+  final GoogleSignIn _googleSignIn; // Instance of Google Sign In
+  final CacheManager _cacheManager; // Instance of the CacheManager
+  final FirebaseAuth _firebaseAuth;
 
-  final CacheManager _cacheManager;
+  GoogleSignInAccount? _currentUser;
+  GoogleSignInAccount? get currentUser => _currentUser;
+  bool _isGoogleSignInInitialized = false;
+  bool get authenticated => _currentUser != null;
 
   Users _users = Users.empty;
   Users get users => _users;
@@ -25,6 +36,73 @@ class UsersRepository {
 
   List<HouseMembers> _houseMembersList = [];
   List<HouseMembers> get houseMembersList => _houseMembersList;
+}
+
+extension Auth on UsersRepository {
+  Future<void> _initializeGoogleSignIn() async {
+    try {
+      await _googleSignIn.initialize();
+      _isGoogleSignInInitialized = true;
+    } catch (e) {
+      debugPrint('Failed to initialize Google Sign-In: $e');
+      throw UsersFailure.fromSignIn();
+    }
+  }
+
+  /// Always check Google sign in initialization before use
+  Future<void> _ensureGoogleSignInInitialized() async {
+    if (!_isGoogleSignInInitialized) {
+      try {
+        await _initializeGoogleSignIn();
+      } catch (e) {
+        debugPrint('Error during sign in: $e');
+        throw UsersFailure.fromSignIn();
+      }
+    }
+  }
+
+  Future<UserCredential> signInWithGoogleFirebase() async {
+    try {
+      await _ensureGoogleSignInInitialized();
+
+      // Authenticate with Google
+      final GoogleSignInAccount googleUser = await _googleSignIn.authenticate(
+        scopeHint: ['email'],
+      );
+
+      // Get authorization for Firebase scopes if needed
+      final authClient = _googleSignIn.authorizationClient;
+      final authorization = await authClient.authorizationForScopes(['email']);
+
+      final credential = GoogleAuthProvider.credential(
+        accessToken: authorization?.accessToken,
+        idToken: googleUser.authentication.idToken,
+      );
+
+      final userCredential =
+          await _firebaseAuth.signInWithCredential(credential);
+
+      // Update local state
+      _currentUser = googleUser;
+
+      return userCredential;
+    } catch (e) {
+      debugPrint('Error during sign in: $e');
+      throw UsersFailure.fromSignIn();
+    }
+  }
+
+  /// Signs out the user from both Google and Firebase.
+  Future<void> signOut() async {
+    try {
+      await Future.wait([
+        _googleSignIn.signOut(),
+      ]);
+    } on Exception catch (e, st) {
+      debugPrint('Error during signOut: $e, $st');
+      throw UsersFailure.fromSignOut();
+    }
+  }
 }
 
 extension Create on UsersRepository {

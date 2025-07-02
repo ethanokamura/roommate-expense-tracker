@@ -15,8 +15,6 @@ dependencies:
     path: packages/app_core
   app_ui:
     path: packages/app_ui
-  credentials_repository:
-    path: packages/credentials_repository
   flutter:
     sdk: flutter
   {% for repo in repositories %}
@@ -36,3 +34,5 @@ flutter:
   uses-material-design: true
   assets:
   - assets/data/
+  - assets/logos/
+  - .env

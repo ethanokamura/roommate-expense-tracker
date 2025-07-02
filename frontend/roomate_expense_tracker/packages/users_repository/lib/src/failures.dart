@@ -6,6 +6,8 @@ class UsersFailure extends Failure {
   factory UsersFailure.fromCreate() => const CreateFailure();
   factory UsersFailure.fromGet() => const ReadFailure();
   factory UsersFailure.fromUpdate() => const UpdateFailure();
+  factory UsersFailure.fromSignIn() => const SignInFailure();
+  factory UsersFailure.fromSignOut() => const SignOutFailure();
   factory UsersFailure.fromDelete() => const DeleteFailure();
 
   static const empty = EmptyFailure();
@@ -25,6 +27,14 @@ class UpdateFailure extends UsersFailure {
 
 class DeleteFailure extends UsersFailure {
   const DeleteFailure() : super._();
+}
+
+class SignInFailure extends UsersFailure {
+  const SignInFailure() : super._();
+}
+
+class SignOutFailure extends UsersFailure {
+  const SignOutFailure() : super._();
 }
 
 class EmptyFailure extends UsersFailure {

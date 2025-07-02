@@ -26,7 +26,8 @@ CREATE TABLE IF NOT EXISTS house_members (
     user_id UUID NOT NULL,
     house_id UUID NOT NULL,
     is_admin BOOLEAN DEFAULT FALSE NOT NULL, -- True if this member is the "Head of House" for this house
-    joined_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     nickname VARCHAR(100), -- House-specific nickname for the user
     is_active BOOLEAN DEFAULT TRUE NOT NULL, -- For managing (add/remove) members without deleting history
     UNIQUE (user_id, house_id), -- A user can only be a member of a house once
@@ -74,7 +75,8 @@ CREATE TABLE IF NOT EXISTS receipts (
     expense_id UUID UNIQUE NOT NULL, -- One receipt per expense for simplicity, or remove UNIQUE for multiple
     image_url TEXT NOT NULL, -- Path or URL to the stored image
     user_id UUID NOT NULL,
-    uploaded_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     FOREIGN KEY (expense_id) REFERENCES Expenses(expense_id) ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE RESTRICT
 );

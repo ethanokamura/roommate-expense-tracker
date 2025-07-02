@@ -15,7 +15,6 @@ extension AppStatusExtensions on AppStatus {
   bool get isUnauthenticated => this == AppStatus.unauthenticated;
   bool get needsUsername => this == AppStatus.needsUsername;
   bool get isAuthenticated => this == AppStatus.authenticated;
-  bool get isAuthenticatedAsAdmin => this == AppStatus.authenticatedAsAdmin;
   bool get isFailure => this == AppStatus.failure;
   bool get isLoading => this == AppStatus.loading;
 }
@@ -25,7 +24,7 @@ final class AppState extends Equatable {
   /// AppState Constructor
   const AppState._({
     required this.status,
-    this.failure = CredentialsFailure.empty,
+    this.failure = UsersFailure.empty,
   });
 
   /// Private setters for AppStatus
@@ -53,7 +52,7 @@ final class AppState extends Equatable {
   // /// State properties
   final AppStatus status;
   // final UserData user;
-  final CredentialsFailure failure;
+  final UsersFailure failure;
 
   @override
   List<Object?> get props => [status, failure];
@@ -62,7 +61,6 @@ final class AppState extends Equatable {
 /// Public getters for AppState
 extension AppStateExtensions on AppState {
   bool get isUnauthenticated => status.isUnauthenticated;
-  bool get isAuthenticatedAsAdmin => status.isAuthenticatedAsAdmin;
   bool get isAuthenticated => status.isAuthenticated;
   bool get isFailure => status.isFailure;
   bool get isLoading => status.isLoading;

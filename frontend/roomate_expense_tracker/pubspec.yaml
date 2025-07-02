@@ -13,7 +13,7 @@ version: 1.0.0+1
 ##  is regenerated. If you need to modify behavior, update the source     ##
 ##                         template instead.                              ##
 ##                                                                        ##
-##                Generated on: 2025-07-01 17:10:50 UTC                   ##
+##                Generated on: 2025-07-02 02:59:11 UTC                   ##
 ##                                                                        ##
 ############################################################################
 
@@ -29,8 +29,6 @@ dependencies:
     path: packages/app_core
   app_ui:
     path: packages/app_ui
-  credentials_repository:
-    path: packages/credentials_repository
   flutter:
     sdk: flutter
   users_repository:
@@ -52,3 +50,5 @@ flutter:
   uses-material-design: true
   assets:
   - assets/data/
+  - assets/logos/
+  - .env
