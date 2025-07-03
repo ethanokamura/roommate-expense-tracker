@@ -15,7 +15,7 @@ import utils
 HEADER = utils.generate_header()
 
 # --- Configuration Paths ---
-ROOT_DIR = Path("../../frontend/roomate_expense_tracker")
+ROOT_DIR = Path("../../frontend/roommate_expense_tracker")
 REPOSITORY_SOURCE = Path("../data/repositories.txt")
 # Lib paths
 LIB_DIR = ROOT_DIR / "lib"
@@ -139,7 +139,7 @@ if __name__ == "__main__":
             # Generate pubspec file
             generate_root_pubspec_file(updated_repos, ROOT_PUBSPEC_FILE)
             print("\n--- All lib file updates complete! ---")
-            utils.run_flutter_pub_get("../../frontend/roomate_expense_tracker")
+            utils.run_flutter_pub_get("../../frontend/roommate_expense_tracker")
 
             utils.run_flutter_pub_get(ROOT_DIR)
             utils.format_dart_files(ROOT_DIR)
