@@ -1,6 +1,6 @@
 const express = require("express");
 const ExpenseSplitsRouter = express.Router();
-const { expenseSplitsValidators } = require("./validators");
+const { expenseSplitsValidators } = require("./validator");
 const { ExpenseSplitsController } = require("./controller");
 
 const expenseSplitsController = new ExpenseSplitsController();

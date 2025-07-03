@@ -1,6 +1,6 @@
 const express = require("express");
 const HouseMembersRouter = express.Router();
-const { houseMembersValidators } = require("./validators");
+const { houseMembersValidators } = require("./validator");
 const { HouseMembersController } = require("./controller");
 
 const houseMembersController = new HouseMembersController();
