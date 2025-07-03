@@ -1,44 +1,44 @@
 const express = require("express");
 const ReceiptsRouter = express.Router();
-const { ReceiptsValidators } = require("./validators");
+const { receiptsValidators } = require("./validator");
 const { ReceiptsController } = require("./controller");
 
-const ReceiptsController = new ReceiptsController();
+const receiptsController = new ReceiptsController();
 
 // Create
 ReceiptsRouter.post(
 	"/",
-	ReceiptsValidators.createReceipts,
-	ReceiptsController.createReceipts
+	receiptsValidators.createReceipts,
+	receiptsController.createReceipts
 );
 
 // Read
 ReceiptsRouter.get(
 	"/:id",
-	ReceiptsValidators.ReceiptsId,
-	ReceiptsController.getReceipts
+	receiptsValidators.receiptsId,
+	receiptsController.getReceipts
 );
 
 // Read
 ReceiptsRouter.get(
 	"/",
-	ReceiptsValidators.ReceiptsQuery,
-	ReceiptsController.findReceiptss
+	receiptsValidators.receiptsQuery,
+	receiptsController.findReceiptss
 );
 
 // Update
 ReceiptsRouter.patch(
 	"/:id",
-	ReceiptsValidators.ReceiptsId,
-	ReceiptsValidators.updateReceipts,
-	ReceiptsController.updateReceipts
+	receiptsValidators.receiptsId,
+	receiptsValidators.updateReceipts,
+	receiptsController.updateReceipts
 );
 
 // Delete
 ReceiptsRouter.delete(
 	"/:id",
-	ReceiptsValidators.ReceiptsId,
-	ReceiptsController.deleteReceipts
+	receiptsValidators.receiptsId,
+	receiptsController.deleteReceipts
 );
 
 module.exports = { ReceiptsRouter };

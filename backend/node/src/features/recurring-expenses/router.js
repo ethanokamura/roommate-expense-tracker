@@ -1,6 +1,6 @@
 const express = require("express");
 const RecurringExpensesRouter = express.Router();
-const { recurringExpensesValidators } = require("./validators");
+const { recurringExpensesValidators } = require("./validator");
 const { RecurringExpensesController } = require("./controller");
 
 const recurringExpensesController = new RecurringExpensesController();

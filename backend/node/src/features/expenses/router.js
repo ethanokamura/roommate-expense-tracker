@@ -1,6 +1,6 @@
 const express = require("express");
 const ExpensesRouter = express.Router();
-const { expensesValidators } = require("./validators");
+const { expensesValidators } = require("./validator");
 const { ExpensesController } = require("./controller");
 
 const expensesController = new ExpensesController();
