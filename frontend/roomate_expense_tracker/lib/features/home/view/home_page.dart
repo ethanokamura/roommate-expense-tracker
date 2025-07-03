@@ -32,7 +32,7 @@ class HomeBody extends StatelessWidget {
   const HomeBody({super.key});
   @override
   Widget build(BuildContext context) {
-    final userEmail = context.read<UsersRepository>().currentUser!.email;
+    // final userEmail = context.read<UsersRepository>().currentUser!.email;
     final pageController = context.watch<NavBarController>();
 
     return PageView(
