@@ -9,7 +9,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.roomate_expense_tracker"
+    namespace = "com.example.roommate_expense_tracker"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -24,7 +24,7 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.example.roomate_expense_tracker"
+        applicationId = "com.example.roommate_expense_tracker"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion

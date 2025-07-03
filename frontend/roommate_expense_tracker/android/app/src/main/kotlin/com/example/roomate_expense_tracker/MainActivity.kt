@@ -1,4 +1,4 @@
-package com.example.roomate_expense_tracker
+package com.example.roommate_expense_tracker
 
 import io.flutter.embedding.android.FlutterActivity
 

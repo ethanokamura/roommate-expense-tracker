@@ -15,7 +15,7 @@ import utils # Assuming utils.py contains snake_to_pascal, snake_to_camel, read_
 HEADER = utils.generate_header()
 
 # --- Configuration Paths ---
-ROOT_DIR = Path("../../frontend/roomate_expense_tracker")
+ROOT_DIR = Path("../../frontend/roommate_expense_tracker")
 
 # Input data files (reusing from repository script)
 REPO_MODEL_MAPPING_FILE = Path("../data/model_map.json")

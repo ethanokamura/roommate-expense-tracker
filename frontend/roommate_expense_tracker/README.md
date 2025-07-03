@@ -1,4 +1,4 @@
-# roomate_expense_tracker
+# romomate_expense_tracker
 
 A new Flutter project.
 

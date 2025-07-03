@@ -15,7 +15,7 @@ import utils
 HEADER = utils.generate_header()
 
 # --- Configuration Paths ---
-ROOT_DIR = Path("../../frontend/roomate_expense_tracker")
+ROOT_DIR = Path("../../frontend/roommate_expense_tracker")
 
 SCHEMA_FILE = Path("../data/schema.txt")
 REPO_MODEL_MAPPING_FILE = Path("../data/model_map.json")
