@@ -1,0 +1,16 @@
+*.log
+# Test files
+test.js
+.DS_Store
+
+# Environment variables and secrets
+.env
+.env.local
+.env.production
+
+# Node modules
+node_modules/
+
+# Build outputs
+dist/
+build/

@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  node:
+    build: ./node
+    ports:
+      - 3001:3001
+      - 8080:8080
+    environment:
+      # Application Configuration
+      SERVER_PORT: ${SERVER_PORT}
+  
+    volumes:
+      - ./node/src:/server/src/src
+      - ./node/server.js:/server/src/server.js
+      - ./node/logs:/server/src/logs
+      - ~/.aws/credentials:/root/.aws/credentials:ro
+    deploy:
+      resources:
+        limits:
+          memory: 4GB
+        reservations:
+          memory: 2GB
+
