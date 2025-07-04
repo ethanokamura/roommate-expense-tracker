@@ -85,6 +85,10 @@ extension Auth on UsersRepository {
       // Update local state
       _currentUser = googleUser;
 
+      if (userCredential.user != null) {
+        createUsers(email: userCredential.user!.email!, token: '');
+      }
+
       return userCredential;
     } catch (e) {
       debugPrint('Error during sign in: $e');
@@ -114,6 +118,7 @@ extension Create on UsersRepository {
   Future<Users> createUsers({
     required String email,
     required String token,
+    String displayName = '',
     bool forceRefresh = true,
   }) async {
     // Get cache key
@@ -136,6 +141,16 @@ extension Create on UsersRepository {
       }
     }
 
+    final payload = {
+      Users.displayNameConverter: email,
+    };
+
+    if (displayName.isNotEmpty) {
+      payload.addAll({
+        Users.displayNameConverter: displayName,
+      });
+    }
+
     // No valid cache, or forceRefresh is true, fetch from API
     try {
       // Retrieve new row after inserting
@@ -146,9 +161,7 @@ extension Create on UsersRepository {
         headers: {
           'Authorization': 'Bearer $token',
         },
-        payload: {
-          'email': email,
-        },
+        payload: payload,
       );
       debugPrint('Users post response: $response');
       if (response['status'] != '201') {

@@ -6,7 +6,6 @@ import 'package:roommate_expense_tracker/features/houses/pages/pages.dart';
 import 'package:roommate_expense_tracker/features/users/pages/user_dashboard.dart';
 import 'package:roommate_expense_tracker/theme/theme_button.dart';
 import 'package:users_repository/users_repository.dart';
-// import 'package:users_repository/users_repository.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -18,11 +17,17 @@ class HomePage extends StatelessWidget {
     debugPrint('home pages');
     return ListenableProvider(
       create: (_) => NavBarController(),
-      child: const DefaultPageView(
+      child: DefaultPageView(
         title: 'RET',
-        body: HomeBody(),
-        actions: [ThemeButton()],
-        bottomNavigationBar: BottomNavBar(),
+        body: const HomeBody(),
+        actions: [
+          const ThemeButton(),
+          AppBarButton(
+            icon: Icons.exit_to_app,
+            onTap: () async => context.read<UsersRepository>().signOut(),
+          )
+        ],
+        bottomNavigationBar: const BottomNavBar(),
       ),
     );
   }
