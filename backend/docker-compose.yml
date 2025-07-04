@@ -7,7 +7,7 @@ services:
     environment:
       # Application Configuration
       SERVER_PORT: ${SERVER_PORT}
-  
+      DATABASE_URL: postgresql://neondb_owner:npg_tJGM2vVym3lX@ep-solitary-thunder-affxnh7s-pooler.c-2.us-west-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require
     volumes:
       - ./node/src:/server/src/src
       - ./node/server.js:/server/src/server.js
