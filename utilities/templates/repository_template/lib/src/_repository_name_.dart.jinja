@@ -84,7 +84,7 @@ extension Create on {{ object_name }}Repository {
         payload: {
           {% if table_key_info and table_key_info.not_null %}
           {% for nn in table_key_info.not_null %}
-          '{{ nn }}': {{ nn | snake_to_camel }},
+          {{model | snake_to_pascal}}.{{ nn | snake_to_camel }}Converter: {{ nn | snake_to_camel }},
           {% endfor %}
           {% endif %}
         },
