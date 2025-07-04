@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS houses (
     user_id UUID NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE RESTRICT
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE RESTRICT
 );
 
 -- Table: HouseMembers
@@ -31,8 +31,8 @@ CREATE TABLE IF NOT EXISTS house_members (
     nickname VARCHAR(100), -- House-specific nickname for the user
     is_active BOOLEAN DEFAULT TRUE NOT NULL, -- For managing (add/remove) members without deleting history
     UNIQUE (user_id, house_id), -- A user can only be a member of a house once
-    FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE CASCADE,
-    FOREIGN KEY (house_id) REFERENCES Houses(house_id) ON DELETE CASCADE
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (house_id) REFERENCES houses(house_id) ON DELETE CASCADE
 );
 
 -- Table: Expenses
@@ -49,13 +49,13 @@ CREATE TABLE IF NOT EXISTS expenses (
     settled_at TIMESTAMP WITH TIME ZONE, -- When the expense was settled (nullable)
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    FOREIGN KEY (house_id) REFERENCES Houses(house_id) ON DELETE CASCADE,
-    FOREIGN KEY (house_member_id) REFERENCES HouseMembers(house_member_id) ON DELETE RESTRICT
+    FOREIGN KEY (house_id) REFERENCES houses(house_id) ON DELETE CASCADE,
+    FOREIGN KEY (house_member_id) REFERENCES house_members(house_member_id) ON DELETE RESTRICT
 );
 
 -- Table: ExpenseSplits
 -- Details how an expense is divided among house members.
-CREATE TABLE IF NOT EXISTS expense_spits (
+CREATE TABLE IF NOT EXISTS expense_splits (
     expense_split_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     expense_id UUID NOT NULL,
     house_member_id UUID NOT NULL, -- The HouseMember responsible for this portion of the expense
@@ -64,8 +64,8 @@ CREATE TABLE IF NOT EXISTS expense_spits (
     paid_at TIMESTAMP WITH TIME ZONE, -- When this split portion was paid (nullable)
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    FOREIGN KEY (expense_id) REFERENCES Expenses(expense_id) ON DELETE CASCADE,
-    FOREIGN KEY (house_member_id) REFERENCES HouseMembers(house_member_id) ON DELETE RESTRICT
+    FOREIGN KEY (expense_id) REFERENCES expenses(expense_id) ON DELETE CASCADE,
+    FOREIGN KEY (house_member_id) REFERENCES house_members(house_member_id) ON DELETE RESTRICT
 );
 
 -- Table: Receipts
@@ -77,8 +77,8 @@ CREATE TABLE IF NOT EXISTS receipts (
     user_id UUID NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    FOREIGN KEY (expense_id) REFERENCES Expenses(expense_id) ON DELETE CASCADE,
-    FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE RESTRICT
+    FOREIGN KEY (expense_id) REFERENCES expenses(expense_id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE RESTRICT
 );
 
 -- Table: RecurringExpenses
@@ -96,6 +96,6 @@ CREATE TABLE IF NOT EXISTS recurring_expenses (
     is_active BOOLEAN DEFAULT TRUE NOT NULL, -- Can be deactivated/cancelled
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    FOREIGN KEY (house_id) REFERENCES Houses(house_id) ON DELETE CASCADE,
-    FOREIGN KEY (house_member_id) REFERENCES HouseMembers(house_member_id) ON DELETE RESTRICT
+    FOREIGN KEY (house_id) REFERENCES houses(house_id) ON DELETE CASCADE,
+    FOREIGN KEY (house_member_id) REFERENCES house_members(house_member_id) ON DELETE RESTRICT
 );
