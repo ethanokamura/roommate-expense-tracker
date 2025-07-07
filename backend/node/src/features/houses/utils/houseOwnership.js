@@ -28,7 +28,6 @@ async function isUserHeadOfHouse(house_Id, user_Id) {
 
 async function assertUserIsHouseHead(house_id, user_id) {
   const isHead = await isUserHeadOfHouse(house_id, user_id);
-
   if (!isHead) {
     const error = new Error(
       "Forbidden: only head of house can perform this action"
