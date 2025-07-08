@@ -5,6 +5,61 @@ import 'package:flutter/foundation.dart';
 import 'models/expenses.dart';
 import 'failures.dart';
 
+class ExpenseSplit {
+  const ExpenseSplit({
+    this.userId = '',
+    this.amountOwed = 0.0,
+    this.paidOn,
+  });
+
+  final String userId;
+  final double amountOwed;
+  final DateTime? paidOn;
+
+  // JSON string equivalent for our data
+  static String get userIdConverter => 'user_id';
+  static String get amountOwedConverter => 'amount_owed';
+  static String get paidOnConverter => 'paid_on';
+
+  // Helper function that converts a JSON object to our dart object
+  factory ExpenseSplit.fromJson(Map<String, dynamic> json) {
+    return ExpenseSplit(
+      userId: json[userIdConverter]?.toString() ?? '',
+      amountOwed: json[amountOwedConverter] as double? ?? 0.0,
+      paidOn: json[paidOnConverter] != null
+          ? DateTime.tryParse(json[paidOnConverter].toString())?.toUtc() ??
+              DateTime.now().toUtc()
+          : DateTime.now().toUtc(),
+    );
+  }
+
+  // Helper function that converts a list of SQL objects to a list of our dart objects
+  static List<ExpenseSplit> converter(List<Map<String, dynamic>> data) {
+    return data.map(ExpenseSplit.fromJson).toList();
+  }
+
+  // Generic function to map our dart object to a JSON object
+  Map<String, dynamic> toJson() {
+    return _generateMap(
+      userId: userId,
+      amountOwed: amountOwed,
+      paidOn: paidOn,
+    );
+  }
+
+  // Generic function to generate a generic mapping between objects
+  static Map<String, dynamic> _generateMap({
+    String? userId,
+    double? amountOwed,
+    DateTime? paidOn,
+  }) =>
+      {
+        if (userId != null) userIdConverter: userId,
+        if (amountOwed != null) amountOwedConverter: amountOwed,
+        if (paidOn != null) paidOnConverter: paidOn,
+      };
+}
+
 /// Repository class for managing ExpensesRepository methods and data
 class ExpensesRepository {
   /// Constructor for ExpensesRepository.
@@ -32,22 +87,14 @@ extension Create on ExpensesRepository {
   /// Requires the [totalAmount] to create the object
   /// Requires the [isSettled] to create the object
   Future<Expenses> createExpenses({
-    required String houseId,
-    required String houseMemberId,
-    required String description,
-    required String totalAmount,
-    required String isSettled,
+    required Map<String, dynamic> data,
     required String token,
     bool forceRefresh = true,
   }) async {
     // Get cache key
     final cacheKey = generateCacheKey({
       'object': 'expenses',
-      Expenses.houseIdConverter: houseId,
-      Expenses.houseMemberIdConverter: houseMemberId,
-      Expenses.descriptionConverter: description,
-      Expenses.totalAmountConverter: totalAmount,
-      Expenses.isSettledConverter: isSettled,
+      ...data,
     });
 
     // Check cache if not forcing refresh
@@ -75,13 +122,7 @@ extension Create on ExpensesRepository {
         headers: {
           'Authorization': 'Bearer $token',
         },
-        payload: {
-          'house_id': houseId,
-          'house_member_id': houseMemberId,
-          'description': description,
-          'total_amount': totalAmount,
-          'is_settled': isSettled,
-        },
+        payload: data,
       );
       debugPrint('Expenses post response: $response');
       if (response['status'] != '201') {
