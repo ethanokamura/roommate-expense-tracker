@@ -23,57 +23,11 @@
     "not_null": [
       "house_id",
       "house_member_id",
-      "description",
+      "title",
+      "splits",
       "total_amount",
       "is_settled"
     ],
     "unique": []
-  },
-  "expense_spits": {
-    "primary": ["expense_split_id"],
-    "foreign": [
-      "expense_id",
-      "house_member_id"
-    ],
-    "not_null": [
-      "expense_id",
-      "house_member_id",
-      "amount_owed",
-      "is_paid"
-    ],
-    "unique": []
-  },
-  "recurring_expenses": {
-    "primary": ["recurring_expense_id"],
-    "foreign": [
-      "house_id",
-      "house_member_id"
-    ],
-    "not_null": [
-      "house_id",
-      "house_member_id",
-      "description_template",
-      "amount_template",
-      "frequency",
-      "is_active"
-    ],
-    "unique": []
-  },
-  "receipts": {
-    "primary": [
-      "receipt_id"
-    ],
-    "foreign": [
-      "expense_id",
-      "user_id"
-    ],
-    "not_null": [
-      "expense_id",
-      "image_url",
-      "user_id"
-    ],
-    "unique": [
-      "expense_id"
-    ]
   }
 }

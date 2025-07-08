@@ -10,7 +10,7 @@ import 'package:app_core/app_core.dart';
 //  is regenerated. If you need to modify behavior, update the source     //
 //                         template instead.                              //
 //                                                                        //
-//                Generated on: 2025-07-01 18:50:34 UTC                   //
+//                Generated on: 2025-07-08 21:21:03 UTC                   //
 //                                                                        //
 ////////////////////////////////////////////////////////////////////////////
 
@@ -24,11 +24,10 @@ class HouseMembers extends Equatable {
     this.userId, // FK
     this.houseId, // FK
     this.isAdmin = false,
-    this.joinedAt,
+    this.createdAt = '',
+    this.updatedAt = '',
     this.nickname = '',
     this.isActive = false,
-    this.createdAt,
-    this.updatedAt,
   });
 
   // Helper function that converts a single SQL object to our dart object
@@ -43,20 +42,10 @@ class HouseMembers extends Equatable {
       userId: json[userIdConverter]?.toString() ?? '',
       houseId: json[houseIdConverter]?.toString() ?? '',
       isAdmin: HouseMembers._parseBool(json[isAdminConverter]),
-      joinedAt: json[joinedAtConverter] != null
-          ? DateTime.tryParse(json[joinedAtConverter].toString())?.toUtc() ??
-              DateTime.now().toUtc()
-          : DateTime.now().toUtc(),
+      createdAt: json[createdAtConverter]?.toString() ?? '',
+      updatedAt: json[updatedAtConverter]?.toString() ?? '',
       nickname: json[nicknameConverter]?.toString() ?? '',
       isActive: HouseMembers._parseBool(json[isActiveConverter]),
-      createdAt: json[createdAtConverter] != null
-          ? DateTime.tryParse(json[createdAtConverter].toString())?.toUtc() ??
-              DateTime.now().toUtc()
-          : DateTime.now().toUtc(),
-      updatedAt: json[updatedAtConverter] != null
-          ? DateTime.tryParse(json[updatedAtConverter].toString())?.toUtc() ??
-              DateTime.now().toUtc()
-          : DateTime.now().toUtc(),
     );
   }
 
@@ -65,11 +54,10 @@ class HouseMembers extends Equatable {
   static String get userIdConverter => 'user_id';
   static String get houseIdConverter => 'house_id';
   static String get isAdminConverter => 'is_admin';
-  static String get joinedAtConverter => 'joined_at';
-  static String get nicknameConverter => 'nickname';
-  static String get isActiveConverter => 'is_active';
   static String get createdAtConverter => 'created_at';
   static String get updatedAtConverter => 'updated_at';
+  static String get nicknameConverter => 'nickname';
+  static String get isActiveConverter => 'is_active';
 
   // Defines the empty state for the HouseMembers
   static const empty = HouseMembers(
@@ -84,11 +72,10 @@ class HouseMembers extends Equatable {
   final String? userId; // FK
   final String? houseId; // FK
   final bool isAdmin;
-  final DateTime? joinedAt;
+  final String createdAt;
+  final String updatedAt;
   final String nickname;
   final bool isActive;
-  final DateTime? createdAt;
-  final DateTime? updatedAt;
 
   // Defines object properties
   @override
@@ -97,11 +84,10 @@ class HouseMembers extends Equatable {
         userId,
         houseId,
         isAdmin,
-        joinedAt,
-        nickname,
-        isActive,
         createdAt,
         updatedAt,
+        nickname,
+        isActive,
       ];
 
   // Helper function that converts a list of SQL objects to a list of our dart objects
@@ -116,11 +102,10 @@ class HouseMembers extends Equatable {
       userId: userId,
       houseId: houseId,
       isAdmin: isAdmin,
-      joinedAt: joinedAt,
-      nickname: nickname,
-      isActive: isActive,
       createdAt: createdAt,
       updatedAt: updatedAt,
+      nickname: nickname,
+      isActive: isActive,
     );
   }
 
@@ -130,22 +115,20 @@ class HouseMembers extends Equatable {
     String? userId,
     String? houseId,
     bool? isAdmin,
-    DateTime? joinedAt,
+    String? createdAt,
+    String? updatedAt,
     String? nickname,
     bool? isActive,
-    DateTime? createdAt,
-    DateTime? updatedAt,
   }) {
     return {
       if (houseMemberId != null) houseMemberIdConverter: houseMemberId,
       if (userId != null) userIdConverter: userId,
       if (houseId != null) houseIdConverter: houseId,
       if (isAdmin != null) isAdminConverter: isAdmin,
-      if (joinedAt != null) joinedAtConverter: joinedAt,
-      if (nickname != null) nicknameConverter: nickname,
-      if (isActive != null) isActiveConverter: isActive,
       if (createdAt != null) createdAtConverter: createdAt,
       if (updatedAt != null) updatedAtConverter: updatedAt,
+      if (nickname != null) nicknameConverter: nickname,
+      if (isActive != null) isActiveConverter: isActive,
     };
   }
 
