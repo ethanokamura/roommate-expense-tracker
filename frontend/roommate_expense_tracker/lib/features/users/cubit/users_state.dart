@@ -15,6 +15,7 @@ final class UsersState extends Equatable {
     this.status = UsersStatus.initial,
     this.users = Users.empty,
     this.usersList = const [],
+    this.userHouseDataList = const [],
     this.houseMembers = HouseMembers.empty,
     this.houseMembersList = const [],
     this.failure = UsersFailure.empty,
@@ -26,6 +27,7 @@ final class UsersState extends Equatable {
   final UsersStatus status;
   final Users users;
   final List<Users> usersList;
+  final List<UserHouseData> userHouseDataList;
   final HouseMembers houseMembers;
   final List<HouseMembers> houseMembersList;
   final UsersFailure failure;
@@ -37,6 +39,7 @@ final class UsersState extends Equatable {
         users,
         usersList,
         houseMembers,
+        userHouseDataList,
         houseMembersList,
         failure,
       ];
@@ -47,6 +50,7 @@ final class UsersState extends Equatable {
     UsersStatus? status,
     Users? users,
     List<Users>? usersList,
+    List<UserHouseData>? userHouseDataList,
     HouseMembers? houseMembers,
     List<HouseMembers>? houseMembersList,
     UsersFailure? failure,
@@ -56,6 +60,7 @@ final class UsersState extends Equatable {
       users: users ?? this.users,
       usersList: usersList ?? this.usersList,
       houseMembers: houseMembers ?? this.houseMembers,
+      userHouseDataList: userHouseDataList ?? this.userHouseDataList,
       houseMembersList: houseMembersList ?? this.houseMembersList,
       failure: failure ?? this.failure,
     );
@@ -91,6 +96,14 @@ extension _UsersStateExtensions on UsersState {
       copyWith(
         status: UsersStatus.loaded,
         houseMembersList: houseMembersList,
+      );
+
+  UsersState fromUserHouseDataListLoaded({
+    required List<UserHouseData> userHouseDataList,
+  }) =>
+      copyWith(
+        status: UsersStatus.loaded,
+        userHouseDataList: userHouseDataList,
       );
 
   UsersState fromUsersFailure(UsersFailure failure) => copyWith(

@@ -231,3 +231,30 @@ class KeyValueGrid extends StatelessWidget {
     );
   }
 }
+
+class CustomListView extends StatelessWidget {
+  const CustomListView({
+    required this.itemCount,
+    required this.itemBuilder,
+    super.key,
+  });
+  final int itemCount;
+  final Widget? Function(BuildContext context, int index) itemBuilder;
+  @override
+  Widget build(BuildContext context) {
+    return ClipRect(
+      clipper: TopClipper(),
+      child: ListView.builder(
+        clipBehavior: Clip.none,
+        padding: const EdgeInsets.only(
+          bottom: defaultPadding * 4,
+          left: defaultPadding,
+          right: defaultPadding,
+        ),
+        physics: const NeverScrollableScrollPhysics(),
+        itemCount: itemCount,
+        itemBuilder: itemBuilder,
+      ),
+    );
+  }
+}
