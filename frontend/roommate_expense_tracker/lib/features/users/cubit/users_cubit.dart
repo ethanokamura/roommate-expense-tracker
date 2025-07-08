@@ -451,4 +451,33 @@ class UsersCubit extends Cubit<UsersState> {
       emit(state.fromUsersFailure(failure));
     }
   }
+
+  /// Fetch list of all [HouseMembers] objects from Rds.
+  ///
+  /// Requires the [userId] for lookup
+  Future<void> fetchUsersHouseData({
+    required String userId,
+    required String token,
+    required String orderBy,
+    required bool ascending,
+    bool forceRefresh = false,
+  }) async {
+    emit(state.fromLoading());
+    try {
+      // Retrieve new row after inserting
+      final userHouseDataList = await _usersRepository.fetchUsersHouseData(
+        userId: userId,
+        token: token,
+        orderBy: orderBy,
+        ascending: ascending,
+        forceRefresh: forceRefresh,
+      );
+      emit(state.fromUserHouseDataListLoaded(
+        userHouseDataList: userHouseDataList,
+      ));
+    } on UsersFailure catch (failure) {
+      debugPrint('Failure to create houseMembers: $failure');
+      emit(state.fromUsersFailure(failure));
+    }
+  }
 }
