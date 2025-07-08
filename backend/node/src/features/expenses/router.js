@@ -1,6 +1,8 @@
 const express = require("express");
 const ExpensesRouter = express.Router();
 const { expensesValidators } = require("./validator");
+const { validateUser } = require("../auth/middleware");
+const { validateRequest } = require("../../utils/validator");
 const { ExpensesController } = require("./controller");
 
 const expensesController = new ExpensesController();
@@ -9,6 +11,8 @@ const expensesController = new ExpensesController();
 ExpensesRouter.post(
 	"/",
 	expensesValidators.createExpenses,
+  validateRequest,
+  validateUser,
 	expensesController.createExpenses
 );
 
@@ -16,6 +20,8 @@ ExpensesRouter.post(
 ExpensesRouter.get(
 	"/:id",
 	expensesValidators.expensesId,
+  validateRequest,
+  validateUser,
 	expensesController.getExpenses
 );
 
@@ -23,6 +29,8 @@ ExpensesRouter.get(
 ExpensesRouter.get(
 	"/",
 	expensesValidators.expensesQuery,
+  validateRequest,
+  validateUser,
 	expensesController.findExpensess
 );
 
@@ -31,6 +39,8 @@ ExpensesRouter.patch(
 	"/:id",
 	expensesValidators.expensesId,
 	expensesValidators.updateExpenses,
+  validateRequest,
+  validateUser,
 	expensesController.updateExpenses
 );
 
@@ -38,6 +48,8 @@ ExpensesRouter.patch(
 ExpensesRouter.delete(
 	"/:id",
 	expensesValidators.expensesId,
+  validateRequest,
+  validateUser,
 	expensesController.deleteExpenses
 );
 
