@@ -27,21 +27,31 @@ class ExpensesCubit extends Cubit<ExpensesState> {
   Future<void> createExpenses({
     required String houseId,
     required String houseMemberId,
+    required String title,
     required String description,
     required String totalAmount,
+    required List<ExpenseSplit> splits,
     required String isSettled,
     required String token,
     bool forceRefresh = true,
   }) async {
     emit(state.fromLoading());
     try {
+      final List<Map<String, dynamic>> mappedSplits = [];
+      for (final split in splits) {
+        mappedSplits.add(split.toJson());
+      }
       // Retrieve new row after inserting
       final expenses = await _expensesRepository.createExpenses(
-        houseId: houseId,
-        houseMemberId: houseMemberId,
-        description: description,
-        totalAmount: totalAmount,
-        isSettled: isSettled,
+        data: {
+          Expenses.houseIdConverter: houseId,
+          Expenses.houseMemberIdConverter: houseMemberId,
+          Expenses.titleConverter: title,
+          Expenses.descriptionConverter: description,
+          Expenses.splitsConverter: {"house_members": mappedSplits},
+          Expenses.totalAmountConverter: totalAmount,
+          Expenses.isSettledConverter: isSettled,
+        },
         token: token,
         forceRefresh: forceRefresh,
       );
