@@ -21,17 +21,6 @@ const socketOptions = {
 const io = new SocketIOServer(server, socketOptions);
 
 
-pulse({
-  schema: {
-    Task: {
-      onCreate: async ({ record }) => {
-        console.log("Pulse: new task", record);
-        io.emit("new-task", record);
-      }
-    }
-  }
-});
-
 io.on("connection", (socket) => {
   console.log("Client connected:", socket.id);
   socket.on("disconnect", () => {
