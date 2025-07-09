@@ -5,7 +5,6 @@ require("dotenv").config();
 const http = require("http");
 const { Server: SocketIOServer } = require("socket.io");
 const { PrismaClient } = require("@prisma/client");
-const { pulse } = require("@prisma/pulse");
 const app = require("./app");
 
 const prisma = new PrismaClient();
@@ -20,17 +19,6 @@ const socketOptions = {
 
 const io = new SocketIOServer(server, socketOptions);
 
-
-pulse({
-  schema: {
-    Task: {
-      onCreate: async ({ record }) => {
-        console.log("Pulse: new task", record);
-        io.emit("new-task", record);
-      }
-    }
-  }
-});
 
 io.on("connection", (socket) => {
   console.log("Client connected:", socket.id);
