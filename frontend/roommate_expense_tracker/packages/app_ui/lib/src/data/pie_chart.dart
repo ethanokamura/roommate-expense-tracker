@@ -1,3 +1,4 @@
+import 'package:app_core/app_core.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:app_ui/src/theme.dart';
 import 'package:app_ui/src/extensions.dart';
@@ -73,7 +74,10 @@ List<Widget> keys(BuildContext context, Map<String, double> data) {
           colorIndicator(context, i),
           const HorizontalSpacer(),
           Flexible(
-            child: CustomText(text: key, style: AppTextStyles.secondary),
+            child: CustomText(
+              text: key.toTitleCase,
+              style: AppTextStyles.secondary,
+            ),
           ),
         ],
       ),
