@@ -7,7 +7,7 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:673110359622:android:363e0db3d7298298c5d447",
+        "mobilesdk_app_id": "1:673110359622:android:174e605c626b5546c5d447",
         "android_client_info": {
           "package_name": "com.example.roommate_expense_tracker"
         }
@@ -29,6 +29,13 @@
             {
               "client_id": "673110359622-k7vo8e3ejnrkt96nfe2e0bnlu7n0bvu6.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "673110359622-mvntiae2hgeonklhvl41a7l72of57m6i.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.roomateExpenseTracker"
+              }
             }
           ]
         }
