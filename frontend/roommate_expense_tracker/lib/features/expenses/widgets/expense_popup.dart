@@ -58,7 +58,8 @@ Future<dynamic> expensePopUp({
                   items: {
                     'Category': expense.category.toTitleCase,
                     'Total': formatCurrency(expense.totalAmount),
-                    'Created On': expense.createdAt,
+                    'Created On':
+                        DateFormatter.formatTimestamp(expense.createdAt!),
                     'Splits': (expense.splits.length + 1).toString(),
                   },
                 ),
@@ -84,7 +85,10 @@ Future<dynamic> expensePopUp({
                   children: List.generate(
                     splits.length,
                     (index) => Stack(children: [
-                      ExpenseSplitsCard(split: splits[index]),
+                      ExpenseSplitsCard(
+                        split: splits[index],
+                        paid: expense.isSettled,
+                      ),
                     ]),
                   ),
                 )

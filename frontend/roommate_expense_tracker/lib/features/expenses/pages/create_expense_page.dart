@@ -175,7 +175,9 @@ class _CreateExpensePageState extends State<CreateExpensePage> {
                             ),
                             children: [
                               ExpenseSplitsCard(
-                                  split: ExpenseSplit.fromJson(splits[index])),
+                                split: ExpenseSplit.fromJson(splits[index]),
+                                paid: false,
+                              ),
                               Positioned(
                                 top: 0,
                                 right: 0,

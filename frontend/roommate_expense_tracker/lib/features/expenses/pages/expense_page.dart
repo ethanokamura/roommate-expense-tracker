@@ -62,7 +62,10 @@ class ExpensePage extends StatelessWidget {
             Column(
               children: List.generate(
                 splits.length,
-                (index) => ExpenseSplitsCard(split: splits[index]),
+                (index) => ExpenseSplitsCard(
+                  split: splits[index],
+                  paid: expense.isSettled,
+                ),
               ),
             )
           ],

@@ -234,7 +234,7 @@ class ExpenseCard extends StatelessWidget {
                       color: context.theme.accentColor,
                     ),
                     CustomText(
-                      text: expense.createdAt,
+                      text: DateFormatter.formatTimestamp(expense.createdAt!),
                       style: AppTextStyles.secondary,
                     ),
                   ],
