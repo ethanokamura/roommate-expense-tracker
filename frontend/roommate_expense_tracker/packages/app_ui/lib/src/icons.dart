@@ -6,19 +6,12 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 Icon defaultIconStyle(
   BuildContext context,
   IconData icon,
-  int color, {
+  Color color, {
   double size = 14,
 }) {
-  List<Color> colors = [
-    context.theme.textColor,
-    context.theme.subtextColor,
-    context.theme.hintTextColor,
-    context.theme.inverseTextColor,
-    context.theme.accentColor,
-  ];
   return Icon(
     icon,
-    color: colors[color],
+    color: color,
     size: size,
   );
 }
@@ -61,4 +54,12 @@ class AppIcons {
   static const IconData house = FontAwesomeIcons.house;
   static const IconData darkMode = FontAwesomeIcons.moon;
   static const IconData lightMode = FontAwesomeIcons.sun;
+
+  /// APP ICONS
+  static const IconData groceries = Icons.fastfood_outlined;
+  static const IconData rent = FontAwesomeIcons.houseUser;
+  static const IconData utilities = FontAwesomeIcons.wrench;
+  static const IconData toiletries = FontAwesomeIcons.toiletPaper;
+  static const IconData random = FontAwesomeIcons.dice;
+  static const IconData food = Icons.restaurant;
 }

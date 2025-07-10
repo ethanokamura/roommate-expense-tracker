@@ -10,7 +10,7 @@ import 'package:app_core/app_core.dart';
 //  is regenerated. If you need to modify behavior, update the source     //
 //                         template instead.                              //
 //                                                                        //
-//                Generated on: 2025-07-01 18:50:34 UTC                   //
+//                Generated on: 2025-07-08 21:21:03 UTC                   //
 //                                                                        //
 ////////////////////////////////////////////////////////////////////////////
 
@@ -24,8 +24,8 @@ class Houses extends Equatable {
     this.name = '',
     this.inviteCode = '',
     this.userId,
-    this.createdAt,
-    this.updatedAt,
+    this.createdAt = '',
+    this.updatedAt = '',
   });
 
   // Helper function that converts a single SQL object to our dart object
@@ -40,14 +40,8 @@ class Houses extends Equatable {
       name: json[nameConverter]?.toString() ?? '',
       inviteCode: json[inviteCodeConverter]?.toString() ?? '',
       userId: json[userIdConverter]?.toString() ?? '',
-      createdAt: json[createdAtConverter] != null
-          ? DateTime.tryParse(json[createdAtConverter].toString())?.toUtc() ??
-              DateTime.now().toUtc()
-          : DateTime.now().toUtc(),
-      updatedAt: json[updatedAtConverter] != null
-          ? DateTime.tryParse(json[updatedAtConverter].toString())?.toUtc() ??
-              DateTime.now().toUtc()
-          : DateTime.now().toUtc(),
+      createdAt: json[createdAtConverter]?.toString() ?? '',
+      updatedAt: json[updatedAtConverter]?.toString() ?? '',
     );
   }
 
@@ -70,8 +64,8 @@ class Houses extends Equatable {
   final String name;
   final String inviteCode;
   final String? userId;
-  final DateTime? createdAt;
-  final DateTime? updatedAt;
+  final String createdAt;
+  final String updatedAt;
 
   // Defines object properties
   @override
@@ -107,8 +101,8 @@ class Houses extends Equatable {
     String? name,
     String? inviteCode,
     String? userId,
-    DateTime? createdAt,
-    DateTime? updatedAt,
+    String? createdAt,
+    String? updatedAt,
   }) {
     return {
       if (houseId != null) houseIdConverter: houseId,

@@ -1,5 +1,7 @@
 import 'package:animations/animations.dart';
 import 'package:app_ui/src/constants.dart';
+import 'package:app_ui/src/extensions.dart';
+import 'package:app_ui/src/theme.dart';
 import 'package:flutter/material.dart';
 
 Route<dynamic> fadeThroughTransition(Widget page, {int duration = 500}) {
@@ -20,13 +22,11 @@ class TransitionContainer extends StatelessWidget {
   const TransitionContainer({
     required this.page,
     required this.child,
-    this.color,
     super.key,
   });
 
   final Widget page;
   final Widget child;
-  final Color? color;
 
   @override
   Widget build(BuildContext context) {
@@ -36,8 +36,9 @@ class TransitionContainer extends StatelessWidget {
       openBuilder: (BuildContext context, VoidCallback _) {
         return page;
       },
+      openColor: context.theme.backgroundColor,
       closedElevation: defaultElevation,
-      closedColor: color ?? Colors.white,
+      closedColor: context.theme.backgroundColor,
       closedBuilder: (BuildContext context, VoidCallback openContainer) {
         return GestureDetector(
           onTap: openContainer,

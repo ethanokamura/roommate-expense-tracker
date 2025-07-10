@@ -47,7 +47,7 @@ class DropDown extends StatelessWidget {
       icon: defaultIconStyle(
         context,
         AppIcons.sort,
-        onSurface ? 3 : 0,
+        onSurface ? context.theme.textColor : context.theme.subtextColor,
         size: 18,
       ),
       itemBuilder: (BuildContext context) {
@@ -80,7 +80,7 @@ class DropDown extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          defaultIconStyle(context, item.icon, 0),
+          defaultIconStyle(context, item.icon, context.theme.textColor),
           const HorizontalSpacer(),
           CustomText(
             style: AppTextStyles.primary,

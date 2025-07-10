@@ -41,7 +41,7 @@ class SignInPage extends StatelessWidget {
                     height: 256,
                     decoration: const BoxDecoration(
                       image: DecorationImage(
-                        image: AssetImage('assets/logos/ret_logo.png'),
+                        image: AssetImage('assets/logos/ret_logo_no_bg.png'),
                         fit: BoxFit.contain,
                       ),
                     ),
@@ -50,7 +50,7 @@ class SignInPage extends StatelessWidget {
                   SizedBox(
                     width: 256,
                     child: CustomButton(
-                      color: 2,
+                      color: context.theme.accentColor,
                       text: state.isLoading ? 'One Moment' : 'Sign In',
                       onTap: state.isLoading
                           ? null

@@ -1,43 +1,116 @@
 {
   "expenses": [
     {
-      "expense_id": "exp-001-a1b2c3d4-e5f6-7890-1234-567890abcdef",
-      "house_id": "11223344-5566-7788-9900-aabbccddeeff",
-      "house_member_id": "alpha1234-beta5678-gamma9012-delta3456",
-      "description": "Monthly Rent",
-      "total_amount": 1500.0,
-      "expense_date": "2024-03-01",
-      "category": "Rent",
+      "expense_id": "m2qrm2l1-1o2n-fp3o-j9q0-0m1l2n3o4p5q",
+      "house_id": "e4ifg4d3-3g4f-7i5g-b1i2-2e3d4f5g6h7i",
+      "house_member_id": "h7ljh7g6-6j7i-ak8j-e4l5-5h6g7i8j9k0l",
+      "title": "Weekly Groceries",
+      "description": "Milk, bread, veggies, fruits",
+      "splits": {
+        "member_splits": [
+          {
+            "member_id": "h7ljh7g6-6j7i-ak8j-e4l5-5h6g7i8j9k0l",
+            "amount_owed": 25.0,
+            "paid_on": null
+          },
+          {
+            "member_id": "j9nlj9i8-8l9k-cm0l-g6n7-7j8i9k0l1m2n",
+            "amount_owed": 25.0,
+            "paid_on": null
+          }
+        ]
+      },
+      "total_amount": 50.0,
+      "expense_date": "2025-07-01",
+      "category": "groceries",
       "is_settled": false,
       "settled_at": null,
-      "created_at": "2024-03-01T08:00:00Z",
-      "updated_at": "2024-03-01T08:00:00Z"
+      "created_at": "2025-07-09T21:11:00Z",
+      "updated_at": "2025-07-09T21:11:00Z"
     },
     {
-      "expense_id": "exp-002-b2c3d4e5-f6a7-8901-2345-67890abcdef0",
-      "house_id": "11223344-5566-7788-9900-aabbccddeeff",
-      "house_member_id": "epsilon7890-zeta1234-eta5678-theta9012",
-      "description": "Grocery Shopping (Week 1)",
-      "total_amount": 120.5,
-      "expense_date": "2024-03-05",
-      "category": "Groceries",
+      "expense_id": "n3rsn3m2-2p3o-gq4p-k0r1-1n2m3o4p5q6r",
+      "house_id": "e4ifg4d3-3g4f-7i5g-b1i2-2e3d4f5g6h7i",
+      "house_member_id": "i8mki8h7-7k8j-bl9k-f5m6-6i7h8j9k0l1m",
+      "title": "Electricity Bill",
+      "description": "Monthly electricity usage",
+      "splits": {
+        "member_splits": [
+          {
+            "member_id": "i8mki8h7-7k8j-bl9k-f5m6-6i7h8j9k0l1m",
+            "amount_owed": 30.0,
+            "paid_on": null
+          },
+          {
+            "member_id": "k0opk0j9-9m0l-dn1m-h7o8-8k9j0l1m2n3o",
+            "amount_owed": 30.0,
+            "paid_on": null
+          }
+        ]
+      },
+      "total_amount": 60.0,
+      "expense_date": "2025-07-05",
+      "category": "utilities",
       "is_settled": false,
       "settled_at": null,
-      "created_at": "2024-03-05T15:30:00Z",
-      "updated_at": "2024-03-05T15:30:00Z"
+      "created_at": "2025-07-09T21:11:00Z",
+      "updated_at": "2025-07-09T21:11:00Z"
     },
     {
-      "expense_id": "exp-003-c3d4e5f6-a7b8-9012-3456-7890abcdef12",
-      "house_id": "22334455-6677-8899-00aa-bbccddeeff00",
-      "house_member_id": "iota3456-kappa7890-lambda1234-mu5678",
-      "description": "Electricity Bill - March",
-      "total_amount": 75.25,
-      "expense_date": "2024-03-10",
-      "category": "Utilities",
+      "expense_id": "o4tto4n3-3q4p-hr5q-l1s2-2o3n4p5q6r7s",
+      "house_id": "e4ifg4d3-3g4f-7i5g-b1i2-2e3d4f5g6h7i",
+      "house_member_id": "j9nlj9i8-8l9k-cm0l-g6n7-7j8i9k0l1m2n",
+      "title": "Dinner Out",
+      "description": "Pizza and drinks",
+      "splits": {
+        "member_splits": [
+          {
+            "member_id": "h7ljh7g6-6j7i-ak8j-e4l5-5h6g7i8j9k0l",
+            "amount_owed": 15.0,
+            "paid_on": null
+          },
+          {
+            "member_id": "j9nlj9i8-8l9k-cm0l-g6n7-7j8i9k0l1m2n",
+            "amount_owed": 15.0,
+            "paid_on": null
+          }
+        ]
+      },
+      "total_amount": 30.0,
+      "expense_date": "2025-06-28",
+      "category": "food",
+      "is_settled": true,
+      "settled_at": "2025-06-30T10:00:00Z",
+      "created_at": "2025-07-09T21:11:00Z",
+      "updated_at": "2025-07-09T21:11:00Z"
+    },
+    {
+      "expense_id": "p5uup5o4-4r5q-is6r-m2t3-3p4o5q6r7s8t",
+      "house_id": "e4ifg4d3-3g4f-7i5g-b1i2-2e3d4f5g6h7i",
+      "house_member_id": "i8mki8h7-7k8j-bl9k-f5m6-6i7h8j9k0l1m",
+      "title": "Monthly Rent",
+      "description": "July rent payment",
+      "splits": {
+        "member_splits": [
+          {
+            "member_id": "i8mki8h7-7k8j-bl9k-f5m6-6i7h8j9k0l1m",
+            "amount_owed": 500.0,
+            "paid_on": null
+          },
+          {
+            "member_id": "k0opk0j9-9m0l-dn1m-h7o8-8k9j0l1m2n3o",
+            "amount_owed": 500.0,
+            "paid_on": null
+          }
+        ]
+      },
+      "total_amount": 1000.0,
+      "expense_date": "2025-07-01",
+      "category": "rent",
       "is_settled": false,
       "settled_at": null,
-      "created_at": "2024-03-10T09:45:00Z",
-      "updated_at": "2024-03-10T09:45:00Z"
+      "created_at": "2025-07-09T21:11:00Z",
+      "updated_at": "2025-07-09T21:11:00Z"
     }
   ]
 }

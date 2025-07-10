@@ -17,8 +17,6 @@ import 'package:expenses_repository/expenses_repository.dart';
 //                                                                        //
 ////////////////////////////////////////////////////////////////////////////
 
-
-
 final getIt = GetIt.instance;
 
 Future<void> setupDependencies({
@@ -33,22 +31,19 @@ Future<void> setupDependencies({
   // Register CacheManager, which depends on Isar
   getIt.registerLazySingleton<CacheManager>(() => CacheManager(getIt<Isar>()));
   // Register all your repositories as lazy singletons
-  getIt.registerSingletonWithDependencies<UsersRepository>(
-      () => UsersRepository(
-        cacheManager: getIt<CacheManager>(),
-      ),
-    dependsOn: [CacheManager ],
+  getIt.registerLazySingleton<UsersRepository>(
+    () => UsersRepository(
+      cacheManager: getIt<CacheManager>(),
+    ),
   );
-  getIt.registerSingletonWithDependencies<HousesRepository>(
-      () => HousesRepository(
-        cacheManager: getIt<CacheManager>(),
-      ),
-    dependsOn: [CacheManager ],
+  getIt.registerLazySingleton<HousesRepository>(
+    () => HousesRepository(
+      cacheManager: getIt<CacheManager>(),
+    ),
   );
-  getIt.registerSingletonWithDependencies<ExpensesRepository>(
-      () => ExpensesRepository(
-        cacheManager: getIt<CacheManager>(),
-      ),
-    dependsOn: [CacheManager ],
+  getIt.registerLazySingleton<ExpensesRepository>(
+    () => ExpensesRepository(
+      cacheManager: getIt<CacheManager>(),
+    ),
   );
 }

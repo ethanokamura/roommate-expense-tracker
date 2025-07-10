@@ -10,6 +10,10 @@ extension CustomThemeData on ThemeData {
       ? CustomColors.accent
       : CustomColors.lightAccent;
 
+  List<Color> get chartColors => CustomColors.chartColors;
+  Color get successColor => CustomColors.success;
+  Color get errorColor => CustomColors.error;
+
   /// [backgroundColor]
   /// Used for scaffolds
   /// the main background color for the app

@@ -14,7 +14,6 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint('home pages');
     return ListenableProvider(
       create: (_) => NavBarController(),
       child: DefaultPageView(
@@ -44,7 +43,7 @@ class HomeBody extends StatelessWidget {
       controller: pageController,
       physics: const NeverScrollableScrollPhysics(),
       children: const [
-        ExpensesDashboard(),
+        ExpensesDashboard(houseId: 'e4ifg4d3-3g4f-7i5g-b1i2-2e3d4f5g6h7i'),
         HouseDashboard(),
         UserDashboard(),
       ],
