@@ -8,6 +8,11 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
+dependencies {
+    implementation(platform("com.google.firebase:firebase-bom:33.16.0"))
+    implementation("com.google.firebase:firebase-analytics")
+}
+
 android {
     namespace = "com.example.roommate_expense_tracker"
     compileSdk = flutter.compileSdkVersion
