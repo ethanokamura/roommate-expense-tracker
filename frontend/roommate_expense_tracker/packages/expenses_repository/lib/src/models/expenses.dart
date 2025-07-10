@@ -10,7 +10,7 @@ import 'package:app_core/app_core.dart';
 //  is regenerated. If you need to modify behavior, update the source     //
 //                         template instead.                              //
 //                                                                        //
-//                Generated on: 2025-07-01 18:50:34 UTC                   //
+//                Generated on: 2025-07-08 21:21:03 UTC                   //
 //                                                                        //
 ////////////////////////////////////////////////////////////////////////////
 
@@ -23,14 +23,16 @@ class Expenses extends Equatable {
     this.expenseId, // PK
     this.houseId, // FK
     this.houseMemberId, // FK
+    this.title = '',
     this.description = '',
+    this.splits = const {},
     this.totalAmount = 0.0,
     this.expenseDate,
     this.category = '',
     this.isSettled = false,
-    this.settledAt,
-    this.createdAt,
-    this.updatedAt,
+    this.settledAt = '',
+    this.createdAt = '',
+    this.updatedAt = '',
   });
 
   // Helper function that converts a single SQL object to our dart object
@@ -44,7 +46,9 @@ class Expenses extends Equatable {
       expenseId: json[expenseIdConverter]?.toString() ?? '',
       houseId: json[houseIdConverter]?.toString() ?? '',
       houseMemberId: json[houseMemberIdConverter]?.toString() ?? '',
+      title: json[titleConverter]?.toString() ?? '',
       description: json[descriptionConverter]?.toString() ?? '',
+      splits: json[splitsConverter] as Map<String, dynamic>? ?? const {},
       totalAmount:
           double.tryParse(json[totalAmountConverter]?.toString() ?? '') ?? 0.0,
       expenseDate: json[expenseDateConverter] != null
@@ -53,18 +57,9 @@ class Expenses extends Equatable {
           : DateTime.now().toUtc(),
       category: json[categoryConverter]?.toString() ?? '',
       isSettled: Expenses._parseBool(json[isSettledConverter]),
-      settledAt: json[settledAtConverter] != null
-          ? DateTime.tryParse(json[settledAtConverter].toString())?.toUtc() ??
-              DateTime.now().toUtc()
-          : DateTime.now().toUtc(),
-      createdAt: json[createdAtConverter] != null
-          ? DateTime.tryParse(json[createdAtConverter].toString())?.toUtc() ??
-              DateTime.now().toUtc()
-          : DateTime.now().toUtc(),
-      updatedAt: json[updatedAtConverter] != null
-          ? DateTime.tryParse(json[updatedAtConverter].toString())?.toUtc() ??
-              DateTime.now().toUtc()
-          : DateTime.now().toUtc(),
+      settledAt: json[settledAtConverter]?.toString() ?? '',
+      createdAt: json[createdAtConverter]?.toString() ?? '',
+      updatedAt: json[updatedAtConverter]?.toString() ?? '',
     );
   }
 
@@ -72,7 +67,9 @@ class Expenses extends Equatable {
   static String get expenseIdConverter => 'expense_id';
   static String get houseIdConverter => 'house_id';
   static String get houseMemberIdConverter => 'house_member_id';
+  static String get titleConverter => 'title';
   static String get descriptionConverter => 'description';
+  static String get splitsConverter => 'splits';
   static String get totalAmountConverter => 'total_amount';
   static String get expenseDateConverter => 'expense_date';
   static String get categoryConverter => 'category';
@@ -85,7 +82,8 @@ class Expenses extends Equatable {
   static const empty = Expenses(
     houseId: '',
     houseMemberId: '',
-    description: '',
+    title: '',
+    splits: {},
     totalAmount: 0.0,
     isSettled: false,
   );
@@ -94,14 +92,16 @@ class Expenses extends Equatable {
   final String? expenseId; // PK
   final String? houseId; // FK
   final String? houseMemberId; // FK
+  final String title;
   final String description;
+  final Map<String, dynamic> splits;
   final double totalAmount;
   final DateTime? expenseDate;
   final String category;
   final bool isSettled;
-  final DateTime? settledAt;
-  final DateTime? createdAt;
-  final DateTime? updatedAt;
+  final String settledAt;
+  final String createdAt;
+  final String updatedAt;
 
   // Defines object properties
   @override
@@ -109,7 +109,9 @@ class Expenses extends Equatable {
         expenseId,
         houseId,
         houseMemberId,
+        title,
         description,
+        splits,
         totalAmount,
         expenseDate,
         category,
@@ -130,7 +132,9 @@ class Expenses extends Equatable {
       expenseId: expenseId,
       houseId: houseId,
       houseMemberId: houseMemberId,
+      title: title,
       description: description,
+      splits: splits,
       totalAmount: totalAmount,
       expenseDate: expenseDate,
       category: category,
@@ -146,20 +150,24 @@ class Expenses extends Equatable {
     String? expenseId,
     String? houseId,
     String? houseMemberId,
+    String? title,
     String? description,
+    Map<String, dynamic>? splits,
     double? totalAmount,
     DateTime? expenseDate,
     String? category,
     bool? isSettled,
-    DateTime? settledAt,
-    DateTime? createdAt,
-    DateTime? updatedAt,
+    String? settledAt,
+    String? createdAt,
+    String? updatedAt,
   }) {
     return {
       if (expenseId != null) expenseIdConverter: expenseId,
       if (houseId != null) houseIdConverter: houseId,
       if (houseMemberId != null) houseMemberIdConverter: houseMemberId,
+      if (title != null) titleConverter: title,
       if (description != null) descriptionConverter: description,
+      if (splits != null) splitsConverter: splits,
       if (totalAmount != null) totalAmountConverter: totalAmount,
       if (expenseDate != null) expenseDateConverter: expenseDate,
       if (category != null) categoryConverter: category,

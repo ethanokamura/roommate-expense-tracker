@@ -6,6 +6,94 @@ import 'models/users.dart';
 import 'models/house_members.dart';
 import 'failures.dart';
 
+class UserHouseData {
+  const UserHouseData({
+    this.houseId = '',
+    this.houseName = '',
+    this.houseMemberId = '',
+    this.isAdmin = false,
+    this.memberNickName = '',
+    this.houseCreatedAt,
+    this.houseUpdatedAt,
+    this.memberCreatedAt,
+    this.memberUpdatedAt,
+  });
+
+  final String houseId;
+  final String houseName;
+  final String houseMemberId;
+  final bool isAdmin;
+  final String memberNickName;
+  final DateTime? houseCreatedAt;
+  final DateTime? houseUpdatedAt;
+  final DateTime? memberCreatedAt;
+  final DateTime? memberUpdatedAt;
+
+  // JSON string equivalent for our data
+  static String get houseIdConverter => 'house_id';
+  static String get houseNameConverter => 'house_name';
+  static String get houseMemberIdConverter => 'house_member_id';
+  static String get isAdminConverter => 'is_admin';
+  static String get memberNickNameConverter => 'member_nickname';
+  static String get houseCreatedAtConverter => 'house_created_at';
+  static String get houseUpdatedAtConverter => 'house_updated_at';
+  static String get memberCreatedAtConverter => 'member_created_at';
+  static String get memberUpdatedAtConverter => 'member_updated_at';
+
+  // Helper function that converts a JSON object to our dart object
+  factory UserHouseData.fromJson(Map<String, dynamic> json) {
+    return UserHouseData(
+      houseId: json[houseIdConverter]?.toString() ?? '',
+      houseName: json[houseNameConverter]?.toString() ?? '',
+      houseMemberId: json[houseMemberIdConverter]?.toString() ?? '',
+      isAdmin: UserHouseData._parseBool(json[isAdminConverter]),
+      memberNickName: json[memberNickNameConverter]?.toString() ?? '',
+      houseCreatedAt: json[houseCreatedAtConverter] != null
+          ? DateTime.tryParse(json[houseCreatedAtConverter].toString())
+                  ?.toUtc() ??
+              DateTime.now().toUtc()
+          : DateTime.now().toUtc(),
+      houseUpdatedAt: json[houseUpdatedAtConverter] != null
+          ? DateTime.tryParse(json[houseUpdatedAtConverter].toString())
+                  ?.toUtc() ??
+              DateTime.now().toUtc()
+          : DateTime.now().toUtc(),
+      memberCreatedAt: json[memberCreatedAtConverter] != null
+          ? DateTime.tryParse(json[memberCreatedAtConverter].toString())
+                  ?.toUtc() ??
+              DateTime.now().toUtc()
+          : DateTime.now().toUtc(),
+      memberUpdatedAt: json[memberUpdatedAtConverter] != null
+          ? DateTime.tryParse(json[memberUpdatedAtConverter].toString())
+                  ?.toUtc() ??
+              DateTime.now().toUtc()
+          : DateTime.now().toUtc(),
+    );
+  }
+
+  // Helper function that converts a list of SQL objects to a list of our dart objects
+  static List<UserHouseData> converter(List<Map<String, dynamic>> data) {
+    return data.map(UserHouseData.fromJson).toList();
+  }
+
+  // Helper function to safely parse boolean values, handling various input types
+  static bool _parseBool(dynamic value) {
+    if (value == null) {
+      return false;
+    }
+    if (value is bool) {
+      return value;
+    }
+    if (value is String) {
+      return value.toLowerCase() == 'true';
+    }
+    if (value is int) {
+      return value != 0;
+    }
+    return false;
+  }
+}
+
 /// Repository class for managing UsersRepository methods and data
 class UsersRepository {
   /// Constructor for UsersRepository.
@@ -28,6 +116,8 @@ class UsersRepository {
 
   Users _users = Users.empty;
   Users get users => _users;
+  UserCredential? _credentials;
+  UserCredential get credentials => _credentials!;
 
   List<Users> _usersList = [];
   List<Users> get usersList => _usersList;
@@ -61,7 +151,7 @@ extension Auth on UsersRepository {
     }
   }
 
-  Future<UserCredential> signInWithGoogleFirebase() async {
+  Future<void> signInWithGoogleFirebase() async {
     try {
       await _ensureGoogleSignInInitialized();
 
@@ -85,11 +175,19 @@ extension Auth on UsersRepository {
       // Update local state
       _currentUser = googleUser;
 
+      // Store credentials
+      _credentials = userCredential;
+
       if (userCredential.user != null) {
         createUsers(email: userCredential.user!.email!, token: '');
+        // final user = await fetchUsersWithEmail(
+        //   email: userCredential.user!.email!,
+        //   token: '',
+        // );
+        // if (user.isEmpty) {
+        //   createUsers(email: userCredential.user!.email!, token: '');
+        // }
       }
-
-      return userCredential;
     } catch (e) {
       debugPrint('Error during sign in: $e');
       throw UsersFailure.fromSignIn();
@@ -897,6 +995,71 @@ extension Read on UsersRepository {
       return _houseMembers;
     } catch (e) {
       debugPrint('Failure to fetch houseMembers with unique details: $e');
+      throw UsersFailure.fromGet();
+    }
+  }
+
+  Future<List<UserHouseData>> fetchUsersHouseData({
+    required String userId,
+    required String token,
+    required String orderBy,
+    required bool ascending,
+    bool forceRefresh = false,
+  }) async {
+    // Get cache key
+    final cacheKey = generateCacheKey({
+      'object': 'user_house_data',
+      'order_by': orderBy,
+      'ascending': ascending.toString(),
+      'user_id': userId,
+    });
+
+    if (!forceRefresh) {
+      final cachedData = await _cacheManager.getCachedHttpResponse(cacheKey);
+      if (cachedData != null) {
+        try {
+          final List<dynamic> jsonData = jsonDecode(cachedData);
+
+          return UserHouseData.converter(jsonData.cast<Map<String, dynamic>>());
+        } catch (e) {
+          debugPrint(
+              'Error decoding cached houseMembers list data for key $cacheKey: $e');
+        }
+      }
+    }
+
+    // No valid cache, or forceRefresh is true, fetch from API
+    try {
+      if (orderBy.isEmpty) orderBy = HouseMembers.createdAtConverter;
+      final ascendingQuery = ascending ? 'asc' : 'desc';
+      final response = await dioRequest(
+        dio: Dio(),
+        apiEndpoint:
+            '/house-members?user_id=$userId&sort_by=$orderBy&sort_order=$ascendingQuery',
+        method: 'GET',
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      );
+      debugPrint('Users GET all house_members response: $response');
+      if (response['status'] != '200') {
+        throw UsersFailure.fromGet();
+      }
+
+      final List<dynamic> jsonData = response['data']!;
+      // Success
+      final String responseBody = jsonEncode(jsonData);
+
+      // Cache the successful response with a specific duration
+      await _cacheManager.cacheHttpResponse(
+        key: cacheKey,
+        responseBody: responseBody,
+        cacheDuration: const Duration(minutes: 60),
+      );
+
+      return UserHouseData.converter(jsonData.cast<Map<String, dynamic>>());
+    } catch (e) {
+      debugPrint('Failure to fetch all house_members: $e');
       throw UsersFailure.fromGet();
     }
   }
