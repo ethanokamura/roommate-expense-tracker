@@ -36,7 +36,7 @@ class ExpensesDashboard extends StatelessWidget {
           return NestedPageBuilder(
             title: 'Expense Dashboard',
             sectionsData: {
-              'My Expenses': [
+              'Cost Analysis': [
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -94,7 +94,7 @@ class ExpensesDashboard extends StatelessWidget {
                   dataType: ChartDataType.isCurrency,
                 )
               ],
-              'Cost Analysis': const [
+              'Expense Distribution': const [
                 Center(
                   child: CustomPieChart(title: 'Expense Distribution', data: {
                     "groceries": 304.37,

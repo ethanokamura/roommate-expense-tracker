@@ -139,7 +139,7 @@ class _CreateExpensePageState extends State<CreateExpensePage> {
                                     final newSplit =
                                         await _expenseSplitFormPopup(
                                       context: context,
-                                      memberId: '231412',
+                                      memberId: 'user-231412$index',
                                     );
                                     setState(() {
                                       splitAmount = 0.0;
@@ -212,6 +212,10 @@ class _CreateExpensePageState extends State<CreateExpensePage> {
                         color: context.theme.accentColor,
                         text: 'Submit Expense',
                         onTap: () async {
+                          titleController.clear();
+                          descriptionController.clear();
+                          totalAmountController.clear();
+                          splitAmountController.clear();
                           context.read<ExpensesRepository>().createExpenses(
                             data: {
                               Expenses.houseIdConverter: widget.houseId,
@@ -225,6 +229,9 @@ class _CreateExpensePageState extends State<CreateExpensePage> {
                             },
                             token: 'token',
                           );
+                          setState(() {
+                            splits.clear();
+                          });
                         },
                       ),
                   ],
@@ -287,15 +294,11 @@ class _CreateExpensePageState extends State<CreateExpensePage> {
                 child: CustomButton(
                   text: 'Save',
                   onTap: () {
-                    Navigator.of(context).pop(
-                      ExpenseSplit.fromJson(
-                        {
-                          ExpenseSplit.amountOwedConverter: splitAmount,
-                          ExpenseSplit.memberIdConverter: memberId,
-                          ExpenseSplit.paidOnConverter: null,
-                        },
-                      ),
-                    );
+                    Navigator.of(context).pop({
+                      ExpenseSplit.amountOwedConverter: splitAmount,
+                      ExpenseSplit.memberIdConverter: memberId,
+                      ExpenseSplit.paidOnConverter: null,
+                    });
                   },
                 ),
               ),

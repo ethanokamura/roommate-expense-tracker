@@ -19,7 +19,6 @@ class HomePage extends StatelessWidget {
       create: (_) => NavBarController(),
       child: DefaultPageView(
         title: 'RET',
-        body: const HomeBody(),
         actions: [
           const ThemeButton(),
           AppBarButton(
@@ -27,6 +26,7 @@ class HomePage extends StatelessWidget {
             onTap: () async => context.read<UsersRepository>().signOut(),
           )
         ],
+        body: const HomeBody(),
         floatingActionButton: FloatingActionTransitionContainer(
           page: const CreateExpensePage(
             memberId: '1234',
