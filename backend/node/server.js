@@ -32,6 +32,8 @@ server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
 
-server.on("close", async () => {});
+server.on("close", async () => {
+  await prisma.$disconnect();
+});
 
 module.exports = { app, server };
