@@ -14,28 +14,80 @@ class DefaultContainer extends StatelessWidget {
     this.accent,
     this.horizontal,
     this.vertical,
+    this.border,
+    this.boxShadow,
     super.key,
   });
 
   final bool? accent;
   final double? horizontal;
   final double? vertical;
+  final Border? border;
+  final List<BoxShadow>? boxShadow;
   final Widget child;
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: accent == null || !accent!
-          ? context.theme.colorScheme.surface
-          : context.theme.accentColor,
-      borderRadius: defaultBorderRadius,
-      elevation: defaultElevation,
-      child: Padding(
-        padding: EdgeInsets.symmetric(
-          horizontal: horizontal == null ? 15 : horizontal!,
-          vertical: vertical == null ? 10 : vertical!,
+    return Padding(
+      padding: const EdgeInsetsGeometry.symmetric(
+        vertical: defaultPadding / 2,
+      ),
+      child: Container(
+        decoration: BoxDecoration(
+          color: accent == null || !accent!
+              ? context.theme.colorScheme.surface
+              : context.theme.accentColor,
+          borderRadius: defaultBorderRadius,
+          border: border ??
+              Border.all(
+                color: context.theme.subtextColor.withAlpha(96),
+                width: 0.5,
+              ),
+          boxShadow: boxShadow,
         ),
-        child: child,
+        child: Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: horizontal == null ? 15 : horizontal!,
+            vertical: vertical == null ? 10 : vertical!,
+          ),
+          child: child,
+        ),
+      ),
+    );
+  }
+}
+
+/// Custom Tag widget
+/// Requires [text] to display inside the tag
+/// Requires [color] to categorize the tag
+class CustomTag extends StatelessWidget {
+  const CustomTag({
+    required this.color,
+    required this.text,
+    super.key,
+  });
+
+  final Color color;
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: defaultBorderRadius,
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: 7,
+          vertical: 3,
+        ),
+        child: CustomText(
+          text: text,
+          style: AppTextStyles.primary,
+          color: context.theme.inverseTextColor,
+          fontSize: 12,
+        ),
       ),
     );
   }
@@ -75,7 +127,7 @@ class DefaultPageView extends StatelessWidget {
               title: title.isNotEmpty
                   ? CustomText(
                       style: AppTextStyles.appBar,
-                      color: 0,
+                      color: context.theme.textColor,
                       text: title,
                       fontSize: fontSize,
                     )
