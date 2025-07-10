@@ -28,11 +28,9 @@ class ExpensesDashboard extends StatelessWidget {
         ),
       child: ExpensesCubitWrapper(
         builder: (context, state) {
-          debugPrint(state.status.toString());
           List<double> values = [12.3, 70, 50.4, 45, 90, 21, 47];
           final total = values.reduce((value, element) => value += element);
           final average = total / values.length;
-
           return NestedPageBuilder(
             title: 'Expense Dashboard',
             sectionsData: {
@@ -40,49 +38,64 @@ class ExpensesDashboard extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    DefaultContainer(
-                      child: Column(
-                        children: [
-                          const CustomText(
-                            text: 'Daily Average',
-                            style: AppTextStyles.primary,
-                          ),
-                          CustomText(
-                            text: formatCurrency(average),
-                            style: AppTextStyles.primary,
-                            color: context.theme.subtextColor,
-                          ),
-                        ],
+                    SizedBox(
+                      width: MediaQuery.sizeOf(context).width / 3 -
+                          (defaultPadding * 2),
+                      child: DefaultContainer(
+                        child: Column(
+                          children: [
+                            const CustomText(
+                              autoSize: true,
+                              text: 'Daily Average',
+                              style: AppTextStyles.primary,
+                            ),
+                            CustomText(
+                              text: formatCurrency(average),
+                              style: AppTextStyles.primary,
+                              color: context.theme.subtextColor,
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                    DefaultContainer(
-                      child: Column(
-                        children: [
-                          const CustomText(
-                            text: 'Lowest Day',
-                            style: AppTextStyles.primary,
-                          ),
-                          CustomText(
-                            text: formatCurrency(12.3),
-                            style: AppTextStyles.primary,
-                            color: context.theme.successColor,
-                          ),
-                        ],
+                    SizedBox(
+                      width: MediaQuery.sizeOf(context).width / 3 -
+                          (defaultPadding * 2),
+                      child: DefaultContainer(
+                        child: Column(
+                          children: [
+                            const CustomText(
+                              autoSize: true,
+                              text: 'Lowest Day',
+                              style: AppTextStyles.primary,
+                            ),
+                            CustomText(
+                              text: formatCurrency(12.3),
+                              style: AppTextStyles.primary,
+                              color: context.theme.successColor,
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                    DefaultContainer(
-                      child: Column(
-                        children: [
-                          const CustomText(
-                            text: 'Highest Day',
-                            style: AppTextStyles.primary,
-                          ),
-                          CustomText(
-                            text: formatCurrency(90),
-                            style: AppTextStyles.primary,
-                            color: context.theme.errorColor,
-                          ),
-                        ],
+                    SizedBox(
+                      width: MediaQuery.sizeOf(context).width / 3 -
+                          (defaultPadding * 2),
+                      child: DefaultContainer(
+                        child: Column(
+                          children: [
+                            const CustomText(
+                              autoSize: true,
+                              text: 'Highest Day',
+                              style: AppTextStyles.primary,
+                            ),
+                            CustomText(
+                              text: formatCurrency(90),
+                              style: AppTextStyles.primary,
+                              color: context.theme.errorColor,
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ],

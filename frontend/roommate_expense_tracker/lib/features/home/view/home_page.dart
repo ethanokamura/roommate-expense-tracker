@@ -5,8 +5,8 @@ import 'package:roommate_expense_tracker/features/expenses/pages/expenses_dashbo
 import 'package:roommate_expense_tracker/features/home/view/bottom_nav_bar.dart';
 import 'package:roommate_expense_tracker/features/houses/pages/pages.dart';
 import 'package:roommate_expense_tracker/features/users/pages/user_dashboard.dart';
-import 'package:roommate_expense_tracker/theme/theme_button.dart';
-import 'package:users_repository/users_repository.dart';
+// import 'package:roommate_expense_tracker/theme/theme_button.dart';
+// import 'package:users_repository/users_repository.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -18,14 +18,15 @@ class HomePage extends StatelessWidget {
     return ListenableProvider(
       create: (_) => NavBarController(),
       child: DefaultPageView(
-        title: 'RET',
-        actions: [
-          const ThemeButton(),
-          AppBarButton(
-            icon: Icons.exit_to_app,
-            onTap: () async => context.read<UsersRepository>().signOut(),
-          )
-        ],
+        centerTitle: false,
+        title: 'Roommate Expense Tracker',
+        // actions: [
+        //   const ThemeButton(),
+        //   AppBarButton(
+        //     icon: Icons.exit_to_app,
+        //     onTap: () async => context.read<UsersRepository>().signOut(),
+        //   )
+        // ],
         body: const HomeBody(),
         floatingActionButton: FloatingActionTransitionContainer(
           page: const CreateExpensePage(
