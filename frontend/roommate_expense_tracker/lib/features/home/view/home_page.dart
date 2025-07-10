@@ -18,8 +18,7 @@ class HomePage extends StatelessWidget {
     return ListenableProvider(
       create: (_) => NavBarController(),
       child: DefaultPageView(
-        centerTitle: false,
-        title: 'Roommate Expense Tracker',
+        title: 'RET',
         // actions: [
         //   const ThemeButton(),
         //   AppBarButton(
