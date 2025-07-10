@@ -1,3 +1,4 @@
+import 'package:app_core/app_core.dart';
 import 'package:app_ui/src/extensions.dart';
 import 'package:app_ui/src/icons.dart';
 import 'package:app_ui/src/text.dart';
@@ -12,14 +13,13 @@ class DropDownItem {
     required this.icon,
     required this.text,
     required this.onSelect,
-    this.value, // Optional: if you still need a unique identifier
+    this.value,
   });
 
   final IconData icon;
   final String text;
   final Future<void> Function() onSelect;
-  final dynamic
-      value; // Can be an enum, int, or String for unique identification
+  final dynamic value;
 }
 
 /// Action button for the UI
@@ -79,12 +79,13 @@ class DropDown extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           defaultIconStyle(context, item.icon, context.theme.textColor),
           const HorizontalSpacer(),
           CustomText(
             style: AppTextStyles.primary,
-            text: item.text,
+            text: item.text.toTitleCase,
             autoSize: false,
           ),
         ],

@@ -1,5 +1,6 @@
 import 'package:app_core/app_core.dart';
 import 'package:app_ui/app_ui.dart';
+import 'package:roommate_expense_tracker/features/expenses/pages/create_expense_page.dart';
 import 'package:roommate_expense_tracker/features/expenses/pages/expenses_dashboard.dart';
 import 'package:roommate_expense_tracker/features/home/view/bottom_nav_bar.dart';
 import 'package:roommate_expense_tracker/features/houses/pages/pages.dart';
@@ -26,6 +27,15 @@ class HomePage extends StatelessWidget {
             onTap: () async => context.read<UsersRepository>().signOut(),
           )
         ],
+        floatingActionButton: FloatingActionTransitionContainer(
+          page: const CreateExpensePage(memberId: '1234'),
+          icon: defaultIconStyle(
+            context,
+            AppIcons.add,
+            context.theme.backgroundColor,
+            size: 24,
+          ),
+        ),
         bottomNavigationBar: const BottomNavBar(),
       ),
     );

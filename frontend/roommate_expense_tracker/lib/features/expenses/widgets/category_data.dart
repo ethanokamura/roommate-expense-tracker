@@ -5,6 +5,6 @@ Map<String, IconData> categoryData = {
   "rent": AppIcons.rent,
   "utilities": AppIcons.utilities,
   "toiletries": AppIcons.toiletries,
-  "food": AppIcons.toiletries,
+  "food": AppIcons.food,
   "random": AppIcons.random,
 };

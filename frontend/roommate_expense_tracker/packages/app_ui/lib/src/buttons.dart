@@ -41,17 +41,18 @@ class CustomButton extends StatelessWidget {
           children: [
             if (icon != null)
               defaultIconStyle(
-                  context,
-                  icon!,
-                  color != null && color != context.theme.accentColor
-                      ? context.theme.textColor
-                      : context.theme.backgroundColor,
-                  size: 16),
+                context,
+                icon!,
+                color != context.theme.accentColor
+                    ? context.theme.textColor
+                    : context.theme.backgroundColor,
+                size: 16,
+              ),
             if (text != null && icon != null) const SizedBox(width: 5),
             if (text != null)
               CustomText(
                 style: AppTextStyles.button,
-                color: color != null && color != context.theme.accentColor
+                color: color != context.theme.accentColor
                     ? context.theme.textColor
                     : context.theme.backgroundColor,
                 fontSize: fontSize,

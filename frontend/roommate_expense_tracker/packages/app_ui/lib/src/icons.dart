@@ -42,7 +42,6 @@ class AppIcons {
   static const IconData contract = FontAwesomeIcons.fileContract;
   static const IconData user = FontAwesomeIcons.solidCircleUser;
   static const IconData notificationBell = FontAwesomeIcons.bell;
-  static const IconData paw = FontAwesomeIcons.paw;
 
   static const IconData money = FontAwesomeIcons.moneyBillTransfer;
   static const IconData person = FontAwesomeIcons.person;
@@ -50,10 +49,12 @@ class AppIcons {
   static const IconData letters = FontAwesomeIcons.a;
   static const IconData link = FontAwesomeIcons.link;
   static const IconData cancel = FontAwesomeIcons.xmark;
+  static const IconData confirm = FontAwesomeIcons.check;
   static const IconData copy = FontAwesomeIcons.copy;
   static const IconData house = FontAwesomeIcons.house;
   static const IconData darkMode = FontAwesomeIcons.moon;
   static const IconData lightMode = FontAwesomeIcons.sun;
+  static const IconData add = Icons.add;
 
   /// APP ICONS
   static const IconData groceries = Icons.fastfood_outlined;
