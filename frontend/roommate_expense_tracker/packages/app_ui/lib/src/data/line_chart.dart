@@ -161,7 +161,7 @@ LineChartData _mainData(
           preventCurveOverShooting: true,
           color: values[values.length - 1] - values[0] < 0
               ? context.theme.errorColor
-              : context.theme.successColor,
+              : context.theme.accentColor,
           // gradient: LinearGradient(
           //   colors: [
           //     chartColors[0],
@@ -181,7 +181,7 @@ LineChartData _mainData(
                 // chartColors[1],
                 values[values.length - 1] - values[0] < 0
                     ? context.theme.errorColor
-                    : context.theme.successColor,
+                    : context.theme.accentColor,
               ],
               begin: Alignment.bottomCenter,
               end: Alignment.topCenter,
@@ -247,7 +247,7 @@ LineChartData _dummyData(
           preventCurveOverShooting: true,
           color: values[values.length - 1] - values[0] < 0
               ? context.theme.errorColor
-              : context.theme.successColor,
+              : context.theme.accentColor,
           // gradient: LinearGradient(
           //   colors: [
           //     chartColors[0],
@@ -267,7 +267,7 @@ LineChartData _dummyData(
                 // chartColors[1],
                 values[values.length - 1] - values[0] < 0
                     ? context.theme.errorColor
-                    : context.theme.successColor,
+                    : context.theme.accentColor,
               ],
               begin: Alignment.bottomCenter,
               end: Alignment.topCenter,
