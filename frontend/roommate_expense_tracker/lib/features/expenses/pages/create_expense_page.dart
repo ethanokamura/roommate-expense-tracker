@@ -6,7 +6,12 @@ import 'package:roommate_expense_tracker/features/expenses/widgets/cards/expense
 import 'package:roommate_expense_tracker/features/expenses/widgets/category_data.dart';
 
 class CreateExpensePage extends StatefulWidget {
-  const CreateExpensePage({required this.memberId, super.key});
+  const CreateExpensePage({
+    required this.houseId,
+    required this.memberId,
+    super.key,
+  });
+  final String houseId;
   final String memberId;
   @override
   State<CreateExpensePage> createState() => _CreateExpensePageState();
@@ -16,13 +21,26 @@ class _CreateExpensePageState extends State<CreateExpensePage> {
   final titleController = TextEditingController();
   final descriptionController = TextEditingController();
   final totalAmountController = TextEditingController();
-  String category = 'misc';
-  List<ExpenseSplit> splits = [];
+  final splitAmountController = TextEditingController();
+  String title = '';
+  String description = '';
+  String category = '';
+  List<Map<String, dynamic>> splits = [];
   double? totalAmount;
+  double splitAmount = 0;
 
   @override
   void initState() {
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    titleController.dispose();
+    descriptionController.dispose();
+    totalAmountController.dispose();
+    splitAmountController.dispose();
+    super.dispose();
   }
 
   @override
@@ -37,163 +55,180 @@ class _CreateExpensePageState extends State<CreateExpensePage> {
           builder: (context, state) {
             return Padding(
               padding: const EdgeInsets.symmetric(horizontal: defaultPadding),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const VerticalSpacer(multiple: 2),
-                  customTextFormField(
-                    context: context,
-                    label: 'Expense Name',
-                    controller: titleController,
-                    onBackground: true,
-                  ),
-                  const VerticalSpacer(),
-                  customTextFormField(
-                    context: context,
-                    label: 'Expense Description',
-                    controller: descriptionController,
-                    onBackground: true,
-                  ),
-                  const VerticalSpacer(),
-                  customTextFormField(
-                    context: context,
-                    label: 'Total Due',
-                    controller: totalAmountController,
-                    keyboardType: const TextInputType.numberWithOptions(
-                      decimal: true,
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const VerticalSpacer(multiple: 2),
+                    customTextFormField(
+                        context: context,
+                        label: 'Expense Name',
+                        controller: titleController,
+                        onBackground: true,
+                        onChanged: (value) => setState(() {
+                              title = value.trim();
+                            })),
+                    const VerticalSpacer(),
+                    customTextFormField(
+                        context: context,
+                        label: 'Expense Description',
+                        controller: descriptionController,
+                        onBackground: true,
+                        onChanged: (value) => setState(() {
+                              description = value.trim();
+                            })),
+                    const VerticalSpacer(),
+                    customTextFormField(
+                      context: context,
+                      label: 'Total Due',
+                      controller: totalAmountController,
+                      keyboardType: const TextInputType.numberWithOptions(
+                        decimal: true,
+                      ),
+                      onChanged: (amount) => setState(() {
+                        totalAmount = double.tryParse(amount.trim());
+                      }),
+                      onBackground: true,
                     ),
-                    onChanged: (amount) => setState(() {
-                      totalAmount = double.tryParse(amount.trim());
-                    }),
-                    onBackground: true,
-                  ),
-                  const VerticalSpacer(),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      const CustomText(
-                        text: 'Select Category',
-                        style: AppTextStyles.primary,
-                      ),
-                      DropDown(
-                        dropDownItems:
-                            List.generate(categoryData.length, (index) {
-                          final categoryAtIndex =
-                              categoryData.keys.toList()[index];
-                          return DropDownItem(
-                            icon:
-                                categoryData[categoryAtIndex] ?? AppIcons.money,
-                            text: categoryAtIndex,
-                            onSelect: () async {},
-                          );
-                        }),
-                      ),
-                    ],
-                  ),
-                  DefaultContainer(
-                    child: Column(
+                    const VerticalSpacer(),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            const CustomText(
-                              text: 'No Member Selected',
-                              style: AppTextStyles.primary,
-                            ),
-                            DropDown(
-                              dropDownItems:
-                                  List.generate(categoryData.length, (index) {
-                                final categoryAtIndex =
-                                    categoryData.keys.toList()[index];
-                                return DropDownItem(
-                                  icon: categoryData[categoryAtIndex] ??
-                                      AppIcons.money,
-                                  text: categoryAtIndex,
-                                  onSelect: () async {},
-                                );
-                              }),
-                            ),
-                          ],
+                        CustomText(
+                          text: category.isEmpty
+                              ? 'Select Category'
+                              : 'Category: ${category.toTitleCase}',
+                          style: AppTextStyles.primary,
                         ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            const CustomText(
-                              text: 'Is Settled',
-                              style: AppTextStyles.primary,
-                            ),
-                            DropDown(dropDownItems: [
-                              DropDownItem(
-                                icon: AppIcons.confirm,
-                                text: 'True',
-                                onSelect: () async {},
-                              ),
-                              DropDownItem(
-                                icon: AppIcons.cancel,
-                                text: 'False',
-                                onSelect: () async {},
-                              ),
-                            ]),
-                          ],
-                        ),
-                        const VerticalSpacer(),
-                        customTextFormField(
-                          context: context,
-                          label: 'Total Due',
-                          controller: totalAmountController,
-                          keyboardType: const TextInputType.numberWithOptions(
-                            decimal: true,
-                          ),
-                          onChanged: (amount) => setState(() {
-                            totalAmount = double.tryParse(amount.trim());
+                        DropDown(
+                          dropDownItems:
+                              List.generate(categoryData.length, (index) {
+                            final categoryAtIndex =
+                                categoryData.keys.toList()[index];
+                            return DropDownItem(
+                              icon: categoryData[categoryAtIndex] ??
+                                  AppIcons.money,
+                              text: categoryAtIndex,
+                              onSelect: () async {
+                                setState(() {
+                                  category = categoryAtIndex;
+                                });
+                              },
+                            );
                           }),
                         ),
-                        // const Row(
-                        //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        //   crossAxisAlignment: CrossAxisAlignment.center,
-                        //   children: [
-                        //     const CustomText(
-                        //       text: 'Split Amount',
-                        //       style: AppTextStyles.primary,
-                        //     ),
-                        //   ],
-                        // ),
                       ],
                     ),
-                  ),
-                  if (splits.isEmpty)
-                    const CustomText(
-                      text: 'No splits have been made yet',
-                      style: AppTextStyles.secondary,
-                    )
-                  else
-                    Column(
+                    if (totalAmount != null && totalAmount != 0)
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          const CustomText(
+                            text: 'Add Split',
+                            style: AppTextStyles.primary,
+                          ),
+                          DropDown(
+                            dropDownItems: List.generate(3, (index) {
+                              return DropDownItem(
+                                icon: AppIcons.user,
+                                text: 'User $index',
+                                onSelect: () async {
+                                  try {
+                                    final newSplit =
+                                        await _expenseSplitFormPopup(
+                                      context: context,
+                                      memberId: '231412',
+                                    );
+                                    setState(() {
+                                      splitAmount = 0.0;
+                                      splitAmountController.clear();
+                                    });
+                                    if (newSplit == null) return;
+                                    setState(() {
+                                      splits.add(newSplit);
+                                    });
+                                  } catch (e) {
+                                    debugPrint(
+                                        'Failure creating expense split ${e.toString()}');
+                                  }
+                                },
+                              );
+                            }),
+                          ),
+                        ],
+                      ),
+                    const VerticalSpacer(),
+                    if (splits.isEmpty)
+                      const CustomText(
+                        text: 'No splits have been made yet',
+                        style: AppTextStyles.secondary,
+                      )
+                    else
+                      Column(
                         children: List.generate(
-                      splits.length,
-                      (index) => ExpenseSplitsCard(split: splits[index]),
-                    )),
-                  const VerticalSpacer(),
-                  CustomButton(
-                    text: 'Add Split',
-                    icon: AppIcons.add,
-                    onTap: totalAmount != null && totalAmount != 0
-                        ? () async {
-                            final split = await _expenseSplitFormPopup(
-                              context: context,
-                              totalAmount: totalAmount!,
-                            );
-                            if (split == null) return;
-
-                            setState(() {
-                              splits.add(split);
-                            });
-                          }
-                        : null,
-                  ),
-                ],
+                          splits.length,
+                          (index) => Stack(
+                            key: ObjectKey(
+                              splits[index][ExpenseSplit.memberIdConverter],
+                            ),
+                            children: [
+                              ExpenseSplitsCard(
+                                  split: ExpenseSplit.fromJson(splits[index])),
+                              Positioned(
+                                top: 0,
+                                right: 0,
+                                child: GestureDetector(
+                                  // Use GestureDetector for better tap control
+                                  onTap: () => setState(() {
+                                    splits.removeAt(index);
+                                  }),
+                                  child: Container(
+                                    padding: const EdgeInsets.all(2),
+                                    decoration: BoxDecoration(
+                                      color: context.theme.errorColor,
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: defaultIconStyle(
+                                      context,
+                                      AppIcons.cancel,
+                                      context.theme.backgroundColor,
+                                      size: 12,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    const VerticalSpacer(),
+                    if (title.isNotEmpty &&
+                        totalAmount != null &&
+                        totalAmount != 0.0 &&
+                        category.isNotEmpty)
+                      CustomButton(
+                        color: context.theme.accentColor,
+                        text: 'Submit Expense',
+                        onTap: () async {
+                          context.read<ExpensesRepository>().createExpenses(
+                            data: {
+                              Expenses.houseIdConverter: widget.houseId,
+                              Expenses.houseMemberIdConverter: widget.memberId,
+                              Expenses.totalAmountConverter: totalAmount,
+                              Expenses.titleConverter: title,
+                              Expenses.descriptionConverter: description,
+                              Expenses.categoryConverter: category,
+                              Expenses.isSettledConverter: false,
+                              Expenses.splitsConverter: {"splits": splits},
+                            },
+                            token: 'token',
+                          );
+                        },
+                      ),
+                  ],
+                ),
               ),
             );
           },
@@ -202,16 +237,16 @@ class _CreateExpensePageState extends State<CreateExpensePage> {
     );
   }
 
-  Future<ExpenseSplit?> _expenseSplitFormPopup({
+  Future<Map<String, dynamic>?> _expenseSplitFormPopup({
     required BuildContext context,
-    required double totalAmount,
+    required String memberId,
   }) async {
-    return await showDialog<ExpenseSplit>(
+    return await showDialog<Map<String, dynamic>>(
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: context.theme.backgroundColor,
-        title: const CustomText(
-          text: 'Add a Split.',
+        title: CustomText(
+          text: 'Add a Split For Member: $memberId',
           style: AppTextStyles.primary,
         ),
         content: Padding(
@@ -221,18 +256,18 @@ class _CreateExpensePageState extends State<CreateExpensePage> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Padding(
-                padding: const EdgeInsets.only(
-                  top: defaultPadding * 2,
-                  left: defaultPadding * 2,
-                  right: defaultPadding * 2,
-                  bottom: 60,
+              customTextFormField(
+                context: context,
+                label: 'Total Due',
+                controller: splitAmountController,
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
                 ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [DropDown(dropDownItems: [])],
-                ),
+                onBackground: true,
+                onChanged: (amount) => setState(() {
+                  splitAmount =
+                      double.tryParse(amount.trim()) ?? (totalAmount! / 2.0);
+                }),
               ),
             ],
           ),
@@ -255,8 +290,8 @@ class _CreateExpensePageState extends State<CreateExpensePage> {
                     Navigator.of(context).pop(
                       ExpenseSplit.fromJson(
                         {
-                          ExpenseSplit.amountOwedConverter: 0.0,
-                          ExpenseSplit.memeberIdConverter: "1234",
+                          ExpenseSplit.amountOwedConverter: splitAmount,
+                          ExpenseSplit.memberIdConverter: memberId,
                           ExpenseSplit.paidOnConverter: null,
                         },
                       ),
@@ -269,14 +304,5 @@ class _CreateExpensePageState extends State<CreateExpensePage> {
         ],
       ),
     );
-  }
-}
-
-class ExpenseSplitForm extends StatelessWidget {
-  const ExpenseSplitForm({required this.split, super.key});
-  final ExpenseSplit split;
-  @override
-  Widget build(BuildContext context) {
-    return Container();
   }
 }

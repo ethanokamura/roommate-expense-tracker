@@ -28,7 +28,10 @@ class HomePage extends StatelessWidget {
           )
         ],
         floatingActionButton: FloatingActionTransitionContainer(
-          page: const CreateExpensePage(memberId: '1234'),
+          page: const CreateExpensePage(
+            memberId: '1234',
+            houseId: '2134',
+          ),
           icon: defaultIconStyle(
             context,
             AppIcons.add,

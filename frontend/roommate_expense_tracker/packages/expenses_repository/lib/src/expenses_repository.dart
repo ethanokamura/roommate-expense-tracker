@@ -8,24 +8,24 @@ import 'failures.dart';
 
 class ExpenseSplit {
   const ExpenseSplit({
-    this.memeberId = '',
+    this.memberId = '',
     this.amountOwed = 0.0,
     this.paidOn,
   });
 
-  final String memeberId;
+  final String memberId;
   final double amountOwed;
   final DateTime? paidOn;
 
   // JSON string equivalent for our data
-  static String get memeberIdConverter => 'member_id';
+  static String get memberIdConverter => 'member_id';
   static String get amountOwedConverter => 'amount_owed';
   static String get paidOnConverter => 'paid_on';
 
   // Helper function that converts a JSON object to our dart object
   factory ExpenseSplit.fromJson(Map<String, dynamic> json) {
     return ExpenseSplit(
-      memeberId: json[memeberIdConverter]?.toString() ?? '',
+      memberId: json[memberIdConverter]?.toString() ?? '',
       amountOwed: json[amountOwedConverter] as double? ?? 0.0,
       paidOn: json[paidOnConverter] != null
           ? DateTime.tryParse(json[paidOnConverter].toString())?.toUtc() ??
@@ -42,7 +42,7 @@ class ExpenseSplit {
   // Generic function to map our dart object to a JSON object
   Map<String, dynamic> toJson() {
     return _generateMap(
-      memeberId: memeberId,
+      memberId: memberId,
       amountOwed: amountOwed,
       paidOn: paidOn,
     );
@@ -50,12 +50,12 @@ class ExpenseSplit {
 
   // Generic function to generate a generic mapping between objects
   static Map<String, dynamic> _generateMap({
-    String? memeberId,
+    String? memberId,
     double? amountOwed,
     DateTime? paidOn,
   }) =>
       {
-        if (memeberId != null) memeberIdConverter: memeberId,
+        if (memberId != null) memberIdConverter: memberId,
         if (amountOwed != null) amountOwedConverter: amountOwed,
         if (paidOn != null) paidOnConverter: paidOn,
       };

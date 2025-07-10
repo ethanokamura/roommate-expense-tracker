@@ -44,7 +44,6 @@ class AppIcons {
   static const IconData notificationBell = FontAwesomeIcons.bell;
 
   static const IconData money = FontAwesomeIcons.moneyBillTransfer;
-  static const IconData person = FontAwesomeIcons.person;
   static const IconData sort = Icons.sort_sharp;
   static const IconData letters = FontAwesomeIcons.a;
   static const IconData link = FontAwesomeIcons.link;

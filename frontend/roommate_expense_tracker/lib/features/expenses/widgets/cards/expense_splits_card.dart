@@ -14,7 +14,8 @@ class ExpenseSplitsCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               CustomText(
-                text: '${split.memeberId.substring(0, 20)}...',
+                text:
+                    '${split.memberId.length > 20 ? split.memberId.substring(0, 20) : split.memberId}...',
                 style: AppTextStyles.primary,
               ),
               CustomText(

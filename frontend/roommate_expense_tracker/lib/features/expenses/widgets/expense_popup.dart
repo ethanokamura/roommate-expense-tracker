@@ -10,7 +10,6 @@ Future<dynamic> expensePopUp({
   required List<ExpenseSplit> splits,
 }) async {
   await context.showScrollControlledBottomSheet<void>(
-    context: context,
     builder: (context) => Padding(
       padding: const EdgeInsets.only(top: defaultPadding),
       child: Column(
@@ -84,7 +83,9 @@ Future<dynamic> expensePopUp({
                 Column(
                   children: List.generate(
                     splits.length,
-                    (index) => ExpenseSplitsCard(split: splits[index]),
+                    (index) => Stack(children: [
+                      ExpenseSplitsCard(split: splits[index]),
+                    ]),
                   ),
                 )
               ],

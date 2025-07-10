@@ -180,7 +180,7 @@ class VerticalBar extends StatelessWidget {
       children: [
         VerticalSpacer(multiple: multiple / 2),
         Divider(
-          color: context.theme.subtextColor,
+          color: context.theme.subtextColor.withAlpha(100),
           thickness: 0.5,
           indent: 10,
           endIndent: 10,

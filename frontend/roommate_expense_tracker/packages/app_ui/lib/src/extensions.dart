@@ -1,5 +1,6 @@
-import 'package:app_ui/src/app_ui.dart';
 import 'package:app_ui/src/constants.dart';
+import 'package:app_ui/src/text.dart';
+import 'package:app_ui/src/theme.dart';
 import 'package:flutter/material.dart';
 
 extension BuildContextExtensions on BuildContext {
@@ -13,7 +14,11 @@ extension BuildContextExtensions on BuildContext {
       ..hideCurrentSnackBar()
       ..showSnackBar(
         SnackBar(
-          content: Text(text),
+          backgroundColor: theme.surfaceColor,
+          content: CustomText(
+            text: text,
+            style: AppTextStyles.primary,
+          ),
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -21,12 +26,11 @@ extension BuildContextExtensions on BuildContext {
 
   Future<T?> showScrollControlledBottomSheet<T>({
     required WidgetBuilder builder,
-    required BuildContext context,
   }) {
     return showModalBottomSheet<T>(
       context: this,
       builder: builder,
-      backgroundColor: context.theme.backgroundColor,
+      backgroundColor: theme.backgroundColor,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(borderRadius: defaultBorderRadius),
     );
