@@ -14,6 +14,30 @@
       },
       "oauth_client": [
         {
+          "client_id": "673110359622-8d17m8st3cf7aro3tni9uo2cv1sn2a0r.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.roommate_expense_tracker",
+            "certificate_hash": "9d6b09d9cca25fa614e501a3cf90ad23cd25436d"
+          }
+        },
+        {
+          "client_id": "673110359622-q7s3jkkjpnnc1u8s6pr4l7e35mfup90v.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.roommate_expense_tracker",
+            "certificate_hash": "14c501b67a15fb417dfa0813cf17a36969d10056"
+          }
+        },
+        {
+          "client_id": "673110359622-qbf171aimhj2qlvi2j5g8m58c0r9vumv.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.roommate_expense_tracker",
+            "certificate_hash": "abec498bbd461666966af17f2fc773d33fa65832"
+          }
+        },
+        {
           "client_id": "673110359622-k7vo8e3ejnrkt96nfe2e0bnlu7n0bvu6.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -31,7 +55,7 @@
               "client_type": 3
             },
             {
-              "client_id": "673110359622-mvntiae2hgeonklhvl41a7l72of57m6i.apps.googleusercontent.com",
+              "client_id": "673110359622-gs64e8keeofkc5v9o79qtjo7iien7213.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
                 "bundle_id": "com.example.roommateExpenseTracker"
