@@ -24,35 +24,49 @@ class ExpensePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return DefaultPageView(
       title: 'Expenses Page',
-      body: Column(
-        children: [
-          CustomText(
-            text: expense.title,
-            style: AppTextStyles.primary,
-          ),
-          CustomText(
-            text: expense.description,
-            style: AppTextStyles.primary,
-          ),
-          CustomText(
-            text: expense.category,
-            style: AppTextStyles.primary,
-          ),
-          CustomText(
-            text: formatCurrency(expense.totalAmount),
-            style: AppTextStyles.primary,
-          ),
-          CustomText(
-            text: expense.isSettled.toString(),
-            style: AppTextStyles.primary,
-          ),
-          Column(
-            children: List.generate(
-              splits.length,
-              (index) => ExpenseSplitsCard(split: splits[index]),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: defaultPadding),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const VerticalSpacer(multiple: 2),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                CustomText(
+                  text: expense.title,
+                  style: AppTextStyles.appBar,
+                ),
+                CustomTag(
+                  text: '#${expense.category}',
+                  color: context.theme.accentColor,
+                ),
+              ],
             ),
-          )
-        ],
+            CustomText(
+              text: expense.description,
+              style: AppTextStyles.secondary,
+            ),
+            const VerticalBar(),
+            CustomText(
+              text: formatCurrency(expense.totalAmount),
+              style: AppTextStyles.title,
+            ),
+            CustomText(
+              text: expense.isSettled ? 'Paid' : 'Unpaid',
+              style: AppTextStyles.primary,
+              color: expense.isSettled
+                  ? context.theme.successColor
+                  : context.theme.errorColor,
+            ),
+            Column(
+              children: List.generate(
+                splits.length,
+                (index) => ExpenseSplitsCard(split: splits[index]),
+              ),
+            )
+          ],
+        ),
       ),
     );
   }

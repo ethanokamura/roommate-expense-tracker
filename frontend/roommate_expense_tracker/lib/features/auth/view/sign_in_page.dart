@@ -41,7 +41,7 @@ class SignInPage extends StatelessWidget {
                     height: 256,
                     decoration: const BoxDecoration(
                       image: DecorationImage(
-                        image: AssetImage('assets/logos/ret_logo.png'),
+                        image: AssetImage('assets/logos/ret_logo_no_bg.png'),
                         fit: BoxFit.contain,
                       ),
                     ),

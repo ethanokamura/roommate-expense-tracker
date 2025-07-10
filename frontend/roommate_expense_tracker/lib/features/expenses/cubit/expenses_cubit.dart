@@ -177,11 +177,9 @@ class ExpensesCubit extends Cubit<ExpensesState> {
         ascending: ascending,
         forceRefresh: forceRefresh,
       );
-      emit(
-        state.fromExpensesListLoaded(
-          expensesList: expensesList,
-        ),
-      );
+      emit(state.fromExpensesListLoaded(
+        expensesList: expensesList,
+      ));
     } on ExpensesFailure catch (failure) {
       debugPrint('Failure to create expenses: $failure');
       emit(state.fromExpensesFailure(failure));

@@ -35,12 +35,12 @@ class DefaultContainer extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           color: accent == null || !accent!
-              ? context.theme.colorScheme.surface
+              ? context.theme.primaryColor
               : context.theme.accentColor,
           borderRadius: defaultBorderRadius,
           border: border ??
               Border.all(
-                color: context.theme.subtextColor.withAlpha(96),
+                color: context.theme.primaryColor.withAlpha(96),
                 width: 0.5,
               ),
           boxShadow: boxShadow,

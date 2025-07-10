@@ -2,29 +2,30 @@ import 'dart:convert';
 import 'package:api_client/api_client.dart';
 import 'package:app_core/app_core.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart' show rootBundle;
 import 'models/expenses.dart';
 import 'failures.dart';
 
 class ExpenseSplit {
   const ExpenseSplit({
-    this.userId = '',
+    this.memeberId = '',
     this.amountOwed = 0.0,
     this.paidOn,
   });
 
-  final String userId;
+  final String memeberId;
   final double amountOwed;
   final DateTime? paidOn;
 
   // JSON string equivalent for our data
-  static String get userIdConverter => 'user_id';
+  static String get memeberIdConverter => 'member_id';
   static String get amountOwedConverter => 'amount_owed';
   static String get paidOnConverter => 'paid_on';
 
   // Helper function that converts a JSON object to our dart object
   factory ExpenseSplit.fromJson(Map<String, dynamic> json) {
     return ExpenseSplit(
-      userId: json[userIdConverter]?.toString() ?? '',
+      memeberId: json[memeberIdConverter]?.toString() ?? '',
       amountOwed: json[amountOwedConverter] as double? ?? 0.0,
       paidOn: json[paidOnConverter] != null
           ? DateTime.tryParse(json[paidOnConverter].toString())?.toUtc() ??
@@ -41,7 +42,7 @@ class ExpenseSplit {
   // Generic function to map our dart object to a JSON object
   Map<String, dynamic> toJson() {
     return _generateMap(
-      userId: userId,
+      memeberId: memeberId,
       amountOwed: amountOwed,
       paidOn: paidOn,
     );
@@ -49,12 +50,12 @@ class ExpenseSplit {
 
   // Generic function to generate a generic mapping between objects
   static Map<String, dynamic> _generateMap({
-    String? userId,
+    String? memeberId,
     double? amountOwed,
     DateTime? paidOn,
   }) =>
       {
-        if (userId != null) userIdConverter: userId,
+        if (memeberId != null) memeberIdConverter: memeberId,
         if (amountOwed != null) amountOwedConverter: amountOwed,
         if (paidOn != null) paidOnConverter: paidOn,
       };
@@ -120,7 +121,6 @@ extension Create on ExpensesRepository {
         },
         payload: data,
       );
-      debugPrint('Expenses post response: $response');
       if (response['status'] != '201') {
         throw ExpensesFailure.fromCreate();
       }
@@ -189,7 +189,6 @@ extension Read on ExpensesRepository {
           'Authorization': 'Bearer $token',
         },
       );
-      debugPrint('Expenses GET all expenses response: $response');
       if (response['status'] != '200') {
         throw ExpensesFailure.fromGet();
       }
@@ -222,8 +221,38 @@ extension Read on ExpensesRepository {
   Future<Expenses> fetchExpensesWithExpenseId({
     required String expenseId,
     required String token,
-    bool forceRefresh = false, // Added parameter to force API call
+    bool forceRefresh = false,
+    bool useTestData = true,
   }) async {
+    if (useTestData) {
+      debugPrint('Loading test data for expenses');
+      try {
+        const assetPath = 'assets/data/expenses.json';
+        final String responseBody = await rootBundle.loadString(assetPath);
+        final Map<String, dynamic> rawJsonData = jsonDecode(responseBody);
+        if (!rawJsonData.containsKey('expenses')) {
+          debugPrint(
+              'Error loading test data from asset: key - "expenses" does not exist.');
+          throw ExpensesFailure.fromGet();
+        }
+        final List<dynamic> jsonData = rawJsonData['expenses'];
+        _expensesList =
+            Expenses.converter(jsonData.cast<Map<String, dynamic>>());
+        // Now, search for the specific expense in the loaded list
+        _expenses = _expensesList.firstWhere(
+          (exp) => exp.expenseId == expenseId,
+          orElse: () {
+            debugPrint('Expense with ID $expenseId not found in test data.');
+            return Expenses.empty;
+          },
+        );
+        return _expenses;
+      } catch (e) {
+        debugPrint('Error loading test data from asset: $e');
+        throw ExpensesFailure.fromGet();
+      }
+    }
+
     // Get cache key
     final cacheKey = generateCacheKey({
       'object': 'expenses',
@@ -255,7 +284,6 @@ extension Read on ExpensesRepository {
           'Authorization': 'Bearer $token',
         },
       );
-      debugPrint('Expenses GET response: $response');
       if (response['status'] != '200') {
         throw ExpensesFailure.fromGet();
       }
@@ -325,7 +353,6 @@ extension Read on ExpensesRepository {
           'Authorization': 'Bearer $token',
         },
       );
-      debugPrint('Expenses GET all expenses response: $response');
       if (response['status'] != '200') {
         throw ExpensesFailure.fromGet();
       }
@@ -359,7 +386,29 @@ extension Read on ExpensesRepository {
     required String orderBy,
     required bool ascending,
     bool forceRefresh = false,
+    bool useTestData = true,
   }) async {
+    if (useTestData) {
+      debugPrint('Loading test data for expenses');
+      try {
+        const assetPath = 'assets/data/expenses.json';
+        final String responseBody = await rootBundle.loadString(assetPath);
+        final Map<String, dynamic> rawJsonData = jsonDecode(responseBody);
+        if (!rawJsonData.containsKey('expenses')) {
+          debugPrint(
+              'Error loading test data from asset: key - "expenses" does not exist.');
+          throw ExpensesFailure.fromGet();
+        }
+        final List<dynamic> jsonData = rawJsonData['expenses'];
+        _expensesList =
+            Expenses.converter(jsonData.cast<Map<String, dynamic>>());
+        return _expensesList;
+      } catch (e) {
+        debugPrint('Error loading test data from asset: $e');
+        throw ExpensesFailure.fromGet();
+      }
+    }
+
     // Get cache key
     final cacheKey = generateCacheKey({
       'object': 'expenses',
@@ -396,7 +445,6 @@ extension Read on ExpensesRepository {
           'Authorization': 'Bearer $token',
         },
       );
-      debugPrint('Expenses GET all expenses response: $response');
       if (response['status'] != '200') {
         throw ExpensesFailure.fromGet();
       }
@@ -422,7 +470,7 @@ extension Read on ExpensesRepository {
   }
 
   List<ExpenseSplit> extractSplits(Map<String, dynamic> splitsJson) {
-    List<dynamic> splitList = splitsJson['splits'];
+    List<dynamic> splitList = splitsJson['member_splits'];
     return ExpenseSplit.converter(splitList.cast<Map<String, dynamic>>());
   }
 }
@@ -457,8 +505,6 @@ extension Update on ExpensesRepository {
         },
         payload: data,
       );
-
-      debugPrint('Expenses PATCH response: $response');
 
       // Failure
       if (response['status'] != '200') {
@@ -508,8 +554,6 @@ extension Delete on ExpensesRepository {
           'Authorization': 'Bearer $token',
         },
       );
-
-      debugPrint('Expenses DELETE response: $response');
 
       // Failure
       if (response['status'] != '204') {

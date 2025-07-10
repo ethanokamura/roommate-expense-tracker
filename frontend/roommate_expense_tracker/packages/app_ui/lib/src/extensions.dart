@@ -1,3 +1,4 @@
+import 'package:app_ui/src/app_ui.dart';
 import 'package:app_ui/src/constants.dart';
 import 'package:flutter/material.dart';
 
@@ -20,10 +21,12 @@ extension BuildContextExtensions on BuildContext {
 
   Future<T?> showScrollControlledBottomSheet<T>({
     required WidgetBuilder builder,
+    required BuildContext context,
   }) {
     return showModalBottomSheet<T>(
       context: this,
       builder: builder,
+      backgroundColor: context.theme.backgroundColor,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(borderRadius: defaultBorderRadius),
     );
