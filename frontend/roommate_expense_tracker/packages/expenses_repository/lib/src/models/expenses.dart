@@ -83,7 +83,7 @@ class Expenses extends Equatable {
     houseId: '',
     houseMemberId: '',
     title: '',
-    splits: const {},
+    splits: {},
     totalAmount: 0.0,
     isSettled: false,
   );

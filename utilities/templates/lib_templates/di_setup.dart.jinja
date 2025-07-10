@@ -20,7 +20,7 @@ Future<void> setupDependencies({
   getIt.registerLazySingleton<CacheManager>(() => CacheManager(getIt<Isar>()));
   // Register all your repositories as lazy singletons
 {% for repo in repositories %}
-  getIt.registerSingletonWithDependencies<{{repo | snake_to_pascal}}Repository>(
+  getIt.registerLazySingleton<{{repo | snake_to_pascal}}Repository>(
       () => {{repo | snake_to_pascal}}Repository(
         cacheManager: getIt<CacheManager>(),
         {% if repo == "users_repository" %}
@@ -28,7 +28,6 @@ Future<void> setupDependencies({
         firebaseAuth: getIt<FirebaseAuth>(),
         {%endif%}
       ),
-    dependsOn: [CacheManager {% if repo == "users_repository" %}, GoogleSignIn, FirebaseAuth {%endif%}],
   );
 {% endfor %}
 }

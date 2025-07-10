@@ -180,6 +180,13 @@ extension Auth on UsersRepository {
 
       if (userCredential.user != null) {
         createUsers(email: userCredential.user!.email!, token: '');
+        // final user = await fetchUsersWithEmail(
+        //   email: userCredential.user!.email!,
+        //   token: '',
+        // );
+        // if (user.isEmpty) {
+        //   createUsers(email: userCredential.user!.email!, token: '');
+        // }
       }
     } catch (e) {
       debugPrint('Error during sign in: $e');

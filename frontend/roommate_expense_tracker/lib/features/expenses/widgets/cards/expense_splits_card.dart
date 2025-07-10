@@ -8,18 +8,26 @@ class ExpenseSplitsCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return DefaultContainer(
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          CustomText(
-            text: split.userId,
-            style: AppTextStyles.primary,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              CustomText(
+                text: '${split.memeberId.substring(0, 20)}...',
+                style: AppTextStyles.primary,
+              ),
+              CustomText(
+                text: formatCurrency(split.amountOwed),
+                style: AppTextStyles.primary,
+                color: context.theme.successColor,
+              ),
+            ],
           ),
           CustomText(
-            text: formatCurrency(split.amountOwed),
-            style: AppTextStyles.primary,
-          ),
-          CustomText(
-            text: split.paidOn != null
-                ? DateFormatter.formatTimestamp(split.paidOn!)
+            text: split.paidOn != null &&
+                    split.paidOn!.compareTo(DateTime.now()) > 0
+                ? 'Paid On: ${DateFormatter.formatTimestamp(split.paidOn!)}'
                 : 'Expense has not been paid.',
             style: AppTextStyles.secondary,
           ),
