@@ -21,7 +21,10 @@ class ExpenseSplitsCard extends StatelessWidget {
               CustomText(
                 text: formatCurrency(split.amountOwed),
                 style: AppTextStyles.primary,
-                color: context.theme.successColor,
+                color: split.paidOn != null &&
+                        split.paidOn!.compareTo(DateTime.now()) > 0
+                    ? context.theme.successColor
+                    : context.theme.errorColor,
               ),
             ],
           ),
