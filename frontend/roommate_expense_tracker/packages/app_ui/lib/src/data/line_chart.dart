@@ -176,7 +176,7 @@ LineChartData _mainData(
             show: true,
             gradient: LinearGradient(
               colors: [
-                context.theme.colorScheme.surface,
+                context.theme.primaryColor,
                 // chartColors[0],
                 // chartColors[1],
                 values[values.length - 1] - values[0] < 0
@@ -262,7 +262,7 @@ LineChartData _dummyData(
             show: true,
             gradient: LinearGradient(
               colors: [
-                context.theme.surfaceColor,
+                context.theme.primaryColor,
                 // chartColors[0],
                 // chartColors[1],
                 values[values.length - 1] - values[0] < 0
