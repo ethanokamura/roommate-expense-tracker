@@ -2,7 +2,6 @@ import 'package:app_ui/app_ui.dart';
 import 'package:app_core/app_core.dart';
 import 'package:expenses_repository/expenses_repository.dart';
 import 'package:roommate_expense_tracker/features/expenses/expenses.dart';
-import 'package:roommate_expense_tracker/features/expenses/pages/expense_page.dart';
 import 'package:roommate_expense_tracker/features/expenses/widgets/category_data.dart';
 import 'package:roommate_expense_tracker/features/expenses/widgets/expense_cubit_wrapper.dart';
 import 'package:roommate_expense_tracker/features/expenses/widgets/expense_popup.dart';
