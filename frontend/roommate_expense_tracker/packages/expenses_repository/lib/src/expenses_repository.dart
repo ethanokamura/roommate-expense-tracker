@@ -81,11 +81,7 @@ extension Create on ExpensesRepository {
   ///
   /// Return data if successful, or an empty instance of [Expenses].
   ///
-  /// Requires the [houseId] to create the object
-  /// Requires the [houseMemberId] to create the object
-  /// Requires the [description] to create the object
-  /// Requires the [totalAmount] to create the object
-  /// Requires the [isSettled] to create the object
+  /// Requires the [data] to create the object
   Future<Expenses> createExpenses({
     required Map<String, dynamic> data,
     required String token,
@@ -423,6 +419,11 @@ extension Read on ExpensesRepository {
       debugPrint('Failure to fetch all expenses: $e');
       throw ExpensesFailure.fromGet();
     }
+  }
+
+  List<ExpenseSplit> extractSplits(Map<String, dynamic> splitsJson) {
+    List<dynamic> splitList = splitsJson['splits'];
+    return ExpenseSplit.converter(splitList.cast<Map<String, dynamic>>());
   }
 }
 

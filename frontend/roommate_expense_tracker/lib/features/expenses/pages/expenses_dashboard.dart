@@ -2,6 +2,7 @@ import 'package:app_ui/app_ui.dart';
 import 'package:app_core/app_core.dart';
 import 'package:expenses_repository/expenses_repository.dart';
 import 'package:roommate_expense_tracker/features/expenses/expenses.dart';
+import 'package:roommate_expense_tracker/features/expenses/pages/expense_page.dart';
 import 'package:roommate_expense_tracker/features/expenses/widgets/expense_cubit_wrapper.dart';
 import 'package:users_repository/users_repository.dart';
 
@@ -50,9 +51,31 @@ class ExpensesDashboard extends StatelessWidget {
                             itemCount: state.expensesList.length,
                             itemBuilder: (context, index) {
                               final expense = state.expensesList[index];
-                              return CustomText(
-                                text: expense.description,
-                                style: AppTextStyles.secondary,
+                              final splits = context
+                                  .read<ExpensesRepository>()
+                                  .extractSplits(expense.splits);
+                              return TransitionContainer(
+                                page: ExpensePage(
+                                    expense: expense, splits: splits),
+                                child: DefaultContainer(
+                                  child: Column(
+                                    children: [
+                                      CustomText(
+                                        text: expense.title,
+                                        style: AppTextStyles.primary,
+                                      ),
+                                      CustomText(
+                                        text:
+                                            formatCurrency(expense.totalAmount),
+                                        style: AppTextStyles.primary,
+                                      ),
+                                      CustomText(
+                                        text: 'Splits: ${splits.length}',
+                                        style: AppTextStyles.primary,
+                                      )
+                                    ],
+                                  ),
+                                ),
                               );
                             },
                           ),

@@ -78,7 +78,7 @@ class Section extends StatelessWidget {
           text: title,
           style: AppTextStyles.title,
           maxLines: 3,
-          color: 4,
+          color: context.theme.accentColor,
         ),
         const VerticalSpacer(),
         ..._addSpacingToChildren(children, multiple),
@@ -122,7 +122,7 @@ class SliverSectionForNested extends StatelessWidget {
             child: CustomText(
               text: title,
               style: AppTextStyles.title,
-              color: 4,
+              color: context.theme.accentColor,
             ),
           ),
         ),
@@ -209,7 +209,7 @@ class NestedPageBuilder extends StatelessWidget {
                   child: CustomText(
                     text: title,
                     style: AppTextStyles.title,
-                    color: 4,
+                    color: context.theme.accentColor,
                   ),
                 ),
               ),

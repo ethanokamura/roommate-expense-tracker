@@ -50,7 +50,7 @@ class SignInPage extends StatelessWidget {
                   SizedBox(
                     width: 256,
                     child: CustomButton(
-                      color: 2,
+                      color: context.theme.accentColor,
                       text: state.isLoading ? 'One Moment' : 'Sign In',
                       onTap: state.isLoading
                           ? null

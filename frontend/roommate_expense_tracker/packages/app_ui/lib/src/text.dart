@@ -13,7 +13,7 @@ class CustomText extends StatelessWidget {
     super.key,
   });
 
-  final int? color;
+  final Color? color;
   final String text;
   final double? fontSize;
   final TextStyle style;
@@ -24,15 +24,8 @@ class CustomText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorOptions = <Color>[
-      context.theme.textColor,
-      context.theme.subtextColor,
-      context.theme.hintTextColor,
-      context.theme.inverseTextColor,
-      context.theme.accentColor,
-    ];
     final textStyle = style.copyWith(
-      color: colorOptions[color ?? 0],
+      color: color ?? context.theme.textColor,
       fontSize: fontSize,
     );
     return autoSize

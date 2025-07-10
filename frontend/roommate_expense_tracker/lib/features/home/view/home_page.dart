@@ -44,7 +44,7 @@ class HomeBody extends StatelessWidget {
       controller: pageController,
       physics: const NeverScrollableScrollPhysics(),
       children: const [
-        ExpensesDashboard(),
+        ExpensesDashboard(houseId: '1234'),
         HouseDashboard(),
         UserDashboard(),
       ],

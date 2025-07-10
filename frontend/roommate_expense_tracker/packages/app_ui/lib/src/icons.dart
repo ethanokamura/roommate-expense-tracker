@@ -6,19 +6,12 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 Icon defaultIconStyle(
   BuildContext context,
   IconData icon,
-  int color, {
+  Color color, {
   double size = 14,
 }) {
-  List<Color> colors = [
-    context.theme.textColor,
-    context.theme.subtextColor,
-    context.theme.hintTextColor,
-    context.theme.inverseTextColor,
-    context.theme.accentColor,
-  ];
   return Icon(
     icon,
-    color: colors[color],
+    color: color,
     size: size,
   );
 }
