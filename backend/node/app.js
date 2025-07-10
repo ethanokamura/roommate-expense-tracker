@@ -29,6 +29,7 @@ const corsOpts = {
 };
 
 app.use(cors(corsOpts));
+app.use(express.json());
 
 app.use("/expense-splits", ExpenseSplitsRouter);
 app.use("/expenses", ExpensesRouter);
