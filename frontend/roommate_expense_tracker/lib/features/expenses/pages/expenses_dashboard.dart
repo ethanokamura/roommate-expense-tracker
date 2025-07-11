@@ -1,10 +1,8 @@
 import 'package:app_ui/app_ui.dart';
 import 'package:app_core/app_core.dart';
 import 'package:expenses_repository/expenses_repository.dart';
-import 'package:roommate_expense_tracker/features/expenses/expenses.dart';
-import 'package:roommate_expense_tracker/features/expenses/widgets/category_data.dart';
-import 'package:roommate_expense_tracker/features/expenses/widgets/expense_cubit_wrapper.dart';
-import 'package:roommate_expense_tracker/features/expenses/widgets/expense_popup.dart';
+import 'package:roommate_expense_tracker/features/expenses/cubit/expenses_cubit.dart';
+import 'package:roommate_expense_tracker/features/expenses/widgets/widgets.dart';
 import 'package:users_repository/users_repository.dart';
 
 class ExpensesDashboard extends StatelessWidget {
@@ -180,69 +178,6 @@ class ExpensesDashboard extends StatelessWidget {
             emptyMessage: 'No expenses have been posted',
           );
         },
-      ),
-    );
-  }
-}
-
-class ExpenseCard extends StatelessWidget {
-  const ExpenseCard({
-    required this.expense,
-    required this.splits,
-    super.key,
-  });
-
-  final Expenses expense;
-  final List<ExpenseSplit> splits;
-
-  @override
-  Widget build(BuildContext context) {
-    return DefaultContainer(
-      child: Row(
-        children: [
-          defaultIconStyle(
-            context,
-            categoryData[expense.category]!,
-            context.theme.textColor,
-            size: 24,
-          ),
-          const HorizontalSpacer(multiple: 1.5),
-          Expanded(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    CustomText(
-                      text: expense.title,
-                      style: AppTextStyles.primary,
-                    ),
-                    CustomText(
-                      text: expense.description,
-                      style: AppTextStyles.secondary,
-                    ),
-                  ],
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    CustomText(
-                      text: '-${formatCurrency(expense.totalAmount)}',
-                      style: AppTextStyles.primary,
-                      color: context.theme.accentColor,
-                    ),
-                    CustomText(
-                      text: DateFormatter.formatTimestamp(expense.createdAt!),
-                      style: AppTextStyles.secondary,
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ],
       ),
     );
   }

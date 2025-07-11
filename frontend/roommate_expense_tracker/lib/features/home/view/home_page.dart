@@ -1,10 +1,9 @@
 import 'package:app_core/app_core.dart';
 import 'package:app_ui/app_ui.dart';
-import 'package:roommate_expense_tracker/features/expenses/pages/create_expense_page.dart';
-import 'package:roommate_expense_tracker/features/expenses/pages/expenses_dashboard.dart';
+import 'package:roommate_expense_tracker/features/expenses/expenses.dart';
 import 'package:roommate_expense_tracker/features/home/view/bottom_nav_bar.dart';
-import 'package:roommate_expense_tracker/features/houses/pages/pages.dart';
-import 'package:roommate_expense_tracker/features/users/pages/user_dashboard.dart';
+import 'package:roommate_expense_tracker/features/houses/houses.dart';
+import 'package:roommate_expense_tracker/features/users/users.dart';
 // import 'package:roommate_expense_tracker/theme/theme_button.dart';
 // import 'package:users_repository/users_repository.dart';
 
