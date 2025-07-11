@@ -22,6 +22,14 @@
           }
         },
         {
+          "client_id": "673110359622-q6h3s6c67rpqjsuvh89h33i57o93fa3p.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.roommate_expense_tracker",
+            "certificate_hash": "51a4273a5474a4e3c82f7ce8d52fa284bef8fb55"
+          }
+        },
+        {
           "client_id": "673110359622-q7s3jkkjpnnc1u8s6pr4l7e35mfup90v.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
