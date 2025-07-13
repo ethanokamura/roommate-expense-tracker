@@ -85,9 +85,11 @@ class SkeletonRows extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const SkeletonText(width: 125.0, height: 10),
-          const VerticalSpacer(multiple: 0.5),
-          ..._buildSkeletons(lines - 1),
+          if (hasTitle) ...[
+            const SkeletonText(width: 125.0, height: 10),
+            const VerticalSpacer(multiple: 0.5),
+          ],
+          ..._buildSkeletons(hasTitle ? lines - 1 : lines),
         ],
       ),
     );

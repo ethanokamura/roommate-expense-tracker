@@ -85,7 +85,9 @@ class CustomTag extends StatelessWidget {
         child: CustomText(
           text: text,
           style: AppTextStyles.primary,
-          color: context.theme.inverseTextColor,
+          color: color == context.theme.accentColor
+              ? context.theme.inverseTextColor
+              : context.theme.textColor,
           fontSize: 12,
         ),
       ),
