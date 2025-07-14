@@ -22,11 +22,11 @@ class ModularPageBuilder extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (title.isNotEmpty) ...[
-              const VerticalSpacer(),
+              const VerticalSpacer(multiple: 2),
               CustomText(
                 text: title,
                 style: AppTextStyles.appBar,
-                fontSize: 28,
+                fontSize: 32,
                 maxLines: 3,
               ),
               const VerticalSpacer(),
@@ -76,11 +76,10 @@ class Section extends StatelessWidget {
       children: [
         CustomText(
           text: title,
-          style: AppTextStyles.title,
+          style: AppTextStyles.appBar,
           maxLines: 3,
-          color: 4,
+          color: context.theme.accentColor,
         ),
-        const VerticalSpacer(),
         ..._addSpacingToChildren(children, multiple),
       ],
     );
@@ -122,7 +121,7 @@ class SliverSectionForNested extends StatelessWidget {
             child: CustomText(
               text: title,
               style: AppTextStyles.title,
-              color: 4,
+              color: context.theme.accentColor,
             ),
           ),
         ),
@@ -157,8 +156,10 @@ class SliverSectionForNested extends StatelessWidget {
 class NestedPageBuilder extends StatelessWidget {
   const NestedPageBuilder({
     required this.sectionsData,
-    required this.list,
+    required this.itemBuilder,
+    required this.itemCount,
     required this.isLoading,
+    required this.emptyMessage,
     this.filter,
     this.title = '',
     super.key,
@@ -167,8 +168,10 @@ class NestedPageBuilder extends StatelessWidget {
   final String title;
   final Map<String, List<Widget>> sectionsData;
   final Widget? filter;
+  final String emptyMessage;
   final bool isLoading;
-  final Widget list;
+  final int itemCount;
+  final Widget? Function(BuildContext context, int index) itemBuilder;
 
   @override
   Widget build(BuildContext context) {
@@ -209,7 +212,7 @@ class NestedPageBuilder extends StatelessWidget {
                   child: CustomText(
                     text: title,
                     style: AppTextStyles.title,
-                    color: 4,
+                    color: context.theme.accentColor,
                   ),
                 ),
               ),
@@ -253,11 +256,23 @@ class NestedPageBuilder extends StatelessWidget {
         }
         return headerSlivers;
       },
-      body: Padding(
-        padding: const EdgeInsetsGeometry.symmetric(horizontal: defaultPadding),
-        child: Expanded(
-          child: isLoading ? const SkeletonList(lines: 7) : list,
-        ),
+      body: Expanded(
+        child: isLoading
+            ? const SkeletonList(lines: 7)
+            : itemCount == 0
+                ? Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: defaultPadding,
+                    ),
+                    child: CustomText(
+                      text: emptyMessage,
+                      style: AppTextStyles.secondary,
+                    ),
+                  )
+                : CustomListView(
+                    itemBuilder: itemBuilder,
+                    itemCount: itemCount,
+                  ),
       ),
     );
   }

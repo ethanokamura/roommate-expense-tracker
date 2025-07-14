@@ -1,5 +1,6 @@
 import 'package:app_core/app_core.dart';
 import 'package:app_ui/app_ui.dart';
+import 'package:roommate_expense_tracker/features/demo_page.dart';
 import 'package:roommate_expense_tracker/features/expenses/pages/expenses_dashboard.dart';
 import 'package:roommate_expense_tracker/features/home/view/bottom_nav_bar.dart';
 import 'package:roommate_expense_tracker/features/houses/pages/pages.dart';
@@ -14,13 +15,19 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint('home pages');
     return ListenableProvider(
       create: (_) => NavBarController(),
       child: DefaultPageView(
         title: 'RET',
         body: const HomeBody(),
         actions: [
+          AppBarButton(
+            icon: Icons.code_rounded,
+            onTap: () => Navigator.push(
+              context,
+              fadeThroughTransition(const DemoPage()),
+            ),
+          ),
           const ThemeButton(),
           AppBarButton(
             icon: Icons.exit_to_app,
@@ -44,7 +51,7 @@ class HomeBody extends StatelessWidget {
       controller: pageController,
       physics: const NeverScrollableScrollPhysics(),
       children: const [
-        ExpensesDashboard(),
+        ExpensesDashboard(houseId: 'e4ifg4d3-3g4f-7i5g-b1i2-2e3d4f5g6h7i'),
         HouseDashboard(),
         UserDashboard(),
       ],

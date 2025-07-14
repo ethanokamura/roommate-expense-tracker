@@ -10,7 +10,7 @@ import 'package:app_core/app_core.dart';
 //  is regenerated. If you need to modify behavior, update the source     //
 //                         template instead.                              //
 //                                                                        //
-//                Generated on: 2025-07-01 18:50:34 UTC                   //
+//                Generated on: 2025-07-08 21:21:03 UTC                   //
 //                                                                        //
 ////////////////////////////////////////////////////////////////////////////
 
@@ -23,8 +23,8 @@ class Users extends Equatable {
     this.userId, // PK
     this.displayName = '',
     this.email = '',
-    this.createdAt,
-    this.updatedAt,
+    this.createdAt = '',
+    this.updatedAt = '',
   });
 
   // Helper function that converts a single SQL object to our dart object
@@ -38,14 +38,8 @@ class Users extends Equatable {
       userId: json[userIdConverter]?.toString() ?? '',
       displayName: json[displayNameConverter]?.toString() ?? '',
       email: json[emailConverter]?.toString() ?? '',
-      createdAt: json[createdAtConverter] != null
-          ? DateTime.tryParse(json[createdAtConverter].toString())?.toUtc() ??
-              DateTime.now().toUtc()
-          : DateTime.now().toUtc(),
-      updatedAt: json[updatedAtConverter] != null
-          ? DateTime.tryParse(json[updatedAtConverter].toString())?.toUtc() ??
-              DateTime.now().toUtc()
-          : DateTime.now().toUtc(),
+      createdAt: json[createdAtConverter]?.toString() ?? '',
+      updatedAt: json[updatedAtConverter]?.toString() ?? '',
     );
   }
 
@@ -65,8 +59,8 @@ class Users extends Equatable {
   final String? userId; // PK
   final String displayName;
   final String email;
-  final DateTime? createdAt;
-  final DateTime? updatedAt;
+  final String createdAt;
+  final String updatedAt;
 
   // Defines object properties
   @override
@@ -99,8 +93,8 @@ class Users extends Equatable {
     String? userId,
     String? displayName,
     String? email,
-    DateTime? createdAt,
-    DateTime? updatedAt,
+    String? createdAt,
+    String? updatedAt,
   }) {
     return {
       if (userId != null) userIdConverter: userId,
