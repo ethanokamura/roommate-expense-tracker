@@ -53,7 +53,6 @@ class CustomButton extends StatelessWidget {
               CustomText(
                 style: AppTextStyles.button,
                 color: color != context.theme.accentColor
-                color: color != context.theme.accentColor
                     ? context.theme.textColor
                     : context.theme.backgroundColor,
                 fontSize: fontSize,
