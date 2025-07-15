@@ -11,6 +11,8 @@ const userController = new UserController();
 UserRouter.post(
 	"/",
 	userValidators.createUser,
+  validateRequest,
+  validateUser,
 	userController.createUser
 );
 
@@ -18,6 +20,8 @@ UserRouter.post(
 UserRouter.get(
 	"/:id",
 	userValidators.userId,
+  validateRequest,
+  validateUser,
 	userController.getUser
 );
 
@@ -25,6 +29,8 @@ UserRouter.get(
 UserRouter.get(
 	"/",
 	userValidators.userQuery,
+  validateRequest,
+  validateUser,
 	userController.findUsers
 );
 
@@ -33,6 +39,8 @@ UserRouter.patch(
 	"/:id",
 	userValidators.userId,
 	userValidators.updateUser,
+  validateRequest,
+  validateUser,
 	userController.updateUser
 );
 
@@ -40,6 +48,8 @@ UserRouter.patch(
 UserRouter.delete(
 	"/:id",
 	userValidators.userId,
+  validateRequest,
+  validateUser,
 	userController.deleteUser
 );
 
