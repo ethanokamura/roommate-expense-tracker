@@ -1,13 +1,15 @@
 const express = require("express");
-const UserRouter = express.Router();
+const UserHousesRouter = express.Router();
 const { userHousesValidator } = require("./validator");
 const { UserHousesController } = require("./controller");
 
 const userHousesController = new UserHousesController();
 
 // Read
-UserRouter.get(
+UserHousesRouter.get(
 	"/:id",
-	userHousesValidator.userId,
-	userHousesController.getUser
+	userHousesValidator.userHousesQuery,
+	userHousesController.getUserHouses
 );
+
+module.exports = { UserHousesRouter };
