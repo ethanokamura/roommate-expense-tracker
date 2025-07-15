@@ -70,6 +70,8 @@ Future<Map<String, dynamic>> dioRequest({
     receiveTimeout: const Duration(seconds: 30), // Adjust as needed
   );
 
+  debugPrint('sending body: $payload');
+
   try {
     Response<dynamic> response;
     // Use uppercase method names for strict matching and clarity
@@ -112,7 +114,6 @@ Future<Map<String, dynamic>> dioRequest({
       default:
         throw ArgumentError('Unsupported HTTP method: $method');
     }
-
     if (response.data is Map<String, dynamic>) {
       if (response.data.containsKey('success') &&
           response.data['success'] == false) {

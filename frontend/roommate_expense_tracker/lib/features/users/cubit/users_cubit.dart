@@ -15,35 +15,6 @@ class UsersCubit extends Cubit<UsersState> {
 
   final UsersRepository _usersRepository;
 
-  /// Insert [Users] object to Rds.
-  ///
-  /// Return data if successful, or an empty instance of [Users].
-  ///
-  /// Requires the [email] to create the object
-  Future<void> createUsers({
-    required String email,
-    required String token,
-    bool forceRefresh = true,
-  }) async {
-    emit(state.fromLoading());
-    try {
-      // Retrieve new row after inserting
-      final users = await _usersRepository.createUsers(
-        email: email,
-        token: token,
-        forceRefresh: forceRefresh,
-      );
-      emit(
-        state.fromUsersLoaded(
-          users: users,
-        ),
-      );
-    } on UsersFailure catch (failure) {
-      debugPrint('Failure to create users: $failure');
-      emit(state.fromUsersFailure(failure));
-    }
-  }
-
   /// Insert [HouseMembers] object to Rds.
   ///
   /// Return data if successful, or an empty instance of [HouseMembers].

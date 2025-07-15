@@ -37,6 +37,10 @@ class ExpensesDashboard extends StatelessWidget {
             title: 'Expense Dashboard',
             sectionsData: {
               'My Expenses': [
+                CustomText(
+                  text: userRepository.users.displayName,
+                  style: AppTextStyles.primary,
+                ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
