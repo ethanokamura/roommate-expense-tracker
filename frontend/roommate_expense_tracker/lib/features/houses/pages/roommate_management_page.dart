@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 
 class RoommateManagementPage extends StatelessWidget {
-  const RoommateManagementPage({
-    super.key
-  });
+  const RoommateManagementPage({super.key});
 
   @override
-   Widget build(BuildContext context) {
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Roommate Management"),
@@ -15,8 +13,29 @@ class RoommateManagementPage extends StatelessWidget {
           onPressed: () => Navigator.pop(context),
         ),
       ),
-      body: const Center(
-        child: Text("to be filled"),
+      body: ListView(
+        children: const [
+          ExpansionTile(
+            title: Text("Add Roommate"),
+            leading: Icon(Icons.person_add),
+            children: [
+              Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Text("Add roommate functionality goes here."),
+              ),
+            ],
+          ),
+          ExpansionTile(
+            title: Text("Remove Roommate"),
+            leading: Icon(Icons.person_remove),
+            children: [
+              Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Text("Remove roommate functionality goes here."),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
