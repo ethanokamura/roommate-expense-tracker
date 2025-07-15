@@ -2,6 +2,7 @@ const { query } = require("../../db/connection");
 
 
 class UserController {
+//Check db and ? parameters, remove password
 
 	/**
 	 * Create a new user
@@ -10,13 +11,11 @@ class UserController {
 	 * @param {*} next - Express next function
 	 */
 	async createUser(req, res, next) {
+		const { display_name, email} = req.body;
+		//const user_id = req.body.user_id
 		try {
-			const { name, email, password } = req.body;
-			const result = await query(
-				`INSERT INTO users (name, email, password) VALUES (?, ?, ?)`,
-				[name, email, password]
-			);
-			const newUser = { id: result.insertId, name, email };
+			const result = await query("INSERT INTO users (user_id, display_name, email) VALUES ($1, $2, $3)",[user_id, display_name, email]);
+			const newUser = { id: user_id, display_name, email };
 			res.status(201).json({ message: "User created successfully", user: newUser });
 		} catch (error) {
 			if (error.code === 'ER_DUP_ENTRY') {
@@ -37,14 +36,15 @@ class UserController {
 	 */
 	async getUser(req, res, next) {
 		try {
-			const userId = req.params.id;
-			const results = await query(`SELECT id, name, email FROM users WHERE id = ?`, [userId]);
+			const{ user_id }= req.params.id;
+			const results = await query("SELECT user_id, display_name, email FROM users WHERE id = $1", [user_id]);
 			if (results.length === 0) {
 				return res.status(404).json({ error: "User not found" });
 			}
+			console.log(`User fetched successfully`);
 			res.status(200).json(results[0]);
 		} catch (error) {
-			next(error);
+			return res.status(500).json({ error: "Internal server error" });
 		}
 	}
 
@@ -52,19 +52,20 @@ class UserController {
 	 * Handle GET /users with optional query filters
 	 * @param {*} req - Express request object
 	 * @param {*} res - Express response object
-	 * @param {*} next - Express next function
+	 * @param {*} next - Express next faunction
 	 */
 	async findUsers(req, res, next) {
+		
 		try {
-			const { name, email } = req.query;
-			let sql = `SELECT id, name, email FROM users WHERE 1=1`;
+			const { display_name, email } = req.query;
+			let sql_query = "SELECT * FROM users";
 			const params = [];
-			if (name) {
-				sql += ` AND name LIKE ?`;
-				params.push(`%${name}%`);
+			if (display_name) {
+				sql += ` AND name LIKE $1`;
+				params.push(`%${display_name}%`);
 			}
 			if (email) {
-				sql += ` AND email LIKE ?`;
+				sql += ` AND email LIKE $1`;
 				params.push(`%${email}%`);
 			}
 			const results = await query(sql, params);
@@ -82,18 +83,24 @@ class UserController {
 	 */
 	async updateUser(req, res, next) {
 		try {
-			const userId = req.params.id;
-			const { name, email, password } = req.body;
+			const user_id = req.params.id;
+			const { display_name, email} = req.body;
 			const fields = [];
 			const params = [];
-			if (name) { fields.push("name = ?"); params.push(name); }
-			if (email) { fields.push("email = ?"); params.push(email); }
-			if (password) { fields.push("password = ?"); params.push(password); }
+			if (display_name) {
+				fields.push("name = $1");
+				params.push(display_name); 
+			}
+			if (email) { 
+				fields.push("email = $1");
+				params.push(email); 
+			}
 			if (fields.length === 0) {
 				return res.status(400).json({ error: "No fields to update" });
 			}
-			params.push(userId);
-			const sql = `UPDATE users SET ${fields.join(", ")} WHERE id = ?`;
+			params.push(user_id);
+
+			const sql = `UPDATE users SET ${fields.join(", ")} WHERE id = $1`;
 			const result = await query(sql, params);
 			if (result.affectedRows === 0) {
 				return res.status(404).json({ error: "User not found" });
@@ -116,15 +123,20 @@ class UserController {
 	 * @param {*} next - Express next function
 	 */
 	async deleteUser(req, res, next) {
+		const user_id = req.params.id;
 		try {
-			const userId = req.params.id;
-			const result = await query(`DELETE FROM users WHERE id = ?`, [userId]);
-			if (result.affectedRows === 0) {
+			const result = await query("DELETE (*) FROM users WHERE user_id = ($1)", [user_id]);
+			console.log(`User deleted successfully`);
+			res.status(200).json({ message: 'User deleted successfully with id: (${user_id})', });
+
+			if (result.rowCount === 0) {
 				return res.status(404).json({ error: "User not found" });
 			}
-			res.status(200).json({ message: "User deleted successfully" });
-		} catch (error) {
-			next(error);
+		}
+		catch (error) {
+			console.error(`Error getting user: ${error.message}`);
+			return res.status(500).json({ error: "Internal server error while deleting user",
+				code: "INTERNAL_ERROR"});
 		}
 	}
 }
