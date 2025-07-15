@@ -529,6 +529,7 @@ extension Read on UsersRepository {
 
     // No valid cache, or forceRefresh is true, fetch from API
     try {
+      debugPrint('finding user with email $email');
       // Retrieve new row after inserting
       final response = await dioRequest(
         dio: Dio(),

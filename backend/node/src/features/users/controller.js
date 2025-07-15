@@ -70,14 +70,15 @@ class UserController {
       const { display_name, email } = req.query;
       let sql = "SELECT * FROM users";
       const params = [];
+      console.log(`querying user with email ${email}`);
       if (display_name) {
         sql += ` WHERE display_name = ($${params.length + 1})`;
-        params.push(`%${display_name}%`);
+        params.push(display_name);
       }
       if (email) {
         let prefix = params.length == 1 ? "AND" : "WHERE";
         sql += ` ${prefix} email = ($${params.length + 1})`;
-        params.push(`%${email}%`);
+        params.push(email);
       }
       const results = await query(sql, params);
       res.status(200).json({
