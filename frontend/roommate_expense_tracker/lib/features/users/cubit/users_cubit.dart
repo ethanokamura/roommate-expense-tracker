@@ -429,18 +429,14 @@ class UsersCubit extends Cubit<UsersState> {
   Future<void> fetchUsersHouseData({
     required String userId,
     required String token,
-    required String orderBy,
-    required bool ascending,
     bool forceRefresh = false,
   }) async {
     emit(state.fromLoading());
     try {
       // Retrieve new row after inserting
-      final userHouseDataList = await _usersRepository.fetchUsersHouseData(
+      final userHouseDataList = await _usersRepository.fetchUserHouseData(
         userId: userId,
         token: token,
-        orderBy: orderBy,
-        ascending: ascending,
         forceRefresh: forceRefresh,
       );
       emit(state.fromUserHouseDataListLoaded(

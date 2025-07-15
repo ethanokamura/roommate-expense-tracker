@@ -26,4 +26,12 @@ class AppCubit extends Cubit<AppState> {
         ? emit(const AppState.authenticated())
         : emit(const AppState.unauthenticated());
   }
+
+  void selectedHouse({required String houseId}) {
+    _usersRepository.userHouseId(
+      houseId: houseId,
+      userId: _usersRepository.users.userId!,
+    );
+    emit(const AppState.authenticatedWithHouse());
+  }
 }

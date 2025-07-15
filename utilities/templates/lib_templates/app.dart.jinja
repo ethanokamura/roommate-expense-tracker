@@ -2,6 +2,7 @@ import 'package:app_core/app_core.dart';
 import 'package:app_ui/app_ui.dart';
 import 'package:roommate_expense_tracker/features/auth/auth.dart';
 import 'package:roommate_expense_tracker/features/home/home.dart';
+import 'package:roommate_expense_tracker/features/users/users.dart';
 import 'package:roommate_expense_tracker/app/cubit/app_cubit.dart';
 import 'package:roommate_expense_tracker/theme/theme_cubit.dart';
 {% for repo in repositories %}
@@ -19,6 +20,9 @@ List<Page<dynamic>> onGenerateAppPages(
     return [SignInPage.page()];
   }
   if (status.isAuthenticated) {
+    return [HouseSelectionPage.page()];
+  }
+  if (status.isAuthenticatedWithHouse) {
     return [HomePage.page()];
   }
   return pages;

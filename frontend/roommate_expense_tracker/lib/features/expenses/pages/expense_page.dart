@@ -1,8 +1,6 @@
-import 'package:app_core/app_core.dart';
 import 'package:app_ui/app_ui.dart';
 import 'package:expenses_repository/expenses_repository.dart';
 import 'package:roommate_expense_tracker/features/expenses/widgets/cards/expense_splits_card.dart';
-import 'package:users_repository/users_repository.dart';
 
 class ExpensePage extends StatelessWidget {
   const ExpensePage({

@@ -1,40 +1,92 @@
 import 'package:app_core/app_core.dart';
 import 'package:app_ui/app_ui.dart';
+import 'package:roommate_expense_tracker/app/cubit/app_cubit.dart';
 import 'package:roommate_expense_tracker/features/users/cubit/users_cubit.dart';
-import 'package:roommate_expense_tracker/features/users/widgets/user_cubit_wrapper.dart';
 import 'package:users_repository/users_repository.dart';
 
-class HouseMemberSelectionPage extends StatelessWidget {
-  const HouseMemberSelectionPage({super.key});
+class HouseSelectionPage extends StatelessWidget {
+  const HouseSelectionPage({super.key});
   static MaterialPage<dynamic> page() =>
-      const MaterialPage<void>(child: HouseMemberSelectionPage());
+      const MaterialPage<void>(child: HouseSelectionPage());
   @override
   Widget build(BuildContext context) {
     final userRepository = context.read<UsersRepository>();
     return DefaultPageView(
-      title: 'Select your House',
+      title: 'Select Your House',
       body: BlocProvider(
         create: (context) => UsersCubit(
-          usersRepository: userRepository,
+          usersRepository: context.read<UsersRepository>(),
         )..fetchUsersHouseData(
-            userId: userRepository.users.userId!,
-            token: userRepository.credentials.credential!.accessToken!,
-            orderBy: UserHouseData.memberCreatedAtConverter,
-            ascending: true,
+            userId:
+                // userRepository.users.userId!, // use this
+                'c04355e1-9d60-4d79-a2e3-cbc773e66307',
+            token: '',
+            forceRefresh: true,
           ),
-        child: UsersCubitWrapper(
+        child: BlocBuilder<UsersCubit, UsersState>(
           builder: (context, state) {
-            return CustomListView(
-              itemCount: state.userHouseDataList.length,
-              itemBuilder: (context, index) {
-                final userHouseData = state.userHouseDataList[index];
-                return CustomText(
-                  text: userHouseData.houseName,
-                  style: AppTextStyles.primary,
-                );
+            return NestedPageBuilder(
+              sectionsData: {
+                'House Selection': [
+                  CustomButton(
+                    icon: AppIcons.add,
+                    text: 'Add House',
+                    onTap: () {
+                      // navigate to create a house
+                    },
+                    color: context.theme.accentColor,
+                  ),
+                ],
               },
+              itemBuilder: (context, index) => UsersHouseCard(
+                userHouse: state.userHouseDataList[index],
+              ),
+              itemCount: state.userHouseDataList.length,
+              isLoading: state.isLoading,
+              emptyMessage: 'You are not a member of any houses yet!',
             );
           },
+        ),
+      ),
+    );
+  }
+}
+
+class UsersHouseCard extends StatelessWidget {
+  const UsersHouseCard({
+    required this.userHouse,
+    super.key,
+  });
+
+  final UserHouseData userHouse;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () =>
+          context.read<AppCubit>().selectedHouse(houseId: userHouse.houseId),
+      child: DefaultContainer(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            CustomText(
+              text: userHouse.houseName,
+              style: AppTextStyles.primary,
+            ),
+            CustomText(
+              text: userHouse.memberNickName,
+              style: AppTextStyles.secondary,
+            ),
+            CustomText(
+              text: userHouse.isAdmin ? "Owner" : "Member",
+              style: AppTextStyles.secondary,
+            ),
+            CustomText(
+              text:
+                  'Joined on ${DateFormatter.formatTimestamp(userHouse.memberCreatedAt!)}',
+              style: AppTextStyles.secondary,
+            ),
+          ],
         ),
       ),
     );

@@ -5,7 +5,7 @@ enum AppStatus {
   unauthenticated,
   needsUsername,
   authenticated,
-  authenticatedAsAdmin,
+  authenticatedWithHouse,
   loading,
   failure,
 }
@@ -15,6 +15,7 @@ extension AppStatusExtensions on AppStatus {
   bool get isUnauthenticated => this == AppStatus.unauthenticated;
   bool get needsUsername => this == AppStatus.needsUsername;
   bool get isAuthenticated => this == AppStatus.authenticated;
+  bool get isAuthenticatedWithHouse => this == AppStatus.authenticatedWithHouse;
   bool get isFailure => this == AppStatus.failure;
   bool get isLoading => this == AppStatus.loading;
 }
@@ -30,8 +31,8 @@ final class AppState extends Equatable {
   /// Private setters for AppStatus
   const AppState.unauthenticated() : this._(status: AppStatus.unauthenticated);
   const AppState.authenticated() : this._(status: AppStatus.authenticated);
-  const AppState.authenticatedAsAdmin()
-      : this._(status: AppStatus.authenticatedAsAdmin);
+  const AppState.authenticatedWithHouse()
+      : this._(status: AppStatus.authenticatedWithHouse);
   const AppState.loading() : this._(status: AppStatus.loading);
 
   // const AppState.authenticated(Users user)
@@ -64,4 +65,5 @@ extension AppStateExtensions on AppState {
   bool get isAuthenticated => status.isAuthenticated;
   bool get isFailure => status.isFailure;
   bool get isLoading => status.isLoading;
+  bool get isAuthenticatedWithHouse => status.isAuthenticatedWithHouse;
 }

@@ -124,6 +124,9 @@ class UsersRepository {
   HouseMembers _houseMembers = HouseMembers.empty;
   HouseMembers get houseMembers => _houseMembers;
 
+  String _houseId = '';
+  String get getHouseId => _houseId;
+
   List<HouseMembers> _houseMembersList = [];
   List<HouseMembers> get houseMembersList => _houseMembersList;
 
@@ -370,6 +373,50 @@ extension Create on UsersRepository {
 }
 
 extension Read on UsersRepository {
+  // Fetch user house ID
+  Future<String> userHouseId({
+    required String houseId,
+    required String userId,
+    bool forceRefresh = false,
+  }) async {
+    // Get cache key
+    final cacheKey = generateCacheKey({
+      'object': 'user_house',
+      'house_id': houseId,
+      'user_id': userId,
+    });
+
+    if (!forceRefresh) {
+      final cachedData = await _cacheManager.getCachedHttpResponse(cacheKey);
+      if (cachedData != null) {
+        try {
+          final Map<String, dynamic> data = jsonDecode(cachedData);
+          final dynamic id = data['house_id'];
+          debugPrint('House ID has been fetched from cache: $id');
+          _houseId = id.toString();
+          return _houseId;
+        } catch (e) {
+          debugPrint(
+              'Error decoding cached users list data for key $cacheKey: $e');
+        }
+      }
+    }
+    final String responseBody = jsonEncode({
+      'house_id': houseId,
+    });
+
+    // Cache the successful response
+    await _cacheManager.cacheHttpResponse(
+      key: cacheKey,
+      responseBody: responseBody,
+      cacheDuration: const Duration(minutes: 60),
+    );
+    debugPrint('House ID $houseId was cached');
+
+    _houseId = houseId;
+    return _houseId;
+  }
+
   /// Fetch list of all [UserHouseData] objects from Postgres.
   ///
   /// Return data if exists, or an empty list
@@ -378,7 +425,7 @@ extension Read on UsersRepository {
     required String token,
     bool forceRefresh = false,
   }) async {
-// Get cache key
+    // Get cache key
     final cacheKey = generateCacheKey({
       'object': 'users_houses',
       'user_id': userId,
@@ -401,6 +448,7 @@ extension Read on UsersRepository {
 
     // No valid cache, or forceRefresh is true, fetch from API
     try {
+      debugPrint('fetching users houses with userId $userId');
       final response = await dioRequest(
         dio: Dio(),
         apiEndpoint: '/user-houses/$userId',
@@ -409,8 +457,8 @@ extension Read on UsersRepository {
           'Authorization': 'Bearer $token',
         },
       );
-      debugPrint('Users GET all users response: $response');
-      if (response['status'] != '200') {
+      debugPrint('Users GET all user houses response: $response');
+      if (response['success'] != true) {
         throw UsersFailure.fromGet();
       }
 
@@ -430,7 +478,7 @@ extension Read on UsersRepository {
           UserHouseData.converter(jsonData.cast<Map<String, dynamic>>());
       return _userHousesList;
     } catch (e) {
-      debugPrint('Failure to fetch all users: $e');
+      debugPrint('Failure to fetch all user houses: $e');
       throw UsersFailure.fromGet();
     }
   }
@@ -1063,71 +1111,6 @@ extension Read on UsersRepository {
       return _houseMembers;
     } catch (e) {
       debugPrint('Failure to fetch houseMembers with unique details: $e');
-      throw UsersFailure.fromGet();
-    }
-  }
-
-  Future<List<UserHouseData>> fetchUsersHouseData({
-    required String userId,
-    required String token,
-    required String orderBy,
-    required bool ascending,
-    bool forceRefresh = false,
-  }) async {
-    // Get cache key
-    final cacheKey = generateCacheKey({
-      'object': 'user_house_data',
-      'order_by': orderBy,
-      'ascending': ascending.toString(),
-      'user_id': userId,
-    });
-
-    if (!forceRefresh) {
-      final cachedData = await _cacheManager.getCachedHttpResponse(cacheKey);
-      if (cachedData != null) {
-        try {
-          final List<dynamic> jsonData = jsonDecode(cachedData);
-
-          return UserHouseData.converter(jsonData.cast<Map<String, dynamic>>());
-        } catch (e) {
-          debugPrint(
-              'Error decoding cached houseMembers list data for key $cacheKey: $e');
-        }
-      }
-    }
-
-    // No valid cache, or forceRefresh is true, fetch from API
-    try {
-      if (orderBy.isEmpty) orderBy = HouseMembers.createdAtConverter;
-      final ascendingQuery = ascending ? 'asc' : 'desc';
-      final response = await dioRequest(
-        dio: Dio(),
-        apiEndpoint:
-            '/house-members?user_id=$userId&sort_by=$orderBy&sort_order=$ascendingQuery',
-        method: 'GET',
-        headers: {
-          'Authorization': 'Bearer $token',
-        },
-      );
-      debugPrint('Users GET all house_members response: $response');
-      if (response['status'] != '200') {
-        throw UsersFailure.fromGet();
-      }
-
-      final List<dynamic> jsonData = response['data']!;
-      // Success
-      final String responseBody = jsonEncode(jsonData);
-
-      // Cache the successful response with a specific duration
-      await _cacheManager.cacheHttpResponse(
-        key: cacheKey,
-        responseBody: responseBody,
-        cacheDuration: const Duration(minutes: 60),
-      );
-
-      return UserHouseData.converter(jsonData.cast<Map<String, dynamic>>());
-    } catch (e) {
-      debugPrint('Failure to fetch all house_members: $e');
       throw UsersFailure.fromGet();
     }
   }
