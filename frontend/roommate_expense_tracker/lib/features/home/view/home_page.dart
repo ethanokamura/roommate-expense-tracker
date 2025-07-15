@@ -1,5 +1,6 @@
 import 'package:app_core/app_core.dart';
 import 'package:app_ui/app_ui.dart';
+import 'package:roommate_expense_tracker/features/demo_page.dart';
 import 'package:roommate_expense_tracker/features/expenses/pages/expenses_dashboard.dart';
 import 'package:roommate_expense_tracker/features/home/view/bottom_nav_bar.dart';
 import 'package:roommate_expense_tracker/features/houses/pages/pages.dart';
@@ -20,6 +21,13 @@ class HomePage extends StatelessWidget {
         title: 'RET',
         body: const HomeBody(),
         actions: [
+          AppBarButton(
+            icon: Icons.code_rounded,
+            onTap: () => Navigator.push(
+              context,
+              fadeThroughTransition(const DemoPage()),
+            ),
+          ),
           const ThemeButton(),
           AppBarButton(
             icon: Icons.exit_to_app,

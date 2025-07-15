@@ -9,6 +9,7 @@ const { HousesRouter } = require("./src/features/houses/router");
 const { ReceiptsRouter } = require("./src/features/receipts/router");
 const { RecurringExpensesRouter } = require("./src/features/recurring-expenses/router");
 const { UserRouter } = require("./src/features/users/router");
+const { UserHousesRouter } = require("./src/features/user-houses/router");
 
 
 const app = express();
@@ -37,6 +38,7 @@ app.use("/houses", HousesRouter);
 app.use("/receipts", ReceiptsRouter);
 app.use("/recurring-expenses", RecurringExpensesRouter);
 app.use("/users", UserRouter);
+app.use("/user-houses", UserHousesRouter);
 
 app.use((err, req, res, next) => {
 	const info_string = `Error on path: ${req.path} using ${req.method}`;
