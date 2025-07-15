@@ -179,14 +179,18 @@ extension Auth on UsersRepository {
       _credentials = userCredential;
 
       if (userCredential.user != null) {
-        createUsers(email: userCredential.user!.email!, token: '');
-        // final user = await fetchUsersWithEmail(
-        //   email: userCredential.user!.email!,
-        //   token: '',
-        // );
-        // if (user.isEmpty) {
-        //   createUsers(email: userCredential.user!.email!, token: '');
-        // }
+        final user = await fetchUsersWithEmail(
+          email: userCredential.user!.email!,
+          token: '',
+        );
+        debugPrint('found user: $user');
+        if (user.isEmpty) {
+          createUsers(
+            displayName: userCredential.user!.displayName!,
+            email: userCredential.user!.email!,
+            token: '',
+          );
+        }
       }
     } catch (e) {
       debugPrint('Error during sign in: $e');
@@ -216,9 +220,10 @@ extension Create on UsersRepository {
   Future<Users> createUsers({
     required String email,
     required String token,
-    String displayName = '',
+    required String displayName,
     bool forceRefresh = true,
   }) async {
+    debugPrint('creating a new user');
     // Get cache key
     final cacheKey = generateCacheKey({
       'object': 'users',
@@ -239,30 +244,24 @@ extension Create on UsersRepository {
       }
     }
 
-    final payload = {
-      Users.displayNameConverter: email,
-    };
-
-    if (displayName.isNotEmpty) {
-      payload.addAll({
-        Users.displayNameConverter: displayName,
-      });
-    }
-
     // No valid cache, or forceRefresh is true, fetch from API
     try {
+      debugPrint('Creating account for $displayName with email: $email');
       // Retrieve new row after inserting
       final response = await dioRequest(
         dio: Dio(),
-        apiEndpoint: '/users/',
+        apiEndpoint: '/users',
         method: 'POST',
         headers: {
           'Authorization': 'Bearer $token',
         },
-        payload: payload,
+        payload: {
+          Users.emailConverter: email,
+          Users.displayNameConverter: displayName,
+        },
       );
       debugPrint('Users post response: $response');
-      if (response['status'] != '201') {
+      if (response['success'] != true) {
         throw UsersFailure.fromCreate();
       }
       // Success
@@ -530,15 +529,10 @@ extension Read on UsersRepository {
 
     // No valid cache, or forceRefresh is true, fetch from API
     try {
-      // Build query parameters
-      final queryParams = <String, dynamic>{'email': email};
-      final queryString =
-          queryParams.entries.map((e) => '${e.key}=${e.value}').join('&');
-
       // Retrieve new row after inserting
       final response = await dioRequest(
         dio: Dio(),
-        apiEndpoint: '/users?$queryString',
+        apiEndpoint: '/users?email=$email',
         method: 'GET',
         headers: {
           'Authorization': 'Bearer $token',
@@ -548,12 +542,17 @@ extension Read on UsersRepository {
       debugPrint('Users GET response: $response');
 
       // Failure
-      if (response['status'] != '200') {
+      if (response['success'] != true) {
         throw UsersFailure.fromGet();
       }
 
+      if ((response['data']! as List<dynamic>).isEmpty) {
+        return Users.empty;
+      }
+
       // Success
-      final Map<String, dynamic> jsonData = response['data']!;
+      final Map<String, dynamic> jsonData =
+          (response['data']! as List<dynamic>).first;
       final String responseBody = jsonEncode(jsonData);
 
       // Cache the successful response with a specific duration

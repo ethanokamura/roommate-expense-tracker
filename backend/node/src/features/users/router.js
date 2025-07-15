@@ -12,7 +12,6 @@ UserRouter.post(
 	"/",
 	userValidators.createUser,
   validateRequest,
-  validateUser,
 	userController.createUser
 );
 
@@ -30,7 +29,6 @@ UserRouter.get(
 	"/",
 	userValidators.userQuery,
   validateRequest,
-  validateUser,
 	userController.findUsers
 );
 
@@ -40,7 +38,6 @@ UserRouter.patch(
 	userValidators.userId,
 	userValidators.updateUser,
   validateRequest,
-  validateUser,
 	userController.updateUser
 );
 

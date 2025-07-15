@@ -14,7 +14,7 @@ class UserController {
     //const user_id = req.body.user_id
     try {
       const result = await query(
-        "INSERT INTO users (user_id, display_name, email) VALUES ($1, $2, $3) RETURNING *",
+        "INSERT INTO users (display_name, email) VALUES ($1, $2) RETURNING *",
         [display_name, email]
       );
       const user = result.rows[0];
