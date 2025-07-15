@@ -126,6 +126,9 @@ class UsersRepository {
 
   List<HouseMembers> _houseMembersList = [];
   List<HouseMembers> get houseMembersList => _houseMembersList;
+
+  List<UserHouseData> _userHousesList = [];
+  List<UserHouseData> get userHousesList => _userHousesList;
 }
 
 extension Auth on UsersRepository {
@@ -212,7 +215,7 @@ extension Auth on UsersRepository {
 }
 
 extension Create on UsersRepository {
-  /// Insert [Users] object to Rds.
+  /// Insert [Users] object to Postgres.
   ///
   /// Return data if successful, or an empty instance of [Users].
   ///
@@ -284,7 +287,7 @@ extension Create on UsersRepository {
     }
   }
 
-  /// Insert [HouseMembers] object to Rds.
+  /// Insert [HouseMembers] object to Postgres.
   ///
   /// Return data if successful, or an empty instance of [HouseMembers].
   ///
@@ -367,7 +370,72 @@ extension Create on UsersRepository {
 }
 
 extension Read on UsersRepository {
-  /// Fetch list of all [Users] objects from Rds.
+  /// Fetch list of all [UserHouseData] objects from Postgres.
+  ///
+  /// Return data if exists, or an empty list
+  Future<List<UserHouseData>> fetchUserHouseData({
+    required String userId,
+    required String token,
+    bool forceRefresh = false,
+  }) async {
+// Get cache key
+    final cacheKey = generateCacheKey({
+      'object': 'users_houses',
+      'user_id': userId,
+    });
+
+    if (!forceRefresh) {
+      final cachedData = await _cacheManager.getCachedHttpResponse(cacheKey);
+      if (cachedData != null) {
+        try {
+          final List<dynamic> jsonData = jsonDecode(cachedData);
+          _userHousesList =
+              UserHouseData.converter(jsonData.cast<Map<String, dynamic>>());
+          return _userHousesList;
+        } catch (e) {
+          debugPrint(
+              'Error decoding cached users list data for key $cacheKey: $e');
+        }
+      }
+    }
+
+    // No valid cache, or forceRefresh is true, fetch from API
+    try {
+      final response = await dioRequest(
+        dio: Dio(),
+        apiEndpoint: '/user-houses/$userId',
+        method: 'GET',
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      );
+      debugPrint('Users GET all users response: $response');
+      if (response['status'] != '200') {
+        throw UsersFailure.fromGet();
+      }
+
+      final List<dynamic> jsonData = response['data']!;
+      // Success
+      final String responseBody =
+          jsonEncode(jsonData); // Encode to string for caching
+
+      // Cache the successful response with a specific duration
+      await _cacheManager.cacheHttpResponse(
+        key: cacheKey,
+        responseBody: responseBody,
+        cacheDuration: const Duration(minutes: 60),
+      );
+
+      _userHousesList =
+          UserHouseData.converter(jsonData.cast<Map<String, dynamic>>());
+      return _userHousesList;
+    } catch (e) {
+      debugPrint('Failure to fetch all users: $e');
+      throw UsersFailure.fromGet();
+    }
+  }
+
+  /// Fetch list of all [Users] objects from Postgres.
   ///
   /// Return data if exists, or an empty list
   Future<List<Users>> fetchAllUsers({
@@ -434,7 +502,7 @@ extension Read on UsersRepository {
     }
   }
 
-  /// Fetch single() [Users] object from Rds.
+  /// Fetch single() [Users] object from Postgres.
   ///
   /// Return data if exists, or an empty instance of [Users].
   ///
@@ -498,7 +566,7 @@ extension Read on UsersRepository {
     }
   }
 
-  /// Fetch single() [Users] object from Rds.
+  /// Fetch single() [Users] object from Postgres.
   ///
   /// Return data if exists, or an empty instance of [Users].
   ///
@@ -572,7 +640,7 @@ extension Read on UsersRepository {
     }
   }
 
-  /// Fetch list of all [HouseMembers] objects from Rds.
+  /// Fetch list of all [HouseMembers] objects from Postgres.
   ///
   /// Return data if exists, or an empty list
   Future<List<HouseMembers>> fetchAllHouseMembers({
@@ -642,7 +710,7 @@ extension Read on UsersRepository {
     }
   }
 
-  /// Fetch single() [HouseMembers] object from Rds.
+  /// Fetch single() [HouseMembers] object from Postgres.
   ///
   /// Return data if exists, or an empty instance of [HouseMembers].
   ///
@@ -707,7 +775,7 @@ extension Read on UsersRepository {
     }
   }
 
-  /// Fetch list of all [HouseMembers] objects from Rds.
+  /// Fetch list of all [HouseMembers] objects from Postgres.
   ///
   /// Requires the [userId] for lookup
   Future<List<HouseMembers>> fetchAllHouseMembersWithUserId({
@@ -779,7 +847,7 @@ extension Read on UsersRepository {
     }
   }
 
-  /// Fetch list of all [HouseMembers] objects from Rds.
+  /// Fetch list of all [HouseMembers] objects from Postgres.
   ///
   /// Requires the [houseId] for lookup
   Future<List<HouseMembers>> fetchAllHouseMembersWithHouseId({
@@ -851,7 +919,7 @@ extension Read on UsersRepository {
     }
   }
 
-  /// Fetch single() [HouseMembers] object from Rds.
+  /// Fetch single() [HouseMembers] object from Postgres.
   ///
   /// Return data if exists, or an empty instance of [HouseMembers].
   ///
@@ -925,7 +993,7 @@ extension Read on UsersRepository {
     }
   }
 
-  /// Fetch single() [HouseMembers] object from Rds.
+  /// Fetch single() [HouseMembers] object from Postgres.
   ///
   /// Return data if exists, or an empty instance of [HouseMembers].
   ///
@@ -1066,7 +1134,7 @@ extension Read on UsersRepository {
 }
 
 extension Update on UsersRepository {
-  /// Update the given [Users] in Rds.
+  /// Update the given [Users] in Postgres.
   ///
   /// Return data if successful, or an empty instance of [Users].
   ///
@@ -1127,7 +1195,7 @@ extension Update on UsersRepository {
     }
   }
 
-  /// Update the given [HouseMembers] in Rds.
+  /// Update the given [HouseMembers] in Postgres.
   ///
   /// Return data if successful, or an empty instance of [HouseMembers].
   ///
@@ -1190,7 +1258,7 @@ extension Update on UsersRepository {
 }
 
 extension Delete on UsersRepository {
-  /// Delete the given [Users] from Rds.
+  /// Delete the given [Users] from Postgres.
   ///
   /// Requires the [userId] to delete the object
   Future<String> deleteUsers({
@@ -1223,7 +1291,7 @@ extension Delete on UsersRepository {
     }
   }
 
-  /// Delete the given [HouseMembers] from Rds.
+  /// Delete the given [HouseMembers] from Postgres.
   ///
   /// Requires the [houseMemberId] to delete the object
   Future<String> deleteHouseMembers({
