@@ -55,7 +55,9 @@ class UserController {
       console.log(`User fetched successfully`);
       res.status(200).json({ success: true, data: result.rows[0] });
     } catch (error) {
-      return res.status(500).json({ error: "Internal server error" });
+      return res
+        .status(500)
+        .json({ success: false, error: "Internal server error" });
     }
   }
 
@@ -111,7 +113,9 @@ class UserController {
         params.push(email);
       }
       if (fields.length === 0) {
-        return res.status(400).json({ error: "No fields to update" });
+        return res
+          .status(400)
+          .json({ success: false, error: "No fields to update" });
       }
       params.push(user_id);
 
@@ -120,7 +124,9 @@ class UserController {
       )} WHERE user_id = $1 RETURNING *`;
       const result = await query(sql, params);
       if (result.affectedRows === 0) {
-        return res.status(404).json({ error: "User not found" });
+        return res
+          .status(404)
+          .json({ success: false, error: "User not found" });
       }
       res.status(200).json({
         success: true,
@@ -128,7 +134,7 @@ class UserController {
       });
     } catch (error) {
       if (error.code === "ER_DUP_ENTRY") {
-        res.status(409).json({ error: "Email already exists" });
+        res.status(409).json({ success: false, error: "Email already exists" });
       } else {
         next(error);
       }
@@ -148,19 +154,20 @@ class UserController {
         user_id,
       ]);
       console.log(`User deleted successfully`);
-      res
-        .status(200)
-        .json({
-          success: true,
-          message: "User deleted successfully with id: (${user_id})",
-        });
+      res.status(200).json({
+        success: true,
+        message: "User deleted successfully with id: (${user_id})",
+      });
 
       if (result.rowCount === 0) {
-        return res.status(404).json({ error: "User not found" });
+        return res
+          .status(404)
+          .json({ success: false, error: "User not found" });
       }
     } catch (error) {
       console.error(`Error getting user: ${error.message}`);
       return res.status(500).json({
+        success: false,
         error: "Internal server error while deleting user",
         code: "INTERNAL_ERROR",
       });
