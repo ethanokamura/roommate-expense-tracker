@@ -21,7 +21,11 @@ class HouseDashboard extends StatelessWidget {
     return BlocProvider(
       create: (context) => UsersCubit(
         usersRepository: userRepository,
-      ),
+      )..fetchAllHouseMembersWithHouseId(
+          houseId: houseId,
+          token: userRepository.idToken ?? '',
+          orderBy: "nickname",
+          ascending: false),
       child: UsersCubitWrapper(
         builder: (context, state) {
           return NestedPageBuilder(
