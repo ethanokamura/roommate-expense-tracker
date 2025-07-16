@@ -16,8 +16,6 @@ import 'package:users_repository/users_repository.dart';
 //                                                                        //
 ////////////////////////////////////////////////////////////////////////////
 
-
-
 /// Failure controller for [UsersRepository]
 /// Handles failures from the [UsersRepository]
 /// Requires a [failureSelector] to handle the specifc failure correctly
