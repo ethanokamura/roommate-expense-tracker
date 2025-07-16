@@ -3,51 +3,48 @@ const UserRouter = express.Router();
 const { userValidators } = require("./validator");
 const { UserController } = require("./controller");
 const { validateRequest } = require("../../utils/validator");
-const { validateUser } = require("../auth/middleware");
 
 const userController = new UserController();
 
 // Create
 UserRouter.post(
-	"/",
-	userValidators.createUser,
+  "/",
+  userValidators.createUser,
   validateRequest,
-	userController.createUser
+  userController.createUser
 );
 
 // Read
 UserRouter.get(
-	"/:id",
-	userValidators.userId,
+  "/:id",
+  userValidators.userId,
   validateRequest,
-  validateUser,
-	userController.getUser
+  userController.getUser
 );
 
 // Read
 UserRouter.get(
-	"/",
-	userValidators.userQuery,
+  "/",
+  userValidators.userQuery,
   validateRequest,
-	userController.findUsers
+  userController.findUsers
 );
 
 // Update
 UserRouter.patch(
-	"/:id",
-	userValidators.userId,
-	userValidators.updateUser,
+  "/:id",
+  userValidators.userId,
+  userValidators.updateUser,
   validateRequest,
-	userController.updateUser
+  userController.updateUser
 );
 
 // Delete
 UserRouter.delete(
-	"/:id",
-	userValidators.userId,
+  "/:id",
+  userValidators.userId,
   validateRequest,
-  validateUser,
-	userController.deleteUser
+  userController.deleteUser
 );
 
 module.exports = { UserRouter };

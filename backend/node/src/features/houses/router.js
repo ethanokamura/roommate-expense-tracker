@@ -3,7 +3,6 @@ const HousesRouter = express.Router();
 const { housesValidators } = require("./validator");
 const { HousesController } = require("./controller");
 const { validateRequest } = require("../../utils/validator");
-const { validateUser } = require("../auth/middleware");
 
 const housesController = new HousesController();
 
