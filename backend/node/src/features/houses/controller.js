@@ -16,7 +16,7 @@ class HousesController {
         "INSERT INTO houses (name, invite_code, user_id) VALUES ($1, $2, $3) RETURNING *",
         [name, invite_code, user_id]
       );
-      return res.status(201).json({ house: result.rows[0] });
+      return res.status(201).json({ house: result.rows[0], success: true });
     } catch (error) {
       return next(error);
     }
@@ -38,9 +38,9 @@ class HousesController {
       if (result.rows.length === 0) {
         return res
           .status(404)
-          .json({ error: `House with ID "${house_id}" not found` });
+          .json({ error: `House with ID "${house_id}" not found`, success: false });
       }
-      return res.status(200).json({ house: result.rows[0] });
+      return res.status(200).json({ house: result.rows[0], success: true });
     } catch (error) {
       return next(error);
     }
@@ -78,7 +78,7 @@ class HousesController {
         sql_query += " WHERE " + filters.join(" AND ");
       }
       const result = await query(sql_query, values);
-      return res.status(200).json({ houses: result.rows });
+      return res.status(200).json({ houses: result.rows, success: true });
     } catch (error) {
       return next(error);
     }
@@ -134,7 +134,7 @@ class HousesController {
 
       // if nothing to update, return error
       if (updates.length === 0) {
-        return res.status(400).json({ error: "No valid fields to update" });
+        return res.status(400).json({ error: "No valid fields to update", success: false });
       }
 
       // add house_id to values so we can update the specified house
@@ -154,13 +154,13 @@ class HousesController {
       }
 
       // else, house found with given parameters return it
-      return res.status(200).json({ house: result.rows[0] });
+      return res.status(200).json({ house: result.rows[0], success: true });
     } catch (error) {
       // invite code not unique
       if (error.code == "23505") {
         const invite_code = req.body.invite_code ?? "(unknown)";
         return res.status(409).json({
-          error: `House with invite_code "${invite_code}" already exists`,
+          error: `House with invite_code "${invite_code}" already exists`, success: false
         });
       } else {
         return next(error);
@@ -192,7 +192,7 @@ class HousesController {
           .status(404)
           .json({ error: `House with ID "${house_id}" not found` });
       }
-      return res.status(200).json({ message: "House deleted successfully" });
+      return res.status(200).json({ message: "House deleted successfully", success: true });
     } catch (error) {
       return res
         .status(error.status || 500)
