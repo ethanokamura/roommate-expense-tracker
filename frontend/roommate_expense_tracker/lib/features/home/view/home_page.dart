@@ -19,6 +19,7 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final houseId = context.read<UsersRepository>().getHouseId;
+    final memberId = context.read<UsersRepository>().getMemberId;
     debugPrint('loading house with ID $houseId');
     return ListenableProvider(
       create: (_) => NavBarController(),
@@ -34,6 +35,16 @@ class HomePage extends StatelessWidget {
             ),
           ),
         ],
+        floatingActionButton: FloatingActionTransitionContainer(
+          page: CreateExpensePage(
+            houseId: houseId,
+            memberId: memberId,
+          ),
+          icon: appBarIconStyle(
+            context,
+            AppIcons.add,
+          ),
+        ),
         bottomNavigationBar: const BottomNavBar(),
       ),
     );

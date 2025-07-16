@@ -1,4 +1,5 @@
 import 'package:app_core/app_core.dart';
+import 'package:app_ui/app_ui.dart';
 import 'package:users_repository/users_repository.dart';
 
 part 'app_state.dart';
@@ -27,11 +28,22 @@ class AppCubit extends Cubit<AppState> {
         : emit(const AppState.unauthenticated());
   }
 
-  void selectedHouse({required String houseId}) {
-    _usersRepository.userHouseId(
-      houseId: houseId,
-      userId: _usersRepository.users.userId!,
-    );
+  Future<void> selectedHouse({
+    required String houseId,
+    required String memberId,
+  }) async {
+    try {
+      await _usersRepository.userHouseId(
+        houseId: houseId,
+        userId: _usersRepository.users.userId!,
+      );
+      await _usersRepository.userMemberId(
+        memberId: memberId,
+        userId: _usersRepository.users.userId!,
+      );
+    } catch (e) {
+      debugPrint('Failure to set house details $e');
+    }
     emit(const AppState.authenticatedWithHouse());
   }
 }

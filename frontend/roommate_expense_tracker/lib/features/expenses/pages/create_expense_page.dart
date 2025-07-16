@@ -4,6 +4,7 @@ import 'package:expenses_repository/expenses_repository.dart';
 import 'package:roommate_expense_tracker/features/expenses/cubit/expenses_cubit.dart';
 import 'package:roommate_expense_tracker/features/expenses/widgets/widgets.dart';
 import 'package:roommate_expense_tracker/features/expenses/page_data/page_data.dart';
+import 'package:users_repository/users_repository.dart';
 
 class CreateExpensePage extends StatefulWidget {
   const CreateExpensePage({
@@ -229,7 +230,8 @@ class _CreateExpensePageState extends State<CreateExpensePage> {
                               Expenses.isSettledConverter: false,
                               Expenses.splitsConverter: {"splits": splits},
                             },
-                            token: 'token',
+                            token:
+                                context.read<UsersRepository>().idToken ?? '',
                           );
                           setState(() {
                             splits.clear();
