@@ -16,8 +16,6 @@ import 'package:expenses_repository/expenses_repository.dart';
 //                                                                        //
 ////////////////////////////////////////////////////////////////////////////
 
-
-
 /// Failure controller for [ExpensesRepository]
 /// Handles failures from the [ExpensesRepository]
 /// Requires a [failureSelector] to handle the specifc failure correctly

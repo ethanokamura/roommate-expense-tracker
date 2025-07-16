@@ -10,6 +10,7 @@ const { ReceiptsRouter } = require("./src/features/receipts/router");
 const { RecurringExpensesRouter } = require("./src/features/recurring-expenses/router");
 const { UserRouter } = require("./src/features/users/router");
 const { UserHousesRouter } = require("./src/features/user-houses/router");
+const { authenticateJWT } = require("./src/features/auth/middleware");
 
 
 const app = express();
@@ -33,8 +34,8 @@ app.use(cors(corsOpts));
 app.use(express.json());
 app.use("/expense-splits", ExpenseSplitsRouter);
 app.use("/expenses", ExpensesRouter);
-app.use("/house-members", HouseMembersRouter);
-app.use("/houses", HousesRouter);
+app.use("/house-members", authenticateJWT, HouseMembersRouter);
+app.use("/houses", authenticateJWT, HousesRouter);
 app.use("/receipts", ReceiptsRouter);
 app.use("/recurring-expenses", RecurringExpensesRouter);
 app.use("/users", UserRouter);
