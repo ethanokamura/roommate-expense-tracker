@@ -12,7 +12,6 @@ HouseMembersRouter.post(
   "/",
   houseMembersValidators.createHouseMembers,
   validateRequest,
-  validateUser,
   houseMembersController.createHouseMembers
 );
 
@@ -21,7 +20,6 @@ HouseMembersRouter.get(
   "/:id",
   houseMembersValidators.houseMembersId,
   validateRequest,
-  validateUser,
   houseMembersController.getHouseMembers
 );
 
@@ -30,7 +28,6 @@ HouseMembersRouter.get(
   "/",
   houseMembersValidators.houseMembersQuery,
   validateRequest,
-  validateUser,
   houseMembersController.findHouseMembers
 );
 
@@ -40,7 +37,6 @@ HouseMembersRouter.patch(
   houseMembersValidators.houseMembersId,
   houseMembersValidators.updateHouseMembers,
   validateRequest,
-  validateUser,
   houseMembersController.updateHouseMembers
 );
 
@@ -49,7 +45,6 @@ HouseMembersRouter.delete(
   "/:id",
   houseMembersValidators.houseMembersId,
   validateRequest,
-  validateUser,
   houseMembersController.deleteHouseMembers
 );
 

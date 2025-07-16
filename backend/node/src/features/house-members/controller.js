@@ -9,54 +9,29 @@ class HouseMembersController {
    * @param {*} next - Express next function
    */
   async createHouseMembers(req, res, next) {
-    const { house_id, user_id, role = 'member' } = req.body;
+    const { house_id, user_id, is_admin } = req.body;
     const current_user_id = req.user.user_id;
 
+    let nickname = '';
+    if (req.user.name != null) {
+      nickname = req.user.name;
+    }
+
     try {
-      // Only house head can add members
-      await assertUserIsHouseHead(house_id, current_user_id);
-
-      // Check if user already exists in this house
-      const existingMember = await query(
-        "SELECT * FROM house_members WHERE house_id = $1 AND user_id = $2",
-        [house_id, user_id]
-      );
-
-      if (existingMember.rows.length > 0) {
-        return res.status(409).json({
-          error: "User is already a member of this house"
-        });
-      }
-
-      // Validate user exists
-      const userExists = await query(
-        "SELECT 1 FROM users WHERE user_id = $1",
-        [user_id]
-      );
-
-      if (userExists.rows.length === 0) {
-        return res.status(400).json({
-          error: `User with user_id "${user_id}" not found`
-        });
-      }
-
       // Insert new house member
       const result = await query(
-        "INSERT INTO house_members (house_id, user_id, role) VALUES ($1, $2, $3) RETURNING *",
-        [house_id, user_id, role]
+        "INSERT INTO house_members (house_id, user_id, is_admin, nickname) VALUES ($1, $2, $3, $4) RETURNING *",
+        [house_id, user_id, is_admin, nickname]
       );
-
       return res.status(201).json({ house_member: result.rows[0] });
-
     } catch (error) {
-      if (error.code === "23503") {
-        return res.status(400).json({
-          error: "Invalid house_id or user_id provided"
-        });
+      if (error.code === '23505') {
+        return res.status(400).json({ error: "User is already a member of this house." });
       }
-      return res.status(error.status || 500).json({
-        error: error.message || "Internal Server Error"
-      });
+      if (error.code === '23503') {
+        return res.status(400).json({ error: "Invalid house_id or user_id." });
+      }
+      return next(error);
     }
   }
 
@@ -112,83 +87,74 @@ class HouseMembersController {
       filters.push(`user_id = $${values.length}`);
     }
 
-    if (req.query.role) {
-      values.push(req.query.role);
-      filters.push(`role = $${values.length}`);
+    if (req.query.is_admin) {
+      values.push(req.query.is_admin);
+      filters.push(`is_admin = $${values.length}`);
+    }
+    if (filters.length > 0) {
+      sql_query += " WHERE " + filters.join(" AND ");
     }
 
-    try {
-      if (filters.length > 0) {
-        sql_query += " WHERE " + filters.join(" AND ");
-      }
+    const sort_by = req.query.sort_by || 'created_at';
+    const sort_order = req.query.sort_order || 'desc';
+    sql_query += ` ORDER BY ${sort_by} ${sort_order.toUpperCase()}`;
 
+    try {
       const result = await query(sql_query, values);
       return res.status(200).json({ house_members: result.rows });
-
     } catch (error) {
       return next(error);
     }
   }
 
   /**
-   * Update a house member's details (mainly role changes)
+   * Update a house member's details
    * @param {*} req - Express request object
    * @param {*} res - Express response object
    * @param {*} next - Express next function
    */
   async updateHouseMembers(req, res, next) {
     const house_member_id = req.params.id;
-    const current_user_id = req.user.user_id;
 
-    try {
-      // Get house member info to validate house ownership
-      const memberInfo = await query(
-        "SELECT house_id, user_id, role FROM house_members WHERE house_member_id = $1",
-        [house_member_id]
-      );
+    // Build update query dynamically
+    const updates = [];
+    const values = [];
 
-      if (memberInfo.rows.length === 0) {
-        return res.status(404).json({
-          error: `House member with ID "${house_member_id}" not found`
-        });
-      }
+    if (req.body.hasOwnProperty("is_admin")) {
+      values.push(req.body.is_admin);
+      updates.push(`is_admin = $${values.length}`);
+    }
 
-      const { house_id } = memberInfo.rows[0];
+    if (req.body.nickname) {
+      values.push(req.body.nickname);
+      updates.push(`nickname = $${values.length}`);
+    }
 
-      // Only house head can update member roles
-      await assertUserIsHouseHead(house_id, current_user_id);
+    if (req.body.hasOwnProperty("is_active")) {
+      values.push(req.body.is_active);
+      updates.push(`is_active = $${values.length}`);
+    }
 
-      // Build update query dynamically
-      const updates = [];
-      const values = [];
+    if (updates.length === 0) {
+      return res.status(400).json({
+        error: "No valid fields to update"
+      });
+    }
 
-      if (req.body.role) {
-        values.push(req.body.role);
-        updates.push(`role = $${values.length}`);
-      }
-
-      if (updates.length === 0) {
-        return res.status(400).json({
-          error: "No valid fields to update"
-        });
-      }
-
-      // Add house_member_id to values
-      values.push(house_member_id);
-      const sql_query = `
+    // Add house_member_id to values
+    values.push(house_member_id);
+    const sql_query = `
         UPDATE house_members 
         SET ${updates.join(", ")}, updated_at = NOW() 
         WHERE house_member_id = $${values.length} 
         RETURNING *
       `;
 
+    try {
       const result = await query(sql_query, values);
       return res.status(200).json({ house_member: result.rows[0] });
-
     } catch (error) {
-      return res.status(error.status || 500).json({
-        error: error.message || "Internal Server Error"
-      });
+      return next(error);
     }
   }
 
