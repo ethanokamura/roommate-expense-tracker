@@ -8,7 +8,8 @@ class UserHousesController {
    * @param {*} next - Express next function
    */
   async getUserHouses(req, res, next) {
-    const { userId } = req.params;
+    const id  = req.params.id;
+    console.log(`fetching user's houses for user with id: ${id}`)
     const queryString = `
       SELECT
         h.house_id,
@@ -28,7 +29,7 @@ class UserHousesController {
     `;
 
     try {
-      let result = await query(queryString, [userId]);
+      let result = await query(queryString, [id]);
 
       const data = result.rows;
       console.log(`User's houses fetched successfully`);
