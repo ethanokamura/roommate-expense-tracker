@@ -62,4 +62,5 @@ class AppIcons {
   static const IconData toiletries = FontAwesomeIcons.toiletPaper;
   static const IconData random = FontAwesomeIcons.dice;
   static const IconData food = Icons.restaurant;
+  static const IconData add = FontAwesomeIcons.plus;
 }

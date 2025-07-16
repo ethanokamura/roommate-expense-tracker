@@ -9,34 +9,28 @@ import 'package:roommate_expense_tracker/features/users/users.dart';
 // import 'package:users_repository/users_repository.dart';
 
 class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+  const HomePage({
+    super.key,
+  });
   static MaterialPage<dynamic> page() =>
       const MaterialPage<void>(child: HomePage());
 
   @override
   Widget build(BuildContext context) {
+    final houseId = context.read<UsersRepository>().getHouseId;
+    debugPrint('loading house with ID $houseId');
     return ListenableProvider(
       create: (_) => NavBarController(),
       child: DefaultPageView(
         title: 'RET',
-        // actions: [
-        //   const ThemeButton(),
-        //   AppBarButton(
-        //     icon: Icons.exit_to_app,
-        //     onTap: () async => context.read<UsersRepository>().signOut(),
-        //   )
-        // ],
-        body: const HomeBody(),
-        floatingActionButton: FloatingActionTransitionContainer(
-          page: const CreateExpensePage(
-            memberId: '1234',
-            houseId: '2134',
-          ),
-          icon: defaultIconStyle(
-            context,
-            AppIcons.add,
-            context.theme.backgroundColor,
-            size: 24,
+        body: HomeBody(houseId: houseId),
+        actions: [
+          AppBarButton(
+            icon: Icons.code_rounded,
+            onTap: () => Navigator.push(
+              context,
+              fadeThroughTransition(const DemoPage()),
+            ),
           ),
         ),
         bottomNavigationBar: const BottomNavBar(),
@@ -46,7 +40,12 @@ class HomePage extends StatelessWidget {
 }
 
 class HomeBody extends StatelessWidget {
-  const HomeBody({super.key});
+  const HomeBody({
+    required this.houseId,
+    super.key,
+  });
+
+  final String houseId;
   @override
   Widget build(BuildContext context) {
     // final userEmail = context.read<UsersRepository>().currentUser!.email;
@@ -55,10 +54,10 @@ class HomeBody extends StatelessWidget {
     return PageView(
       controller: pageController,
       physics: const NeverScrollableScrollPhysics(),
-      children: const [
-        ExpensesDashboard(houseId: 'e4ifg4d3-3g4f-7i5g-b1i2-2e3d4f5g6h7i'),
-        HouseDashboard(),
-        UserDashboard(),
+      children: [
+        ExpensesDashboard(houseId: houseId),
+        const HouseDashboard(),
+        const UserDashboard(),
       ],
     );
   }

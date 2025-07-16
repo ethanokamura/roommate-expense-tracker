@@ -71,7 +71,7 @@ extension Create on HousesRepository {
         },
       );
       debugPrint('Houses post response: $response');
-      if (response['status'] != '201') {
+      if (response['success'] != true) {
         throw HousesFailure.fromCreate();
       }
       // Success
@@ -139,7 +139,7 @@ extension Read on HousesRepository {
         },
       );
       debugPrint('Houses GET all houses response: $response');
-      if (response['status'] != '200') {
+      if (response['success'] != true) {
         throw HousesFailure.fromGet();
       }
 
@@ -204,7 +204,7 @@ extension Read on HousesRepository {
         },
       );
       debugPrint('Houses GET response: $response');
-      if (response['status'] != '200') {
+      if (response['success'] != true) {
         throw HousesFailure.fromGet();
       }
 
@@ -276,7 +276,7 @@ extension Read on HousesRepository {
       debugPrint('Houses GET response: $response');
 
       // Failure
-      if (response['status'] != '200') {
+      if (response['success'] != true) {
         throw HousesFailure.fromGet();
       }
 
@@ -335,7 +335,7 @@ extension Update on HousesRepository {
       debugPrint('Houses PATCH response: $response');
 
       // Failure
-      if (response['status'] != '200') {
+      if (response['success'] != true) {
         throw HousesFailure.fromGet();
       }
 
@@ -386,7 +386,7 @@ extension Delete on HousesRepository {
       debugPrint('Houses DELETE response: $response');
 
       // Failure
-      if (response['status'] != '204') {
+      if (response['success'] != true) {
         throw HousesFailure.fromDelete();
       }
 

@@ -121,7 +121,7 @@ extension Create on ExpensesRepository {
         },
         payload: data,
       );
-      if (response['status'] != '201') {
+      if (response['success'] != true) {
         throw ExpensesFailure.fromCreate();
       }
       // Success
@@ -189,7 +189,7 @@ extension Read on ExpensesRepository {
           'Authorization': 'Bearer $token',
         },
       );
-      if (response['status'] != '200') {
+      if (response['success'] != true) {
         throw ExpensesFailure.fromGet();
       }
 
@@ -284,7 +284,7 @@ extension Read on ExpensesRepository {
           'Authorization': 'Bearer $token',
         },
       );
-      if (response['status'] != '200') {
+      if (response['success'] != true) {
         throw ExpensesFailure.fromGet();
       }
 
@@ -353,7 +353,7 @@ extension Read on ExpensesRepository {
           'Authorization': 'Bearer $token',
         },
       );
-      if (response['status'] != '200') {
+      if (response['success'] != true) {
         throw ExpensesFailure.fromGet();
       }
 
@@ -445,7 +445,7 @@ extension Read on ExpensesRepository {
           'Authorization': 'Bearer $token',
         },
       );
-      if (response['status'] != '200') {
+      if (response['success'] != true) {
         throw ExpensesFailure.fromGet();
       }
 
@@ -507,7 +507,7 @@ extension Update on ExpensesRepository {
       );
 
       // Failure
-      if (response['status'] != '200') {
+      if (response['success'] != true) {
         throw ExpensesFailure.fromGet();
       }
 
@@ -556,7 +556,7 @@ extension Delete on ExpensesRepository {
       );
 
       // Failure
-      if (response['status'] != '204') {
+      if (response['success'] != true) {
         throw ExpensesFailure.fromDelete();
       }
 

@@ -116,16 +116,24 @@ class UsersRepository {
 
   Users _users = Users.empty;
   Users get users => _users;
-  UserCredential? _credentials;
-  UserCredential get credentials => _credentials!;
+  late UserCredential _credentials;
+  UserCredential get credentials => _credentials;
 
   List<Users> _usersList = [];
   List<Users> get usersList => _usersList;
   HouseMembers _houseMembers = HouseMembers.empty;
   HouseMembers get houseMembers => _houseMembers;
 
+  String _houseId = '';
+  String get getHouseId => _houseId;
+  String? _idToken;
+  String? get idToken => _idToken;
+
   List<HouseMembers> _houseMembersList = [];
   List<HouseMembers> get houseMembersList => _houseMembersList;
+
+  List<UserHouseData> _userHousesList = [];
+  List<UserHouseData> get userHousesList => _userHousesList;
 }
 
 extension Auth on UsersRepository {
@@ -178,15 +186,20 @@ extension Auth on UsersRepository {
       // Store credentials
       _credentials = userCredential;
 
-      if (userCredential.user != null) {
-        createUsers(email: userCredential.user!.email!, token: '');
-        // final user = await fetchUsersWithEmail(
-        //   email: userCredential.user!.email!,
-        //   token: '',
-        // );
-        // if (user.isEmpty) {
-        //   createUsers(email: userCredential.user!.email!, token: '');
-        // }
+      if (_credentials.user != null) {
+        _idToken = await _credentials.user!.getIdToken();
+        final user = await fetchUsersWithEmail(
+          email: _credentials.user!.email!,
+          token: _idToken ?? '',
+        );
+        debugPrint('found user: $user');
+        if (user.isEmpty) {
+          await createUsers(
+            displayName: _credentials.user!.displayName!,
+            email: _credentials.user!.email!,
+            token: _idToken ?? '',
+          );
+        }
       }
     } catch (e) {
       debugPrint('Error during sign in: $e');
@@ -208,7 +221,7 @@ extension Auth on UsersRepository {
 }
 
 extension Create on UsersRepository {
-  /// Insert [Users] object to Rds.
+  /// Insert [Users] object to Postgres.
   ///
   /// Return data if successful, or an empty instance of [Users].
   ///
@@ -216,9 +229,10 @@ extension Create on UsersRepository {
   Future<Users> createUsers({
     required String email,
     required String token,
-    String displayName = '',
+    required String displayName,
     bool forceRefresh = true,
   }) async {
+    debugPrint('creating a new user');
     // Get cache key
     final cacheKey = generateCacheKey({
       'object': 'users',
@@ -239,30 +253,24 @@ extension Create on UsersRepository {
       }
     }
 
-    final payload = {
-      Users.displayNameConverter: email,
-    };
-
-    if (displayName.isNotEmpty) {
-      payload.addAll({
-        Users.displayNameConverter: displayName,
-      });
-    }
-
     // No valid cache, or forceRefresh is true, fetch from API
     try {
+      debugPrint('Creating account for $displayName with email: $email');
       // Retrieve new row after inserting
       final response = await dioRequest(
         dio: Dio(),
-        apiEndpoint: '/users/',
+        apiEndpoint: '/users',
         method: 'POST',
         headers: {
           'Authorization': 'Bearer $token',
         },
-        payload: payload,
+        payload: {
+          Users.emailConverter: email,
+          Users.displayNameConverter: displayName,
+        },
       );
       debugPrint('Users post response: $response');
-      if (response['status'] != '201') {
+      if (response['success'] != true) {
         throw UsersFailure.fromCreate();
       }
       // Success
@@ -285,7 +293,7 @@ extension Create on UsersRepository {
     }
   }
 
-  /// Insert [HouseMembers] object to Rds.
+  /// Insert [HouseMembers] object to Postgres.
   ///
   /// Return data if successful, or an empty instance of [HouseMembers].
   ///
@@ -343,7 +351,7 @@ extension Create on UsersRepository {
         },
       );
       debugPrint('Users post response: $response');
-      if (response['status'] != '201') {
+      if (response['success'] != true) {
         throw UsersFailure.fromCreate();
       }
       // Success
@@ -368,7 +376,117 @@ extension Create on UsersRepository {
 }
 
 extension Read on UsersRepository {
-  /// Fetch list of all [Users] objects from Rds.
+  // Fetch user house ID
+  Future<String> userHouseId({
+    required String houseId,
+    required String userId,
+    bool forceRefresh = false,
+  }) async {
+    // Get cache key
+    final cacheKey = generateCacheKey({
+      'object': 'user_house',
+      'house_id': houseId,
+      'user_id': userId,
+    });
+
+    if (!forceRefresh) {
+      final cachedData = await _cacheManager.getCachedHttpResponse(cacheKey);
+      if (cachedData != null) {
+        try {
+          final Map<String, dynamic> data = jsonDecode(cachedData);
+          final dynamic id = data['house_id'];
+          debugPrint('House ID has been fetched from cache: $id');
+          _houseId = id.toString();
+          return _houseId;
+        } catch (e) {
+          debugPrint(
+              'Error decoding cached users list data for key $cacheKey: $e');
+        }
+      }
+    }
+    final String responseBody = jsonEncode({
+      'house_id': houseId,
+    });
+
+    // Cache the successful response
+    await _cacheManager.cacheHttpResponse(
+      key: cacheKey,
+      responseBody: responseBody,
+      cacheDuration: const Duration(minutes: 60),
+    );
+    debugPrint('House ID $houseId was cached');
+
+    _houseId = houseId;
+    return _houseId;
+  }
+
+  /// Fetch list of all [UserHouseData] objects from Postgres.
+  ///
+  /// Return data if exists, or an empty list
+  Future<List<UserHouseData>> fetchUserHouseData({
+    required String userId,
+    required String token,
+    bool forceRefresh = false,
+  }) async {
+    // Get cache key
+    final cacheKey = generateCacheKey({
+      'object': 'users_houses',
+      'user_id': userId,
+    });
+
+    if (!forceRefresh) {
+      final cachedData = await _cacheManager.getCachedHttpResponse(cacheKey);
+      if (cachedData != null) {
+        try {
+          final List<dynamic> jsonData = jsonDecode(cachedData);
+          _userHousesList =
+              UserHouseData.converter(jsonData.cast<Map<String, dynamic>>());
+          return _userHousesList;
+        } catch (e) {
+          debugPrint(
+              'Error decoding cached users list data for key $cacheKey: $e');
+        }
+      }
+    }
+
+    // No valid cache, or forceRefresh is true, fetch from API
+    try {
+      debugPrint('fetching users houses with userId $userId');
+      final response = await dioRequest(
+        dio: Dio(),
+        apiEndpoint: '/user-houses/$userId',
+        method: 'GET',
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      );
+      debugPrint('Users GET all user houses response: $response');
+      if (response['success'] != true) {
+        throw UsersFailure.fromGet();
+      }
+
+      final List<dynamic> jsonData = response['data']!;
+      // Success
+      final String responseBody =
+          jsonEncode(jsonData); // Encode to string for caching
+
+      // Cache the successful response with a specific duration
+      await _cacheManager.cacheHttpResponse(
+        key: cacheKey,
+        responseBody: responseBody,
+        cacheDuration: const Duration(minutes: 60),
+      );
+
+      _userHousesList =
+          UserHouseData.converter(jsonData.cast<Map<String, dynamic>>());
+      return _userHousesList;
+    } catch (e) {
+      debugPrint('Failure to fetch all user houses: $e');
+      throw UsersFailure.fromGet();
+    }
+  }
+
+  /// Fetch list of all [Users] objects from Postgres.
   ///
   /// Return data if exists, or an empty list
   Future<List<Users>> fetchAllUsers({
@@ -411,7 +529,7 @@ extension Read on UsersRepository {
         },
       );
       debugPrint('Users GET all users response: $response');
-      if (response['status'] != '200') {
+      if (response['success'] != true) {
         throw UsersFailure.fromGet();
       }
 
@@ -435,7 +553,7 @@ extension Read on UsersRepository {
     }
   }
 
-  /// Fetch single() [Users] object from Rds.
+  /// Fetch single() [Users] object from Postgres.
   ///
   /// Return data if exists, or an empty instance of [Users].
   ///
@@ -476,7 +594,7 @@ extension Read on UsersRepository {
         },
       );
       debugPrint('Users GET response: $response');
-      if (response['status'] != '200') {
+      if (response['success'] != true) {
         throw UsersFailure.fromGet();
       }
 
@@ -499,7 +617,7 @@ extension Read on UsersRepository {
     }
   }
 
-  /// Fetch single() [Users] object from Rds.
+  /// Fetch single() [Users] object from Postgres.
   ///
   /// Return data if exists, or an empty instance of [Users].
   ///
@@ -530,15 +648,11 @@ extension Read on UsersRepository {
 
     // No valid cache, or forceRefresh is true, fetch from API
     try {
-      // Build query parameters
-      final queryParams = <String, dynamic>{'email': email};
-      final queryString =
-          queryParams.entries.map((e) => '${e.key}=${e.value}').join('&');
-
+      debugPrint('finding user with email $email');
       // Retrieve new row after inserting
       final response = await dioRequest(
         dio: Dio(),
-        apiEndpoint: '/users?$queryString',
+        apiEndpoint: '/users?email=$email',
         method: 'GET',
         headers: {
           'Authorization': 'Bearer $token',
@@ -548,12 +662,17 @@ extension Read on UsersRepository {
       debugPrint('Users GET response: $response');
 
       // Failure
-      if (response['status'] != '200') {
+      if (response['success'] != true) {
         throw UsersFailure.fromGet();
       }
 
+      if ((response['data']! as List<dynamic>).isEmpty) {
+        return Users.empty;
+      }
+
       // Success
-      final Map<String, dynamic> jsonData = response['data']!;
+      final Map<String, dynamic> jsonData =
+          (response['data']! as List<dynamic>).first;
       final String responseBody = jsonEncode(jsonData);
 
       // Cache the successful response with a specific duration
@@ -572,7 +691,7 @@ extension Read on UsersRepository {
     }
   }
 
-  /// Fetch list of all [HouseMembers] objects from Rds.
+  /// Fetch list of all [HouseMembers] objects from Postgres.
   ///
   /// Return data if exists, or an empty list
   Future<List<HouseMembers>> fetchAllHouseMembers({
@@ -617,7 +736,7 @@ extension Read on UsersRepository {
         },
       );
       debugPrint('Users GET all house_members response: $response');
-      if (response['status'] != '200') {
+      if (response['success'] != true) {
         throw UsersFailure.fromGet();
       }
 
@@ -642,7 +761,7 @@ extension Read on UsersRepository {
     }
   }
 
-  /// Fetch single() [HouseMembers] object from Rds.
+  /// Fetch single() [HouseMembers] object from Postgres.
   ///
   /// Return data if exists, or an empty instance of [HouseMembers].
   ///
@@ -684,7 +803,7 @@ extension Read on UsersRepository {
         },
       );
       debugPrint('Users GET response: $response');
-      if (response['status'] != '200') {
+      if (response['success'] != true) {
         throw UsersFailure.fromGet();
       }
 
@@ -707,7 +826,7 @@ extension Read on UsersRepository {
     }
   }
 
-  /// Fetch list of all [HouseMembers] objects from Rds.
+  /// Fetch list of all [HouseMembers] objects from Postgres.
   ///
   /// Requires the [userId] for lookup
   Future<List<HouseMembers>> fetchAllHouseMembersWithUserId({
@@ -754,7 +873,7 @@ extension Read on UsersRepository {
         },
       );
       debugPrint('Users GET all house_members response: $response');
-      if (response['status'] != '200') {
+      if (response['success'] != true) {
         throw UsersFailure.fromGet();
       }
 
@@ -779,7 +898,7 @@ extension Read on UsersRepository {
     }
   }
 
-  /// Fetch list of all [HouseMembers] objects from Rds.
+  /// Fetch list of all [HouseMembers] objects from Postgres.
   ///
   /// Requires the [houseId] for lookup
   Future<List<HouseMembers>> fetchAllHouseMembersWithHouseId({
@@ -826,7 +945,7 @@ extension Read on UsersRepository {
         },
       );
       debugPrint('Users GET all house_members response: $response');
-      if (response['status'] != '200') {
+      if (response['success'] != true) {
         throw UsersFailure.fromGet();
       }
 
@@ -851,7 +970,7 @@ extension Read on UsersRepository {
     }
   }
 
-  /// Fetch single() [HouseMembers] object from Rds.
+  /// Fetch single() [HouseMembers] object from Postgres.
   ///
   /// Return data if exists, or an empty instance of [HouseMembers].
   ///
@@ -901,7 +1020,7 @@ extension Read on UsersRepository {
       debugPrint('Users GET response: $response');
 
       // Failure
-      if (response['status'] != '200') {
+      if (response['success'] != true) {
         throw UsersFailure.fromGet();
       }
 
@@ -925,7 +1044,7 @@ extension Read on UsersRepository {
     }
   }
 
-  /// Fetch single() [HouseMembers] object from Rds.
+  /// Fetch single() [HouseMembers] object from Postgres.
   ///
   /// Return data if exists, or an empty instance of [HouseMembers].
   ///
@@ -975,7 +1094,7 @@ extension Read on UsersRepository {
       debugPrint('Users GET response: $response');
 
       // Failure
-      if (response['status'] != '200') {
+      if (response['success'] != true) {
         throw UsersFailure.fromGet();
       }
 
@@ -998,75 +1117,10 @@ extension Read on UsersRepository {
       throw UsersFailure.fromGet();
     }
   }
-
-  Future<List<UserHouseData>> fetchUsersHouseData({
-    required String userId,
-    required String token,
-    required String orderBy,
-    required bool ascending,
-    bool forceRefresh = false,
-  }) async {
-    // Get cache key
-    final cacheKey = generateCacheKey({
-      'object': 'user_house_data',
-      'order_by': orderBy,
-      'ascending': ascending.toString(),
-      'user_id': userId,
-    });
-
-    if (!forceRefresh) {
-      final cachedData = await _cacheManager.getCachedHttpResponse(cacheKey);
-      if (cachedData != null) {
-        try {
-          final List<dynamic> jsonData = jsonDecode(cachedData);
-
-          return UserHouseData.converter(jsonData.cast<Map<String, dynamic>>());
-        } catch (e) {
-          debugPrint(
-              'Error decoding cached houseMembers list data for key $cacheKey: $e');
-        }
-      }
-    }
-
-    // No valid cache, or forceRefresh is true, fetch from API
-    try {
-      if (orderBy.isEmpty) orderBy = HouseMembers.createdAtConverter;
-      final ascendingQuery = ascending ? 'asc' : 'desc';
-      final response = await dioRequest(
-        dio: Dio(),
-        apiEndpoint:
-            '/house-members?user_id=$userId&sort_by=$orderBy&sort_order=$ascendingQuery',
-        method: 'GET',
-        headers: {
-          'Authorization': 'Bearer $token',
-        },
-      );
-      debugPrint('Users GET all house_members response: $response');
-      if (response['status'] != '200') {
-        throw UsersFailure.fromGet();
-      }
-
-      final List<dynamic> jsonData = response['data']!;
-      // Success
-      final String responseBody = jsonEncode(jsonData);
-
-      // Cache the successful response with a specific duration
-      await _cacheManager.cacheHttpResponse(
-        key: cacheKey,
-        responseBody: responseBody,
-        cacheDuration: const Duration(minutes: 60),
-      );
-
-      return UserHouseData.converter(jsonData.cast<Map<String, dynamic>>());
-    } catch (e) {
-      debugPrint('Failure to fetch all house_members: $e');
-      throw UsersFailure.fromGet();
-    }
-  }
 }
 
 extension Update on UsersRepository {
-  /// Update the given [Users] in Rds.
+  /// Update the given [Users] in Postgres.
   ///
   /// Return data if successful, or an empty instance of [Users].
   ///
@@ -1099,7 +1153,7 @@ extension Update on UsersRepository {
       debugPrint('Users PATCH response: $response');
 
       // Failure
-      if (response['status'] != '200') {
+      if (response['success'] != true) {
         throw UsersFailure.fromGet();
       }
 
@@ -1127,7 +1181,7 @@ extension Update on UsersRepository {
     }
   }
 
-  /// Update the given [HouseMembers] in Rds.
+  /// Update the given [HouseMembers] in Postgres.
   ///
   /// Return data if successful, or an empty instance of [HouseMembers].
   ///
@@ -1160,7 +1214,7 @@ extension Update on UsersRepository {
       debugPrint('Users PATCH response: $response');
 
       // Failure
-      if (response['status'] != '200') {
+      if (response['success'] != true) {
         throw UsersFailure.fromGet();
       }
 
@@ -1190,7 +1244,7 @@ extension Update on UsersRepository {
 }
 
 extension Delete on UsersRepository {
-  /// Delete the given [Users] from Rds.
+  /// Delete the given [Users] from Postgres.
   ///
   /// Requires the [userId] to delete the object
   Future<String> deleteUsers({
@@ -1211,7 +1265,7 @@ extension Delete on UsersRepository {
       debugPrint('Users DELETE response: $response');
 
       // Failure
-      if (response['status'] != '204') {
+      if (response['success'] != true) {
         throw UsersFailure.fromDelete();
       }
 
@@ -1223,7 +1277,7 @@ extension Delete on UsersRepository {
     }
   }
 
-  /// Delete the given [HouseMembers] from Rds.
+  /// Delete the given [HouseMembers] from Postgres.
   ///
   /// Requires the [houseMemberId] to delete the object
   Future<String> deleteHouseMembers({
@@ -1244,7 +1298,7 @@ extension Delete on UsersRepository {
       debugPrint('Users DELETE response: $response');
 
       // Failure
-      if (response['status'] != '204') {
+      if (response['success'] != true) {
         throw UsersFailure.fromDelete();
       }
 

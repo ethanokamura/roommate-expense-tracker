@@ -70,9 +70,9 @@ class HousesController {
 
     // dynamically build query text and values. empty queries are allowed
     if (req.query.name) {
-      values.push(`%${req.query.name}%`);
+      values.push(req.query.name);
       // returns houses with names that contain "name", case insensitive
-      filters.push(`name ILIKE $${values.length}`);
+      filters.push(`name = $${values.length}`);
     }
     if (req.query.invite_code) {
       values.push(req.query.invite_code);
