@@ -53,7 +53,6 @@ class AppIcons {
   static const IconData house = FontAwesomeIcons.house;
   static const IconData darkMode = FontAwesomeIcons.moon;
   static const IconData lightMode = FontAwesomeIcons.sun;
-  static const IconData add = Icons.add;
 
   /// APP ICONS
   static const IconData groceries = Icons.fastfood_outlined;
