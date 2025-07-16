@@ -22,7 +22,7 @@ class ExpensesDashboard extends StatelessWidget {
         expensesRepository: context.read<ExpensesRepository>(),
       )..fetchAllExpensesWithHouseId(
           houseId: houseId, // requires house ID
-          token: userRepository.credentials.credential!.accessToken ?? '',
+          token: userRepository.idToken ?? '',
           orderBy: Users.createdAtConverter,
           ascending: false,
         ),

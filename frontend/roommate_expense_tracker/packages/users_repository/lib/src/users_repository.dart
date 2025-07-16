@@ -116,8 +116,8 @@ class UsersRepository {
 
   Users _users = Users.empty;
   Users get users => _users;
-  UserCredential? _credentials;
-  UserCredential get credentials => _credentials!;
+  late UserCredential _credentials;
+  UserCredential get credentials => _credentials;
 
   List<Users> _usersList = [];
   List<Users> get usersList => _usersList;
@@ -126,6 +126,8 @@ class UsersRepository {
 
   String _houseId = '';
   String get getHouseId => _houseId;
+  String? _idToken;
+  String? get idToken => _idToken;
 
   List<HouseMembers> _houseMembersList = [];
   List<HouseMembers> get houseMembersList => _houseMembersList;
@@ -184,17 +186,18 @@ extension Auth on UsersRepository {
       // Store credentials
       _credentials = userCredential;
 
-      if (userCredential.user != null) {
+      if (_credentials.user != null) {
+        _idToken = await _credentials.user!.getIdToken();
         final user = await fetchUsersWithEmail(
-          email: userCredential.user!.email!,
-          token: '',
+          email: _credentials.user!.email!,
+          token: _idToken ?? '',
         );
         debugPrint('found user: $user');
         if (user.isEmpty) {
-          createUsers(
-            displayName: userCredential.user!.displayName!,
-            email: userCredential.user!.email!,
-            token: '',
+          await createUsers(
+            displayName: _credentials.user!.displayName!,
+            email: _credentials.user!.email!,
+            token: _idToken ?? '',
           );
         }
       }
