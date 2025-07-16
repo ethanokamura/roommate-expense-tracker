@@ -116,8 +116,8 @@ class UsersRepository {
 
   Users _users = Users.empty;
   Users get users => _users;
-  UserCredential? _credentials;
-  UserCredential get credentials => _credentials!;
+  late UserCredential _credentials;
+  UserCredential get credentials => _credentials;
 
   List<Users> _usersList = [];
   List<Users> get usersList => _usersList;
@@ -126,6 +126,8 @@ class UsersRepository {
 
   String _houseId = '';
   String get getHouseId => _houseId;
+  String? _idToken;
+  String? get idToken => _idToken;
 
   List<HouseMembers> _houseMembersList = [];
   List<HouseMembers> get houseMembersList => _houseMembersList;
@@ -184,17 +186,18 @@ extension Auth on UsersRepository {
       // Store credentials
       _credentials = userCredential;
 
-      if (userCredential.user != null) {
+      if (_credentials.user != null) {
+        _idToken = await _credentials.user!.getIdToken();
         final user = await fetchUsersWithEmail(
-          email: userCredential.user!.email!,
-          token: '',
+          email: _credentials.user!.email!,
+          token: _idToken ?? '',
         );
         debugPrint('found user: $user');
         if (user.isEmpty) {
-          createUsers(
-            displayName: userCredential.user!.displayName!,
-            email: userCredential.user!.email!,
-            token: '',
+          await createUsers(
+            displayName: _credentials.user!.displayName!,
+            email: _credentials.user!.email!,
+            token: _idToken ?? '',
           );
         }
       }
@@ -348,7 +351,7 @@ extension Create on UsersRepository {
         },
       );
       debugPrint('Users post response: $response');
-      if (response['status'] != '201') {
+      if (response['success'] != true) {
         throw UsersFailure.fromCreate();
       }
       // Success
@@ -526,7 +529,7 @@ extension Read on UsersRepository {
         },
       );
       debugPrint('Users GET all users response: $response');
-      if (response['status'] != '200') {
+      if (response['success'] != true) {
         throw UsersFailure.fromGet();
       }
 
@@ -591,7 +594,7 @@ extension Read on UsersRepository {
         },
       );
       debugPrint('Users GET response: $response');
-      if (response['status'] != '200') {
+      if (response['success'] != true) {
         throw UsersFailure.fromGet();
       }
 
@@ -733,7 +736,7 @@ extension Read on UsersRepository {
         },
       );
       debugPrint('Users GET all house_members response: $response');
-      if (response['status'] != '200') {
+      if (response['success'] != true) {
         throw UsersFailure.fromGet();
       }
 
@@ -800,7 +803,7 @@ extension Read on UsersRepository {
         },
       );
       debugPrint('Users GET response: $response');
-      if (response['status'] != '200') {
+      if (response['success'] != true) {
         throw UsersFailure.fromGet();
       }
 
@@ -870,7 +873,7 @@ extension Read on UsersRepository {
         },
       );
       debugPrint('Users GET all house_members response: $response');
-      if (response['status'] != '200') {
+      if (response['success'] != true) {
         throw UsersFailure.fromGet();
       }
 
@@ -942,7 +945,7 @@ extension Read on UsersRepository {
         },
       );
       debugPrint('Users GET all house_members response: $response');
-      if (response['status'] != '200') {
+      if (response['success'] != true) {
         throw UsersFailure.fromGet();
       }
 
@@ -1017,7 +1020,7 @@ extension Read on UsersRepository {
       debugPrint('Users GET response: $response');
 
       // Failure
-      if (response['status'] != '200') {
+      if (response['success'] != true) {
         throw UsersFailure.fromGet();
       }
 
@@ -1091,7 +1094,7 @@ extension Read on UsersRepository {
       debugPrint('Users GET response: $response');
 
       // Failure
-      if (response['status'] != '200') {
+      if (response['success'] != true) {
         throw UsersFailure.fromGet();
       }
 
@@ -1150,7 +1153,7 @@ extension Update on UsersRepository {
       debugPrint('Users PATCH response: $response');
 
       // Failure
-      if (response['status'] != '200') {
+      if (response['success'] != true) {
         throw UsersFailure.fromGet();
       }
 
@@ -1211,7 +1214,7 @@ extension Update on UsersRepository {
       debugPrint('Users PATCH response: $response');
 
       // Failure
-      if (response['status'] != '200') {
+      if (response['success'] != true) {
         throw UsersFailure.fromGet();
       }
 
@@ -1262,7 +1265,7 @@ extension Delete on UsersRepository {
       debugPrint('Users DELETE response: $response');
 
       // Failure
-      if (response['status'] != '204') {
+      if (response['success'] != true) {
         throw UsersFailure.fromDelete();
       }
 
@@ -1295,7 +1298,7 @@ extension Delete on UsersRepository {
       debugPrint('Users DELETE response: $response');
 
       // Failure
-      if (response['status'] != '204') {
+      if (response['success'] != true) {
         throw UsersFailure.fromDelete();
       }
 

@@ -20,7 +20,7 @@ class HouseSelectionPage extends StatelessWidget {
             userId:
                 // userRepository.users.userId!, // use this
                 'c04355e1-9d60-4d79-a2e3-cbc773e66307',
-            token: '',
+            token: userRepository.idToken ?? '',
             forceRefresh: true,
           ),
         child: BlocBuilder<UsersCubit, UsersState>(
