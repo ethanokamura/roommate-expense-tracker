@@ -16,7 +16,7 @@ class HousesController {
         "INSERT INTO houses (name, invite_code, user_id) VALUES ($1, $2, $3) RETURNING *",
         [name, invite_code, user_id]
       );
-      return res.status(201).json({ house: result.rows[0], success: true });
+      return res.status(201).json({ data: result.rows[0], success: true });
     } catch (error) {
       return next(error);
     }
@@ -41,7 +41,7 @@ class HousesController {
           success: false,
         });
       }
-      return res.status(200).json({ house: result.rows[0], success: true });
+      return res.status(200).json({ data: result.rows[0], success: true });
     } catch (error) {
       return next(error);
     }
@@ -83,7 +83,7 @@ class HousesController {
 
     try {
       const result = await query(sql_query, values);
-      return res.status(200).json({ houses: result.rows, success: true });
+      return res.status(200).json({ data: result.rows, success: true });
     } catch (error) {
       return next(error);
     }
@@ -178,7 +178,7 @@ class HousesController {
       }
 
       // else, house found with given parameters return it
-      return res.status(200).json({ house: result.rows[0], success: true });
+      return res.status(200).json({ data: result.rows[0], success: true });
     } catch (error) {
       // invite code not unique
       if (error.code == "23505") {
