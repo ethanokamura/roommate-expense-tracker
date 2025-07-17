@@ -52,7 +52,7 @@ class HomeBody extends StatelessWidget {
       physics: const NeverScrollableScrollPhysics(),
       children: const [
         ExpensesDashboard(houseId: 'e4ifg4d3-3g4f-7i5g-b1i2-2e3d4f5g6h7i'),
-        HouseDashboard(),
+        HouseDashboard(houseId: 'c781b376-5c18-4d6f-a415-b6117fe8e4b5',),
         UserDashboard(),
       ],
     );
