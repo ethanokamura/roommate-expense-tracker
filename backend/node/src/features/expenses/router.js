@@ -27,7 +27,7 @@ ExpensesRouter.get(
   "/",
   expensesValidators.expensesQuery,
   validateRequest,
-  expensesController.findExpensess
+  expensesController.findExpenses
 );
 
 // Update

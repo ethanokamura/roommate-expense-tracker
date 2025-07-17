@@ -97,18 +97,16 @@ class ExpensesController {
    * @param {*} res - Express response object
    * @param {*} next - Express next function
    */
-  async findExpensess(req, res, next) {
+  async findExpenses(req, res, next) {
     const queryData = req.query;
-    let queryString = `SELECT * FROM expenses`;
+    let queryString = `SELECT * FROM expenses `;
     const queryParams = [];
-    let paramIndex = 1;
 
     // Add WHERE clauses for filtering
     const houseId = queryData.house_id;
     if (houseId) {
-      queryString += ` WHERE house_id = $${houseId}`;
+      queryString += ` WHERE house_id = $${queryParams.length + 1} `;
       queryParams.push(houseId);
-      paramIndex++;
     }
 
     // Add ORDER BY clause
@@ -131,7 +129,7 @@ class ExpensesController {
         });
       }
 
-      orderBy = `ORDER BY ${sort_by}`;
+      orderBy = ` ORDER BY ${queryData.sort_by} `;
 
       let sortOrder = "";
       if (queryData.sort_order) {
@@ -140,7 +138,7 @@ class ExpensesController {
 
       orderBy += sortOrder == "ASC" || sortOrder == "DESC" ? sortOrder : "ASC";
     } else {
-      orderBy = ` ORDER BY created_at DESC`;
+      orderBy = ` ORDER BY created_at DESC `;
     }
     queryString += orderBy;
 
@@ -148,14 +146,14 @@ class ExpensesController {
     let limitValue = 25; // Default limit
     if (queryData.limit) {
       limitValue = parseInt(queryData.limit, 10);
-      queryString += ` LIMIT $${paramIndex}`;
+      queryString += ` LIMIT $${queryParams.length + 1} `;
       queryParams.push(limitValue);
-      paramIndex++;
     } else {
-      queryString += ` LIMIT ${limitValue}`;
+      queryString += ` LIMIT ${limitValue} `;
     }
 
     try {
+      console.log(queryString);
       let result = await query(queryString, queryParams);
       const data = result.rows;
       if (!data) {
@@ -189,42 +187,31 @@ class ExpensesController {
    */
   async updateExpenses(req, res, next) {
     const { id } = req.params;
-    const {
-      description,
-      total_amount,
-      category,
-      is_settled,
-      settled_at,
-    } = req.body;
+    const { description, total_amount, category, is_settled, settled_at } =
+      req.body;
 
     let queryParams = [];
-    let setString = '';
-    let paramIndex = 1;
+    let setString = "";
 
     if (description) {
-      setString += `description = (${paramIndex})`
+      setString += `description = $${queryParams.length + 1}`;
       queryParams.push(description);
-      paramIndex++;
     }
     if (total_amount) {
-      setString += `total_amount = (${paramIndex})`
+      setString += `total_amount = $${queryParams.length + 1}`;
       queryParams.push(total_amount);
-      paramIndex++;
     }
     if (category) {
-      setString += `category = (${paramIndex})`
+      setString += `category = $${queryParams.length + 1}`;
       queryParams.push(category);
-      paramIndex++;
     }
     if (is_settled) {
-      setString += `is_settled = (${paramIndex})`
+      setString += `is_settled = $${queryParams.length + 1}`;
       queryParams.push(is_settled);
-      paramIndex++;
     }
     if (settled_at) {
-      setString += `settled_at = (${paramIndex})`
+      setString += `settled_at = $${queryParams.length + 1}`;
       queryParams.push(settled_at);
-      paramIndex++;
     }
 
     queryParams.push(id);
@@ -232,7 +219,7 @@ class ExpensesController {
     const queryString = `
       UPDATE expenses
       SET ${setString}
-      WHERE expense_id = (${paramIndex})
+      WHERE expense_id = $${queryParams.length + 1}
       RETURNING *
     `;
 

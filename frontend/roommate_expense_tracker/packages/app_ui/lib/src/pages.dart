@@ -231,14 +231,7 @@ class NestedPageBuilder extends StatelessWidget {
           } else {
             headerSlivers.addAll([
               const SliverToBoxAdapter(child: VerticalSpacer(multiple: 1)),
-              SliverToBoxAdapter(
-                child: Divider(
-                  color: context.theme.subtextColor,
-                  thickness: 0.5,
-                  indent: 10,
-                  endIndent: 10,
-                ),
-              ),
+              const SliverToBoxAdapter(child: VerticalBar()),
             ]);
           }
         }

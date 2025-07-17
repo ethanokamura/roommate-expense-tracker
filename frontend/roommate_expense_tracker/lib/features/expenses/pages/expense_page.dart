@@ -1,6 +1,6 @@
 import 'package:app_ui/app_ui.dart';
 import 'package:expenses_repository/expenses_repository.dart';
-import 'package:roommate_expense_tracker/features/expenses/widgets/cards/expense_splits_card.dart';
+import 'package:roommate_expense_tracker/features/expenses/widgets/widgets.dart';
 
 class ExpensePage extends StatelessWidget {
   const ExpensePage({
@@ -62,7 +62,10 @@ class ExpensePage extends StatelessWidget {
             Column(
               children: List.generate(
                 splits.length,
-                (index) => ExpenseSplitsCard(split: splits[index]),
+                (index) => ExpenseSplitsCard(
+                  split: splits[index],
+                  paid: expense.isSettled,
+                ),
               ),
             )
           ],

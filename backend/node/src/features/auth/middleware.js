@@ -1,21 +1,21 @@
-const admin = require('firebase-admin');
+const admin = require("../../../firebase-config");
 
 // Middleware to verify ID token
-async function authenticateJWT(req, res, next) {
+const authMiddleware = async (req, res, next) => {
   const authHeader = req.headers.authorization;
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return res.status(401).json({ error: 'Unauthorized' });
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return res.status(401).json({ error: "Unauthorized" });
   }
 
-  const idToken = authHeader.split('Bearer ')[1];
+  const idToken = authHeader.split("Bearer ")[1];
 
   try {
-    const decoded = await admin.auth().verifyIdToken(idToken);
-    req.user = decoded; // uid is here
+    const decodedToken = await admin.auth().verifyIdToken(idToken);
+    req.user = decodedToken;
     next();
   } catch (err) {
-    res.status(401).json({ error: 'Invalid or expired token' });
+    return res.status(401).send("Unauthorized: Invalid token");
   }
-}
+};
 
-module.exports = { authenticateJWT };
+module.exports = { authMiddleware };

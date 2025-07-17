@@ -126,6 +126,8 @@ class UsersRepository {
 
   String _houseId = '';
   String get getHouseId => _houseId;
+  String _memberId = '';
+  String get getMemberId => _memberId;
   String? _idToken;
   String? get idToken => _idToken;
 
@@ -232,7 +234,6 @@ extension Create on UsersRepository {
     required String displayName,
     bool forceRefresh = true,
   }) async {
-    debugPrint('creating a new user');
     // Get cache key
     final cacheKey = generateCacheKey({
       'object': 'users',
@@ -255,7 +256,6 @@ extension Create on UsersRepository {
 
     // No valid cache, or forceRefresh is true, fetch from API
     try {
-      debugPrint('Creating account for $displayName with email: $email');
       // Retrieve new row after inserting
       final response = await dioRequest(
         dio: Dio(),
@@ -395,7 +395,6 @@ extension Read on UsersRepository {
         try {
           final Map<String, dynamic> data = jsonDecode(cachedData);
           final dynamic id = data['house_id'];
-          debugPrint('House ID has been fetched from cache: $id');
           _houseId = id.toString();
           return _houseId;
         } catch (e) {
@@ -414,10 +413,51 @@ extension Read on UsersRepository {
       responseBody: responseBody,
       cacheDuration: const Duration(minutes: 60),
     );
-    debugPrint('House ID $houseId was cached');
 
     _houseId = houseId;
     return _houseId;
+  }
+
+  // Fetch user house ID
+  Future<String> userMemberId({
+    required String memberId,
+    required String userId,
+    bool forceRefresh = false,
+  }) async {
+    // Get cache key
+    final cacheKey = generateCacheKey({
+      'object': 'user_house',
+      'member_id': memberId,
+      'user_id': userId,
+    });
+
+    if (!forceRefresh) {
+      final cachedData = await _cacheManager.getCachedHttpResponse(cacheKey);
+      if (cachedData != null) {
+        try {
+          final Map<String, dynamic> data = jsonDecode(cachedData);
+          final dynamic id = data['member_id'];
+          _memberId = id.toString();
+          return _memberId;
+        } catch (e) {
+          debugPrint(
+              'Error decoding cached users list data for key $cacheKey: $e');
+        }
+      }
+    }
+    final String responseBody = jsonEncode({
+      'member_id': memberId,
+    });
+
+    // Cache the successful response
+    await _cacheManager.cacheHttpResponse(
+      key: cacheKey,
+      responseBody: responseBody,
+      cacheDuration: const Duration(minutes: 60),
+    );
+
+    _memberId = memberId;
+    return _memberId;
   }
 
   /// Fetch list of all [UserHouseData] objects from Postgres.

@@ -22,26 +22,24 @@ InputDecoration defaultTextFormFieldDecoration({
       ),
       labelStyle: AppTextStyles.primary,
       border: const OutlineInputBorder(
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(defaultRadius),
-          bottomLeft: Radius.circular(defaultRadius),
-        ),
+        borderRadius: defaultBorderRadius,
         borderSide: BorderSide(
           color: Colors.transparent,
           width: 0,
         ),
       ),
       enabledBorder: const OutlineInputBorder(
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(defaultRadius),
-          bottomLeft: Radius.circular(defaultRadius),
-        ),
+        borderRadius: defaultBorderRadius,
         borderSide: BorderSide(
           color: Colors.transparent,
           width: 0,
         ),
       ),
-      label: Text(label),
+      label: CustomText(
+        text: label,
+        style: AppTextStyles.primary,
+        color: context.theme.subtextColor,
+      ),
     );
 
 TextFormField customTextFormField({

@@ -16,10 +16,15 @@ Icon defaultIconStyle(
   );
 }
 
-Icon appBarIconStyle(BuildContext context, IconData icon, {double size = 24}) {
+Icon appBarIconStyle(
+  BuildContext context,
+  IconData icon, {
+  Color? color,
+  double size = 24,
+}) {
   return Icon(
     icon,
-    color: context.theme.textColor,
+    color: color ?? context.theme.textColor,
     size: size,
   );
 }
@@ -42,14 +47,13 @@ class AppIcons {
   static const IconData contract = FontAwesomeIcons.fileContract;
   static const IconData user = FontAwesomeIcons.solidCircleUser;
   static const IconData notificationBell = FontAwesomeIcons.bell;
-  static const IconData paw = FontAwesomeIcons.paw;
 
   static const IconData money = FontAwesomeIcons.moneyBillTransfer;
-  static const IconData person = FontAwesomeIcons.person;
   static const IconData sort = Icons.sort_sharp;
   static const IconData letters = FontAwesomeIcons.a;
   static const IconData link = FontAwesomeIcons.link;
   static const IconData cancel = FontAwesomeIcons.xmark;
+  static const IconData confirm = FontAwesomeIcons.check;
   static const IconData copy = FontAwesomeIcons.copy;
   static const IconData house = FontAwesomeIcons.house;
   static const IconData darkMode = FontAwesomeIcons.moon;

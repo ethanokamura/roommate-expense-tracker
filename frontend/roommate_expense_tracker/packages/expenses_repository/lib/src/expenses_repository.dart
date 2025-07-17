@@ -8,29 +8,30 @@ import 'failures.dart';
 
 class ExpenseSplit {
   const ExpenseSplit({
-    this.memeberId = '',
+    this.memberId = '',
     this.amountOwed = 0.0,
     this.paidOn,
   });
 
-  final String memeberId;
+  final String memberId;
   final double amountOwed;
   final DateTime? paidOn;
 
   // JSON string equivalent for our data
-  static String get memeberIdConverter => 'member_id';
+  static String get memberIdConverter => 'member_id';
   static String get amountOwedConverter => 'amount_owed';
   static String get paidOnConverter => 'paid_on';
 
-  // Helper function that converts a JSON object to our dart object
   factory ExpenseSplit.fromJson(Map<String, dynamic> json) {
     return ExpenseSplit(
-      memeberId: json[memeberIdConverter]?.toString() ?? '',
-      amountOwed: json[amountOwedConverter] as double? ?? 0.0,
+      memberId: json[memberIdConverter]?.toString() ?? '',
+      amountOwed: json[amountOwedConverter] != null
+          ? double.tryParse(json[amountOwedConverter].toString()) ?? 0.0
+          : 0.0,
       paidOn: json[paidOnConverter] != null
           ? DateTime.tryParse(json[paidOnConverter].toString())?.toUtc() ??
               DateTime.now().toUtc()
-          : DateTime.now().toUtc(),
+          : null,
     );
   }
 
@@ -42,7 +43,7 @@ class ExpenseSplit {
   // Generic function to map our dart object to a JSON object
   Map<String, dynamic> toJson() {
     return _generateMap(
-      memeberId: memeberId,
+      memberId: memberId,
       amountOwed: amountOwed,
       paidOn: paidOn,
     );
@@ -50,12 +51,12 @@ class ExpenseSplit {
 
   // Generic function to generate a generic mapping between objects
   static Map<String, dynamic> _generateMap({
-    String? memeberId,
+    String? memberId,
     double? amountOwed,
     DateTime? paidOn,
   }) =>
       {
-        if (memeberId != null) memeberIdConverter: memeberId,
+        if (memberId != null) memberIdConverter: memberId,
         if (amountOwed != null) amountOwedConverter: amountOwed,
         if (paidOn != null) paidOnConverter: paidOn,
       };
@@ -386,28 +387,28 @@ extension Read on ExpensesRepository {
     required String orderBy,
     required bool ascending,
     bool forceRefresh = false,
-    bool useTestData = true,
+    bool useTestData = false,
   }) async {
-    if (useTestData) {
-      debugPrint('Loading test data for expenses');
-      try {
-        const assetPath = 'assets/data/expenses.json';
-        final String responseBody = await rootBundle.loadString(assetPath);
-        final Map<String, dynamic> rawJsonData = jsonDecode(responseBody);
-        if (!rawJsonData.containsKey('expenses')) {
-          debugPrint(
-              'Error loading test data from asset: key - "expenses" does not exist.');
-          throw ExpensesFailure.fromGet();
-        }
-        final List<dynamic> jsonData = rawJsonData['expenses'];
-        _expensesList =
-            Expenses.converter(jsonData.cast<Map<String, dynamic>>());
-        return _expensesList;
-      } catch (e) {
-        debugPrint('Error loading test data from asset: $e');
-        throw ExpensesFailure.fromGet();
-      }
-    }
+    // if (useTestData) {
+    //   debugPrint('Loading test data for expenses');
+    //   try {
+    //     const assetPath = 'assets/data/expenses.json';
+    //     final String responseBody = await rootBundle.loadString(assetPath);
+    //     final Map<String, dynamic> rawJsonData = jsonDecode(responseBody);
+    //     if (!rawJsonData.containsKey('expenses')) {
+    //       debugPrint(
+    //           'Error loading test data from asset: key - "expenses" does not exist.');
+    //       throw ExpensesFailure.fromGet();
+    //     }
+    //     final List<dynamic> jsonData = rawJsonData['expenses'];
+    //     _expensesList =
+    //         Expenses.converter(jsonData.cast<Map<String, dynamic>>());
+    //     return _expensesList;
+    //   } catch (e) {
+    //     debugPrint('Error loading test data from asset: $e');
+    //     throw ExpensesFailure.fromGet();
+    //   }
+    // }
 
     // Get cache key
     final cacheKey = generateCacheKey({
@@ -436,6 +437,9 @@ extension Read on ExpensesRepository {
     try {
       if (orderBy.isEmpty) orderBy = Expenses.createdAtConverter;
       final ascendingQuery = ascending ? 'asc' : 'desc';
+      debugPrint(
+        'sending request GET /expenses?house_id=$houseId&sort_by=$orderBy&sort_order=$ascendingQuery',
+      );
       final response = await dioRequest(
         dio: Dio(),
         apiEndpoint:
@@ -449,10 +453,13 @@ extension Read on ExpensesRepository {
         throw ExpensesFailure.fromGet();
       }
 
+      if (response['data'] == null) {
+        throw ExpensesFailure.fromGet();
+      }
+
       final List<dynamic> jsonData = response['data']!;
       // Success
-      final String responseBody =
-          jsonEncode(jsonData); // Encode to string for caching
+      final String responseBody = jsonEncode(jsonData);
 
       // Cache the successful response with a specific duration
       await _cacheManager.cacheHttpResponse(
@@ -470,6 +477,7 @@ extension Read on ExpensesRepository {
   }
 
   List<ExpenseSplit> extractSplits(Map<String, dynamic> splitsJson) {
+    if (!splitsJson.containsKey('member_splits')) return [];
     List<dynamic> splitList = splitsJson['member_splits'];
     return ExpenseSplit.converter(splitList.cast<Map<String, dynamic>>());
   }

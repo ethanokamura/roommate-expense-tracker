@@ -1,10 +1,8 @@
 import 'package:app_ui/app_ui.dart';
 import 'package:app_core/app_core.dart';
 import 'package:expenses_repository/expenses_repository.dart';
-import 'package:roommate_expense_tracker/features/expenses/expenses.dart';
-import 'package:roommate_expense_tracker/features/expenses/widgets/category_data.dart';
-import 'package:roommate_expense_tracker/features/expenses/widgets/expense_cubit_wrapper.dart';
-import 'package:roommate_expense_tracker/features/expenses/widgets/expense_popup.dart';
+import 'package:roommate_expense_tracker/features/expenses/cubit/expenses_cubit.dart';
+import 'package:roommate_expense_tracker/features/expenses/widgets/widgets.dart';
 import 'package:users_repository/users_repository.dart';
 
 class ExpensesDashboard extends StatelessWidget {
@@ -21,72 +19,82 @@ class ExpensesDashboard extends StatelessWidget {
       create: (context) => ExpensesCubit(
         expensesRepository: context.read<ExpensesRepository>(),
       )..fetchAllExpensesWithHouseId(
-          houseId: houseId, // requires house ID
+          houseId: houseId,
           token: userRepository.idToken ?? '',
           orderBy: Users.createdAtConverter,
           ascending: false,
+          forceRefresh: true,
         ),
       child: ExpensesCubitWrapper(
         builder: (context, state) {
-          debugPrint(state.status.toString());
           List<double> values = [12.3, 70, 50.4, 45, 90, 21, 47];
           final total = values.reduce((value, element) => value += element);
           final average = total / values.length;
-
           return NestedPageBuilder(
             title: 'Expense Dashboard',
             sectionsData: {
-              'My Expenses': [
-                CustomText(
-                  text: userRepository.users.displayName,
-                  style: AppTextStyles.primary,
-                ),
+              'Cost Analysis': [
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    DefaultContainer(
-                      child: Column(
-                        children: [
-                          const CustomText(
-                            text: 'Daily Average',
-                            style: AppTextStyles.primary,
-                          ),
-                          CustomText(
-                            text: formatCurrency(average),
-                            style: AppTextStyles.primary,
-                            color: context.theme.subtextColor,
-                          ),
-                        ],
+                    SizedBox(
+                      width: MediaQuery.sizeOf(context).width / 3 -
+                          (defaultPadding * 2),
+                      child: DefaultContainer(
+                        child: Column(
+                          children: [
+                            const CustomText(
+                              autoSize: true,
+                              text: 'Daily Average',
+                              style: AppTextStyles.primary,
+                            ),
+                            CustomText(
+                              text: formatCurrency(average),
+                              style: AppTextStyles.primary,
+                              color: context.theme.subtextColor,
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                    DefaultContainer(
-                      child: Column(
-                        children: [
-                          const CustomText(
-                            text: 'Lowest Day',
-                            style: AppTextStyles.primary,
-                          ),
-                          CustomText(
-                            text: formatCurrency(12.3),
-                            style: AppTextStyles.primary,
-                            color: context.theme.successColor,
-                          ),
-                        ],
+                    SizedBox(
+                      width: MediaQuery.sizeOf(context).width / 3 -
+                          (defaultPadding * 2),
+                      child: DefaultContainer(
+                        child: Column(
+                          children: [
+                            const CustomText(
+                              autoSize: true,
+                              text: 'Lowest Day',
+                              style: AppTextStyles.primary,
+                            ),
+                            CustomText(
+                              text: formatCurrency(12.3),
+                              style: AppTextStyles.primary,
+                              color: context.theme.successColor,
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                    DefaultContainer(
-                      child: Column(
-                        children: [
-                          const CustomText(
-                            text: 'Highest Day',
-                            style: AppTextStyles.primary,
-                          ),
-                          CustomText(
-                            text: formatCurrency(90),
-                            style: AppTextStyles.primary,
-                            color: context.theme.errorColor,
-                          ),
-                        ],
+                    SizedBox(
+                      width: MediaQuery.sizeOf(context).width / 3 -
+                          (defaultPadding * 2),
+                      child: DefaultContainer(
+                        child: Column(
+                          children: [
+                            const CustomText(
+                              autoSize: true,
+                              text: 'Highest Day',
+                              style: AppTextStyles.primary,
+                            ),
+                            CustomText(
+                              text: formatCurrency(90),
+                              style: AppTextStyles.primary,
+                              color: context.theme.errorColor,
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ],
@@ -98,7 +106,7 @@ class ExpensesDashboard extends StatelessWidget {
                   dataType: ChartDataType.isCurrency,
                 )
               ],
-              'Cost Analysis': const [
+              'Expense Distribution': const [
                 Center(
                   child: CustomPieChart(title: 'Expense Distribution', data: {
                     "groceries": 304.37,
@@ -117,7 +125,6 @@ class ExpensesDashboard extends StatelessWidget {
               final splits = context
                   .read<ExpensesRepository>()
                   .extractSplits(expense.splits);
-              debugPrint('Found ${splits.length} splits');
               return GestureDetector(
                 onTap: () async => expensePopUp(
                   context: context,
@@ -171,69 +178,6 @@ class ExpensesDashboard extends StatelessWidget {
             emptyMessage: 'No expenses have been posted',
           );
         },
-      ),
-    );
-  }
-}
-
-class ExpenseCard extends StatelessWidget {
-  const ExpenseCard({
-    required this.expense,
-    required this.splits,
-    super.key,
-  });
-
-  final Expenses expense;
-  final List<ExpenseSplit> splits;
-
-  @override
-  Widget build(BuildContext context) {
-    return DefaultContainer(
-      child: Row(
-        children: [
-          defaultIconStyle(
-            context,
-            categoryData[expense.category]!,
-            context.theme.textColor,
-            size: 24,
-          ),
-          const HorizontalSpacer(multiple: 1.5),
-          Expanded(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    CustomText(
-                      text: expense.title,
-                      style: AppTextStyles.primary,
-                    ),
-                    CustomText(
-                      text: expense.description,
-                      style: AppTextStyles.secondary,
-                    ),
-                  ],
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    CustomText(
-                      text: '-${formatCurrency(expense.totalAmount)}',
-                      style: AppTextStyles.primary,
-                      color: context.theme.accentColor,
-                    ),
-                    CustomText(
-                      text: expense.createdAt,
-                      style: AppTextStyles.secondary,
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ],
       ),
     );
   }
