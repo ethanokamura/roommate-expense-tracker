@@ -19,7 +19,8 @@ class ExpenseCard extends StatelessWidget {
         children: [
           defaultIconStyle(
             context,
-            categoryData[expense.category]!,
+            categoryData[expense.category.toLowerCase()] ??
+                categoryData.values.first,
             context.theme.textColor,
             size: 24,
           ),
@@ -51,7 +52,9 @@ class ExpenseCard extends StatelessWidget {
                       color: context.theme.accentColor,
                     ),
                     CustomText(
-                      text: DateFormatter.formatTimestamp(expense.createdAt!),
+                      text: DateFormatter.formatTimestamp(
+                        expense.createdAt ?? DateTime.now(),
+                      ),
                       style: AppTextStyles.secondary,
                     ),
                   ],

@@ -19,10 +19,11 @@ class ExpensesDashboard extends StatelessWidget {
       create: (context) => ExpensesCubit(
         expensesRepository: context.read<ExpensesRepository>(),
       )..fetchAllExpensesWithHouseId(
-          houseId: houseId, // requires house ID
+          houseId: houseId,
           token: userRepository.idToken ?? '',
           orderBy: Users.createdAtConverter,
           ascending: false,
+          forceRefresh: true,
         ),
       child: ExpensesCubitWrapper(
         builder: (context, state) {
@@ -124,7 +125,6 @@ class ExpensesDashboard extends StatelessWidget {
               final splits = context
                   .read<ExpensesRepository>()
                   .extractSplits(expense.splits);
-              debugPrint('Found ${splits.length} splits');
               return GestureDetector(
                 onTap: () async => expensePopUp(
                   context: context,

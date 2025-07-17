@@ -234,7 +234,6 @@ extension Create on UsersRepository {
     required String displayName,
     bool forceRefresh = true,
   }) async {
-    debugPrint('creating a new user');
     // Get cache key
     final cacheKey = generateCacheKey({
       'object': 'users',
@@ -257,7 +256,6 @@ extension Create on UsersRepository {
 
     // No valid cache, or forceRefresh is true, fetch from API
     try {
-      debugPrint('Creating account for $displayName with email: $email');
       // Retrieve new row after inserting
       final response = await dioRequest(
         dio: Dio(),
@@ -397,7 +395,6 @@ extension Read on UsersRepository {
         try {
           final Map<String, dynamic> data = jsonDecode(cachedData);
           final dynamic id = data['house_id'];
-          debugPrint('House ID has been fetched from cache: $id');
           _houseId = id.toString();
           return _houseId;
         } catch (e) {
@@ -416,7 +413,6 @@ extension Read on UsersRepository {
       responseBody: responseBody,
       cacheDuration: const Duration(minutes: 60),
     );
-    debugPrint('House ID $houseId was cached');
 
     _houseId = houseId;
     return _houseId;
@@ -441,7 +437,6 @@ extension Read on UsersRepository {
         try {
           final Map<String, dynamic> data = jsonDecode(cachedData);
           final dynamic id = data['member_id'];
-          debugPrint('House ID has been fetched from cache: $id');
           _memberId = id.toString();
           return _memberId;
         } catch (e) {
@@ -460,7 +455,6 @@ extension Read on UsersRepository {
       responseBody: responseBody,
       cacheDuration: const Duration(minutes: 60),
     );
-    debugPrint('House ID $memberId was cached');
 
     _memberId = memberId;
     return _memberId;

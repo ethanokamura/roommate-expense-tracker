@@ -43,6 +43,7 @@ class HomePage extends StatelessWidget {
           icon: appBarIconStyle(
             context,
             AppIcons.add,
+            color: context.theme.backgroundColor,
           ),
         ),
         bottomNavigationBar: const BottomNavBar(),
@@ -62,7 +63,7 @@ class HomeBody extends StatelessWidget {
   Widget build(BuildContext context) {
     // final userEmail = context.read<UsersRepository>().currentUser!.email;
     final pageController = context.watch<NavBarController>();
-
+    debugPrint('user logged in with $houseId');
     return PageView(
       controller: pageController,
       physics: const NeverScrollableScrollPhysics(),

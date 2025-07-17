@@ -33,7 +33,8 @@ Future<dynamic> expensePopUp({
                   children: [
                     defaultIconStyle(
                       context,
-                      categoryData[expense.category]!,
+                      categoryData[expense.category.toLowerCase()] ??
+                          categoryData.values.first,
                       context.theme.textColor,
                       size: 30,
                     ),
@@ -58,8 +59,9 @@ Future<dynamic> expensePopUp({
                   items: {
                     'Category': expense.category.toTitleCase,
                     'Total': formatCurrency(expense.totalAmount),
-                    'Created On':
-                        DateFormatter.formatTimestamp(expense.createdAt!),
+                    'Created On': DateFormatter.formatTimestamp(
+                      expense.createdAt ?? DateTime.now(),
+                    ),
                     'Splits': (expense.splits.length + 1).toString(),
                   },
                 ),

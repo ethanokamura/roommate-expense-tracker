@@ -8,7 +8,7 @@ const { HouseMembersRouter } = require("./src/features/house-members/router");
 const { HousesRouter } = require("./src/features/houses/router");
 const { UserRouter } = require("./src/features/users/router");
 const { UserHousesRouter } = require("./src/features/user-houses/router");
-const { authenticateJWT } = require("./src/features/auth/middleware");
+const { authMiddleware } = require("./src/features/auth/middleware");
 
 const app = express();
 
@@ -30,9 +30,9 @@ const corsOpts = {
 app.use(cors(corsOpts));
 app.use(express.json());
 app.use("/expense-splits", ExpenseSplitsRouter);
-app.use("/expenses", authenticateJWT, ExpensesRouter);
-app.use("/house-members", authenticateJWT, HouseMembersRouter);
-app.use("/houses", authenticateJWT, HousesRouter);
+app.use("/expenses", authMiddleware, ExpensesRouter);
+app.use("/house-members", authMiddleware, HouseMembersRouter);
+app.use("/houses", authMiddleware, HousesRouter);
 app.use("/users", UserRouter);
 app.use("/user-houses", UserHousesRouter);
 

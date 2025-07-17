@@ -70,8 +70,6 @@ Future<Map<String, dynamic>> dioRequest({
     receiveTimeout: const Duration(seconds: 30), // Adjust as needed
   );
 
-  debugPrint('sending body: $payload');
-
   try {
     Response<dynamic> response;
     // Use uppercase method names for strict matching and clarity

@@ -16,10 +16,15 @@ Icon defaultIconStyle(
   );
 }
 
-Icon appBarIconStyle(BuildContext context, IconData icon, {double size = 24}) {
+Icon appBarIconStyle(
+  BuildContext context,
+  IconData icon, {
+  Color? color,
+  double size = 24,
+}) {
   return Icon(
     icon,
-    color: context.theme.textColor,
+    color: color ?? context.theme.textColor,
     size: size,
   );
 }
