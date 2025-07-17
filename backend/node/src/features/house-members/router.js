@@ -3,7 +3,6 @@ const HouseMembersRouter = express.Router();
 const { houseMembersValidators } = require("./validator");
 const { HouseMembersController } = require("./controller");
 const { validateRequest } = require("../../utils/validator");
-const { validateUser } = require("../auth/middleware");
 
 const houseMembersController = new HouseMembersController();
 
@@ -12,7 +11,6 @@ HouseMembersRouter.post(
   "/",
   houseMembersValidators.createHouseMembers,
   validateRequest,
-  validateUser,
   houseMembersController.createHouseMembers
 );
 
@@ -21,7 +19,6 @@ HouseMembersRouter.get(
   "/:id",
   houseMembersValidators.houseMembersId,
   validateRequest,
-  validateUser,
   houseMembersController.getHouseMembers
 );
 
@@ -30,7 +27,6 @@ HouseMembersRouter.get(
   "/",
   houseMembersValidators.houseMembersQuery,
   validateRequest,
-  validateUser,
   houseMembersController.findHouseMembers
 );
 
@@ -40,7 +36,6 @@ HouseMembersRouter.patch(
   houseMembersValidators.houseMembersId,
   houseMembersValidators.updateHouseMembers,
   validateRequest,
-  validateUser,
   houseMembersController.updateHouseMembers
 );
 
@@ -49,7 +44,6 @@ HouseMembersRouter.delete(
   "/:id",
   houseMembersValidators.houseMembersId,
   validateRequest,
-  validateUser,
   houseMembersController.deleteHouseMembers
 );
 

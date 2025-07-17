@@ -1,7 +1,6 @@
 const express = require("express");
 const ExpensesRouter = express.Router();
 const { expensesValidators } = require("./validator");
-const { validateUser } = require("../auth/middleware");
 const { validateRequest } = require("../../utils/validator");
 const { ExpensesController } = require("./controller");
 
@@ -9,48 +8,43 @@ const expensesController = new ExpensesController();
 
 // Create
 ExpensesRouter.post(
-	"/",
-	expensesValidators.createExpenses,
+  "/",
+  expensesValidators.createExpenses,
   validateRequest,
-  validateUser,
-	expensesController.createExpenses
+  expensesController.createExpenses
 );
 
 // Read
 ExpensesRouter.get(
-	"/:id",
-	expensesValidators.expensesId,
+  "/:id",
+  expensesValidators.expensesId,
   validateRequest,
-  validateUser,
-	expensesController.getExpenses
+  expensesController.getExpenses
 );
 
 // Read
 ExpensesRouter.get(
-	"/",
-	expensesValidators.expensesQuery,
+  "/",
+  expensesValidators.expensesQuery,
   validateRequest,
-  validateUser,
-	expensesController.findExpensess
+  expensesController.findExpenses
 );
 
 // Update
 ExpensesRouter.patch(
-	"/:id",
-	expensesValidators.expensesId,
-	expensesValidators.updateExpenses,
+  "/:id",
+  expensesValidators.expensesId,
+  expensesValidators.updateExpenses,
   validateRequest,
-  validateUser,
-	expensesController.updateExpenses
+  expensesController.updateExpenses
 );
 
 // Delete
 ExpensesRouter.delete(
-	"/:id",
-	expensesValidators.expensesId,
+  "/:id",
+  expensesValidators.expensesId,
   validateRequest,
-  validateUser,
-	expensesController.deleteExpenses
+  expensesController.deleteExpenses
 );
 
 module.exports = { ExpensesRouter };

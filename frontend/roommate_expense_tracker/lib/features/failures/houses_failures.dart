@@ -16,8 +16,6 @@ import 'package:houses_repository/houses_repository.dart';
 //                                                                        //
 ////////////////////////////////////////////////////////////////////////////
 
-
-
 /// Failure controller for [HousesRepository]
 /// Handles failures from the [HousesRepository]
 /// Requires a [failureSelector] to handle the specifc failure correctly

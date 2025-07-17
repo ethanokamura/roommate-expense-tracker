@@ -1,8 +1,8 @@
 import 'package:app_core/app_core.dart';
 import 'package:app_ui/app_ui.dart';
 import 'package:expenses_repository/expenses_repository.dart';
-import 'package:roommate_expense_tracker/features/expenses/widgets/cards/expense_splits_card.dart';
-import 'package:roommate_expense_tracker/features/expenses/widgets/category_data.dart';
+import 'package:roommate_expense_tracker/features/expenses/widgets/widgets.dart';
+import 'package:roommate_expense_tracker/features/expenses/page_data/page_data.dart';
 
 Future<dynamic> expensePopUp({
   required BuildContext context,
@@ -10,7 +10,6 @@ Future<dynamic> expensePopUp({
   required List<ExpenseSplit> splits,
 }) async {
   await context.showScrollControlledBottomSheet<void>(
-    context: context,
     builder: (context) => Padding(
       padding: const EdgeInsets.only(top: defaultPadding),
       child: Column(
@@ -34,7 +33,8 @@ Future<dynamic> expensePopUp({
                   children: [
                     defaultIconStyle(
                       context,
-                      categoryData[expense.category]!,
+                      categoryData[expense.category.toLowerCase()] ??
+                          categoryData.values.first,
                       context.theme.textColor,
                       size: 30,
                     ),
@@ -59,7 +59,9 @@ Future<dynamic> expensePopUp({
                   items: {
                     'Category': expense.category.toTitleCase,
                     'Total': formatCurrency(expense.totalAmount),
-                    'Created On': expense.createdAt,
+                    'Created On': DateFormatter.formatTimestamp(
+                      expense.createdAt ?? DateTime.now(),
+                    ),
                     'Splits': (expense.splits.length + 1).toString(),
                   },
                 ),
@@ -84,7 +86,12 @@ Future<dynamic> expensePopUp({
                 Column(
                   children: List.generate(
                     splits.length,
-                    (index) => ExpenseSplitsCard(split: splits[index]),
+                    (index) => Stack(children: [
+                      ExpenseSplitsCard(
+                        split: splits[index],
+                        paid: expense.isSettled,
+                      ),
+                    ]),
                   ),
                 )
               ],

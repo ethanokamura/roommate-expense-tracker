@@ -3,6 +3,7 @@ import 'package:app_ui/app_ui.dart';
 import 'package:roommate_expense_tracker/features/auth/auth.dart';
 import 'package:roommate_expense_tracker/features/home/home.dart';
 import 'package:roommate_expense_tracker/app/cubit/app_cubit.dart';
+import 'package:roommate_expense_tracker/features/users/users.dart';
 import 'package:roommate_expense_tracker/theme/theme_cubit.dart';
 import 'package:users_repository/users_repository.dart';
 import 'package:houses_repository/houses_repository.dart';
@@ -31,6 +32,9 @@ List<Page<dynamic>> onGenerateAppPages(
     return [SignInPage.page()];
   }
   if (status.isAuthenticated) {
+    return [HouseSelectionPage.page()];
+  }
+  if (status.isAuthenticatedWithHouse) {
     return [HomePage.page()];
   }
   return pages;

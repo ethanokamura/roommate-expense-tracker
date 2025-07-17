@@ -5,12 +5,27 @@ const expensesValidators = {
     param("expense_id").isUUID().withMessage("Valid expense ID is required"),
   ],
   expensesQuery: [
-    param("id").isUUID().withMessage("Valid ID is required"),
+    query("house_id")
+      .optional()
+      .isUUID()
+      .notEmpty()
+      .withMessage("Valid House ID is required"),
+    query("house_member_id")
+      .optional()
+      .isUUID()
+      .notEmpty()
+      .withMessage("Valid House Member ID is required"),
     query("sort_by")
       .optional()
       .isString()
       .withMessage("Sort by must be a string")
-      .isIn(["total_amount", "created_at", "updated_at", "settled_date", "expense_date"]),
+      .isIn([
+        "total_amount",
+        "created_at",
+        "updated_at",
+        "settled_date",
+        "expense_date",
+      ]),
     query("sort_order")
       .optional()
       .isString()

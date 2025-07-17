@@ -36,13 +36,50 @@ class TransitionContainer extends StatelessWidget {
       openBuilder: (BuildContext context, VoidCallback _) {
         return page;
       },
-      openColor: context.theme.backgroundColor,
       closedElevation: defaultElevation,
+      openColor: context.theme.backgroundColor,
       closedColor: context.theme.backgroundColor,
       closedBuilder: (BuildContext context, VoidCallback openContainer) {
         return GestureDetector(
           onTap: openContainer,
           child: child,
+        );
+      },
+    );
+  }
+}
+
+class FloatingActionTransitionContainer extends StatelessWidget {
+  const FloatingActionTransitionContainer({
+    required this.page,
+    required this.icon,
+    super.key,
+  });
+
+  final Widget page;
+  final Icon icon;
+
+  @override
+  Widget build(BuildContext context) {
+    return OpenContainer(
+      transitionType: ContainerTransitionType.fadeThrough,
+      transitionDuration: const Duration(milliseconds: 500),
+      openBuilder: (BuildContext context, VoidCallback _) {
+        return page;
+      },
+      closedElevation: 5,
+      closedShape: const RoundedRectangleBorder(
+        borderRadius: defaultBorderRadius,
+      ),
+      openColor: context.theme.backgroundColor,
+      closedColor: context.theme.accentColor,
+      closedBuilder: (BuildContext context, VoidCallback openContainer) {
+        return SizedBox(
+          height: 48,
+          width: 48,
+          child: Center(
+            child: icon,
+          ),
         );
       },
     );

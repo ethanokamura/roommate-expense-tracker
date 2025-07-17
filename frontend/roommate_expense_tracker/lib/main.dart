@@ -23,8 +23,6 @@ import 'firebase_options.dart';
 //                                                                        //
 ////////////////////////////////////////////////////////////////////////////
 
-
-
 Future<Isar> openIsar() async {
   final dir = await getApplicationSupportDirectory();
   return Isar.open(
