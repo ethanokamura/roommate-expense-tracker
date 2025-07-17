@@ -1,12 +1,13 @@
 import 'package:app_core/app_core.dart';
 import 'package:app_ui/app_ui.dart';
 import 'package:roommate_expense_tracker/features/demo_page.dart';
-import 'package:roommate_expense_tracker/features/expenses/pages/expenses_dashboard.dart';
+import 'package:roommate_expense_tracker/features/expenses/expenses.dart';
 import 'package:roommate_expense_tracker/features/home/view/bottom_nav_bar.dart';
-import 'package:roommate_expense_tracker/features/houses/pages/pages.dart';
-import 'package:roommate_expense_tracker/features/users/pages/user_dashboard.dart';
-import 'package:roommate_expense_tracker/theme/theme_button.dart';
+import 'package:roommate_expense_tracker/features/houses/houses.dart';
+import 'package:roommate_expense_tracker/features/users/users.dart';
 import 'package:users_repository/users_repository.dart';
+// import 'package:roommate_expense_tracker/theme/theme_button.dart';
+// import 'package:users_repository/users_repository.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({
@@ -18,6 +19,7 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final houseId = context.read<UsersRepository>().getHouseId;
+    final memberId = context.read<UsersRepository>().getMemberId;
     debugPrint('loading house with ID $houseId');
     return ListenableProvider(
       create: (_) => NavBarController(),
@@ -32,12 +34,18 @@ class HomePage extends StatelessWidget {
               fadeThroughTransition(const DemoPage()),
             ),
           ),
-          const ThemeButton(),
-          AppBarButton(
-            icon: Icons.exit_to_app,
-            onTap: () async => context.read<UsersRepository>().signOut(),
-          )
         ],
+        floatingActionButton: FloatingActionTransitionContainer(
+          page: CreateExpensePage(
+            houseId: houseId,
+            memberId: memberId,
+          ),
+          icon: appBarIconStyle(
+            context,
+            AppIcons.add,
+            color: context.theme.backgroundColor,
+          ),
+        ),
         bottomNavigationBar: const BottomNavBar(),
       ),
     );
@@ -55,7 +63,7 @@ class HomeBody extends StatelessWidget {
   Widget build(BuildContext context) {
     // final userEmail = context.read<UsersRepository>().currentUser!.email;
     final pageController = context.watch<NavBarController>();
-
+    debugPrint('user logged in with $houseId');
     return PageView(
       controller: pageController,
       physics: const NeverScrollableScrollPhysics(),

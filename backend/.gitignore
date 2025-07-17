@@ -8,6 +8,8 @@ test.js
 .env.local
 .env.production
 
+node/ret-adminsdk.json
+
 # Node modules
 node_modules/
 

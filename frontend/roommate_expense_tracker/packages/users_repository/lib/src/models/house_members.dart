@@ -10,7 +10,7 @@ import 'package:app_core/app_core.dart';
 //  is regenerated. If you need to modify behavior, update the source     //
 //                         template instead.                              //
 //                                                                        //
-//                Generated on: 2025-07-08 21:21:03 UTC                   //
+//                Generated on: 2025-07-10 19:14:06 UTC                   //
 //                                                                        //
 ////////////////////////////////////////////////////////////////////////////
 
@@ -24,8 +24,8 @@ class HouseMembers extends Equatable {
     this.userId, // FK
     this.houseId, // FK
     this.isAdmin = false,
-    this.createdAt = '',
-    this.updatedAt = '',
+    this.createdAt,
+    this.updatedAt,
     this.nickname = '',
     this.isActive = false,
   });
@@ -42,8 +42,14 @@ class HouseMembers extends Equatable {
       userId: json[userIdConverter]?.toString() ?? '',
       houseId: json[houseIdConverter]?.toString() ?? '',
       isAdmin: HouseMembers._parseBool(json[isAdminConverter]),
-      createdAt: json[createdAtConverter]?.toString() ?? '',
-      updatedAt: json[updatedAtConverter]?.toString() ?? '',
+      createdAt: json[createdAtConverter] != null
+          ? DateTime.tryParse(json[createdAtConverter].toString())?.toUtc() ??
+              DateTime.now().toUtc()
+          : DateTime.now().toUtc(),
+      updatedAt: json[updatedAtConverter] != null
+          ? DateTime.tryParse(json[updatedAtConverter].toString())?.toUtc() ??
+              DateTime.now().toUtc()
+          : DateTime.now().toUtc(),
       nickname: json[nicknameConverter]?.toString() ?? '',
       isActive: HouseMembers._parseBool(json[isActiveConverter]),
     );
@@ -72,8 +78,8 @@ class HouseMembers extends Equatable {
   final String? userId; // FK
   final String? houseId; // FK
   final bool isAdmin;
-  final String createdAt;
-  final String updatedAt;
+  final DateTime? createdAt;
+  final DateTime? updatedAt;
   final String nickname;
   final bool isActive;
 
@@ -115,8 +121,8 @@ class HouseMembers extends Equatable {
     String? userId,
     String? houseId,
     bool? isAdmin,
-    String? createdAt,
-    String? updatedAt,
+    DateTime? createdAt,
+    DateTime? updatedAt,
     String? nickname,
     bool? isActive,
   }) {

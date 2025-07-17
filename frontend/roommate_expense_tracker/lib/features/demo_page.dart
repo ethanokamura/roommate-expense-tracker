@@ -187,17 +187,17 @@ class DemoPage extends StatelessWidget {
                   ),
                   DropDown(dropDownItems: [
                     DropDownItem(
-                      icon: AppIcons.person,
+                      icon: AppIcons.user,
                       text: 'DropDownItem() #1',
                       onSelect: () async {},
                     ),
                     DropDownItem(
-                      icon: AppIcons.person,
+                      icon: AppIcons.user,
                       text: 'DropDownItem() #2',
                       onSelect: () async {},
                     ),
                     DropDownItem(
-                      icon: AppIcons.person,
+                      icon: AppIcons.user,
                       text: 'DropDownItem() #3',
                       onSelect: () async {},
                     ),

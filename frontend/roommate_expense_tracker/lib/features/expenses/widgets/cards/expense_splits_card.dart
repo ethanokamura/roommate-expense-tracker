@@ -1,9 +1,11 @@
+import 'package:app_core/app_core.dart';
 import 'package:app_ui/app_ui.dart';
 import 'package:expenses_repository/expenses_repository.dart';
 
 class ExpenseSplitsCard extends StatelessWidget {
-  const ExpenseSplitsCard({required this.split, super.key});
+  const ExpenseSplitsCard({required this.split, required this.paid, super.key});
   final ExpenseSplit split;
+  final bool paid;
   @override
   Widget build(BuildContext context) {
     return DefaultContainer(
@@ -14,19 +16,22 @@ class ExpenseSplitsCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               CustomText(
-                text: '${split.memeberId.substring(0, 20)}...',
+                text:
+                    '${split.memberId.length > 20 ? split.memberId.substring(0, 20) : split.memberId}...',
                 style: AppTextStyles.primary,
               ),
               CustomText(
                 text: formatCurrency(split.amountOwed),
                 style: AppTextStyles.primary,
-                color: context.theme.successColor,
+                color: paid
+                    ? context.theme.successColor
+                    : context.theme.errorColor,
               ),
             ],
           ),
           CustomText(
             text: split.paidOn != null &&
-                    split.paidOn!.compareTo(DateTime.now()) > 0
+                    startOfDay(split.paidOn!) != startOfDay(DateTime.now())
                 ? 'Paid On: ${DateFormatter.formatTimestamp(split.paidOn!)}'
                 : 'Expense has not been paid.',
             style: AppTextStyles.secondary,

@@ -1,20 +1,20 @@
 users	user_id	UUID	PK
 users	display_name	VARCHAR(100)
 users	email	VARCHAR(255)	UNIQUE
-users	created_at	TIMESTAMP WITH TIME ZONE
-users	updated_at	TIMESTAMP WITH TIME ZONE
+users	created_at	TIMESTAMP
+users	updated_at	TIMESTAMP
 houses	house_id	UUID	PK
 houses	name	VARCHAR(255)
 houses	invite_code	VARCHAR(50)	UNIQUE
 houses	user_id	UUID	FK
-houses	created_at	TIMESTAMP WITH TIME ZONE
-houses	updated_at	TIMESTAMP WITH TIME ZONE
+houses	created_at	TIMESTAMP
+houses	updated_at	TIMESTAMP
 house_members	house_member_id	UUID	PK
 house_members	user_id	UUID	FK
 house_members	house_id	UUID	FK
 house_members	is_admin	BOOLEAN
-house_members	created_at	TIMESTAMP WITH TIME ZONE
-house_members	updated_at	TIMESTAMP WITH TIME ZONE
+house_members	created_at	TIMESTAMP
+house_members	updated_at	TIMESTAMP
 house_members	nickname	VARCHAR(100)
 house_members	is_active	BOOLEAN
 expenses	expense_id	UUID	PK
@@ -27,6 +27,6 @@ expenses	total_amount	DECIMAL(10, 2)
 expenses	expense_date	DATE
 expenses	category	VARCHAR(100)
 expenses	is_settled	BOOLEAN
-expenses	settled_at	TIMESTAMP WITH TIME ZONE
-expenses	created_at	TIMESTAMP WITH TIME ZONE
-expenses	updated_at	TIMESTAMP WITH TIME ZONE
+expenses	settled_at	TIMESTAMP
+expenses	created_at	TIMESTAMP
+expenses	updated_at	TIMESTAMP

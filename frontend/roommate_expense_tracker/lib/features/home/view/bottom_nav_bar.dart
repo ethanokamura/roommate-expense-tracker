@@ -2,11 +2,10 @@ import 'package:app_core/app_core.dart';
 import 'package:app_ui/app_ui.dart';
 // import 'package:roommate_expense_tracker/features/create/create.dart';
 
-enum NavBarItem { home, create, profile }
+enum NavBarItem { home, expenses, profile }
 
 extension NavBarItemExtensions on NavBarItem {
   bool get isHome => this == NavBarItem.home;
-  bool get isCreate => this == NavBarItem.create;
 }
 
 final class NavBarController extends PageController {
