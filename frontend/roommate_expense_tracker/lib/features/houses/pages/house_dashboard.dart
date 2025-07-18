@@ -25,7 +25,8 @@ class HouseDashboard extends StatelessWidget {
           houseId: houseId,
           token: userRepository.idToken ?? '',
           orderBy: "nickname",
-          ascending: false),
+          ascending: false,
+        ),
       child: UsersCubitWrapper(
         builder: (context, state) {
           return NestedPageBuilder(

@@ -23,7 +23,7 @@ class ExpensesDashboard extends StatelessWidget {
           token: userRepository.idToken ?? '',
           orderBy: Users.createdAtConverter,
           ascending: false,
-          forceRefresh: true,
+          forceRefresh: false,
         ),
       child: ExpensesCubitWrapper(
         builder: (context, state) {
@@ -150,27 +150,54 @@ class ExpensesDashboard extends StatelessWidget {
                   DropDownItem(
                     icon: AppIcons.money,
                     text: 'Total Amount',
-                    onSelect: () async {},
+                    onSelect: () async => context
+                        .read<ExpensesCubit>()
+                        .fetchAllExpensesWithHouseId(
+                          houseId: houseId,
+                          token: userRepository.idToken ?? '',
+                          orderBy: Expenses.totalAmountConverter,
+                          ascending: false,
+                          forceRefresh: false,
+                        ),
                   ),
                   DropDownItem(
                     icon: AppIcons.calendar,
                     text: 'Created At',
-                    onSelect: () async {},
+                    onSelect: () async => context
+                        .read<ExpensesCubit>()
+                        .fetchAllExpensesWithHouseId(
+                          houseId: houseId,
+                          token: userRepository.idToken ?? '',
+                          orderBy: Expenses.createdAtConverter,
+                          ascending: false,
+                          forceRefresh: false,
+                        ),
                   ),
                   DropDownItem(
                     icon: AppIcons.calendar,
                     text: 'Updated At',
-                    onSelect: () async {},
-                  ),
-                  DropDownItem(
-                    icon: AppIcons.calendar,
-                    text: 'Settled At',
-                    onSelect: () async {},
+                    onSelect: () async => context
+                        .read<ExpensesCubit>()
+                        .fetchAllExpensesWithHouseId(
+                          houseId: houseId,
+                          token: userRepository.idToken ?? '',
+                          orderBy: Expenses.updatedAtConverter,
+                          ascending: false,
+                          forceRefresh: false,
+                        ),
                   ),
                   DropDownItem(
                     icon: AppIcons.calendar,
                     text: 'Due Date',
-                    onSelect: () async {},
+                    onSelect: () async => context
+                        .read<ExpensesCubit>()
+                        .fetchAllExpensesWithHouseId(
+                          houseId: houseId,
+                          token: userRepository.idToken ?? '',
+                          orderBy: Expenses.expenseDateConverter,
+                          ascending: false,
+                          forceRefresh: false,
+                        ),
                   ),
                 ])
               ],
