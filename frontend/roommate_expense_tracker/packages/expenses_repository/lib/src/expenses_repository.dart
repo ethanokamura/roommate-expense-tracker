@@ -476,6 +476,73 @@ extension Read on ExpensesRepository {
     }
   }
 
+  /// Fetch list of all [Expenses] objects from Rds.
+  Future<Map<String, dynamic>> fetchWeeklyExpensesWithForeignKey({
+    required String key,
+    required String value,
+    required String token,
+    bool forceRefresh = false,
+    bool useTestData = false,
+  }) async {
+    // Get cache key
+    final cacheKey = generateCacheKey({
+      'object': 'weekly_expenses',
+      key: value,
+    });
+
+    if (!forceRefresh) {
+      final cachedData = await _cacheManager.getCachedHttpResponse(cacheKey);
+      if (cachedData != null) {
+        try {
+          final Map<String, dynamic> jsonData = jsonDecode(cachedData);
+          return jsonData;
+        } catch (e) {
+          debugPrint(
+              'Error decoding cached expenses list data for key $cacheKey: $e');
+        }
+      }
+    }
+
+    // No valid cache, or forceRefresh is true, fetch from API
+    try {
+      final response = await dioRequest(
+        dio: Dio(),
+        apiEndpoint: '/expenses/this-week?key=$key&value=$value',
+        method: 'GET',
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      debugPrint(response.toString());
+
+      if (response['success'] != true) {
+        throw ExpensesFailure.fromGet();
+      }
+
+      if (response['data'] == null) {
+        throw ExpensesFailure.fromGet();
+      }
+
+      final List<dynamic> jsonData = response['data']!;
+
+      // Success
+      final String responseBody = jsonEncode(jsonData);
+
+      // Cache the successful response with a specific duration
+      await _cacheManager.cacheHttpResponse(
+        key: cacheKey,
+        responseBody: responseBody,
+        cacheDuration: const Duration(minutes: 60),
+      );
+
+      return jsonData.first;
+    } catch (e) {
+      debugPrint('Failure to fetch all expenses: $e');
+      throw ExpensesFailure.fromGet();
+    }
+  }
+
   List<ExpenseSplit> extractSplits(Map<String, dynamic> splitsJson) {
     if (!splitsJson.containsKey('member_splits')) return [];
     List<dynamic> splitList = splitsJson['member_splits'];

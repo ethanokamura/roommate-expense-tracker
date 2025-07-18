@@ -2,6 +2,7 @@ import 'package:app_ui/app_ui.dart';
 import 'package:app_core/app_core.dart';
 import 'package:expenses_repository/expenses_repository.dart';
 import 'package:roommate_expense_tracker/features/expenses/cubit/expenses_cubit.dart';
+import 'package:roommate_expense_tracker/features/expenses/widgets/cards/cost_analysis.dart';
 import 'package:roommate_expense_tracker/features/expenses/widgets/widgets.dart';
 import 'package:users_repository/users_repository.dart';
 
@@ -37,6 +38,11 @@ class ExpensesDashboard extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
+                    CostAnalysisWidget(
+                      field: Expenses.houseIdConverter,
+                      value: houseId,
+                      token: userRepository.idToken ?? '',
+                    ),
                     SizedBox(
                       width: MediaQuery.sizeOf(context).width / 3 -
                           (defaultPadding * 2),

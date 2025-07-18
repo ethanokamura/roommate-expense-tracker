@@ -180,6 +180,49 @@ class ExpensesController {
   }
 
   /**
+   * Handle GET /expenses/this-week with house_id
+   * @param {*} req - Express request object
+   * @param {*} res - Express response object
+   * @param {*} next - Express next function
+   */
+  async getWeeklyExpenses(req, res, next) {
+    const { key, value } = req.params;
+    const queryString = `
+      SELECT
+          created_at::DATE AS day,
+          SUM(total_amount) AS total
+      FROM
+          expenses
+      WHERE
+          $1 = $2
+          AND created_at >= (CURRENT_DATE - INTERVAL '6 day') -- Start of 7 days ago (including today)
+          AND created_at < (CURRENT_DATE + INTERVAL '1 day') -- End of today
+      GROUP BY
+          day
+      ORDER BY
+          day;
+    `;
+
+    try {
+      let result = await query(queryString, [key, value]);
+      const data = result;
+      console.log(`Week of expenses fetched successfully`);
+      return res.status(201).json({
+        success: true,
+        data: data,
+      });
+    } catch (err) {
+      console.error(`Error getting expense: ${err.message}`);
+      return res.status(500).json({
+        success: false,
+        error: "Internal server error while creating expense",
+        code: "INTERNAL_ERROR",
+        details: err.message,
+      });
+    }
+  }
+
+  /**
    * Update a expense's details
    * @param {*} req - Express request object
    * @param {*} res - Express response object
