@@ -20,7 +20,7 @@ let lastTaskId = null;
 setInterval(async () => {
   try {
     const latestTask = await prisma.task.findFirst({
-      orderBy: { createdAt: "asc" },
+      orderBy: { createdAt: "desc" },
     });
 
     if (latestTask && latestTask.id !== lastTaskId) {
