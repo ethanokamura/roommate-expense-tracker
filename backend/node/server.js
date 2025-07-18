@@ -30,10 +30,10 @@ setInterval(async () => {
 
     if (latestTask && latestTask.id !== lastTaskId) {
       lastTaskId = latestTask.id;
-      io.emit("new-task", latestTask);
+      io.emit("new expense added", latestTask);
     }
   } catch (err) {
-    console.error("error is there:", err);
+    console.error("can't add expense:", err);
   }
 }, 3000);
 
