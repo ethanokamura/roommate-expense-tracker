@@ -10,12 +10,12 @@ class UserController {
    * @param {*} next - Express next function
    */
   async createUser(req, res, next) {
-    const { display_name, email } = req.body;
+    const { display_name, email, photo_url } = req.body;
     //const user_id = req.body.user_id
     try {
       const result = await query(
-        "INSERT INTO users (display_name, email) VALUES ($1, $2) RETURNING *",
-        [display_name, email]
+        "INSERT INTO users (display_name, email, photo_url) VALUES ($1, $2, $3) RETURNING *",
+        [display_name, email, photo_url]
       );
       const user = result.rows[0];
       return res.status(201).json({ success: true, data: user });
@@ -101,7 +101,8 @@ class UserController {
   async updateUser(req, res, next) {
     try {
       const { user_id } = req.params;
-      const { display_name, email } = req.body;
+      const { display_name, email, photo_url, payment_method, payment_link } =
+        req.body;
       const fields = [];
       const params = [];
       if (display_name) {
@@ -111,6 +112,18 @@ class UserController {
       if (email) {
         fields.push(`email = ($${fields.length + 1})`);
         params.push(email);
+      }
+      if (photo_url) {
+        fields.push(`photo_url = ($${fields.length + 1})`);
+        params.push(photo_url);
+      }
+      if (payment_method) {
+        fields.push(`payment_method = ($${fields.length + 1})`);
+        params.push(payment_method);
+      }
+      if (payment_link) {
+        fields.push(`payment_link = ($${fields.length + 1})`);
+        params.push(payment_link);
       }
       if (fields.length === 0) {
         return res
