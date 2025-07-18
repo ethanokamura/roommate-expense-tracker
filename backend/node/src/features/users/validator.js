@@ -36,17 +36,17 @@ const userValidators = {
       .optional()
       .isString()
       .withMessage("if provided, photo_url by must be a string")
-      .trim()
-      .notEmpty()
-      .withMessage(`if provided, photo_url must not be empty`),
+      .trim(),
     body("payment_method")
       .optional()
       .isString()
-      .withMessage("if provided, payment_method by must be a string"),
+      .withMessage("if provided, payment_method by must be a string")
+      .trim(),
     body("payment_link")
       .optional()
       .isString()
-      .withMessage("if provided, payment_link by must be a string"),
+      .withMessage("if provided, payment_link by must be a string")
+      .trim(),
   ],
 
   createUser: [
@@ -56,7 +56,6 @@ const userValidators = {
       .withMessage("Value required for email")
       .isEmail()
       .withMessage("Invalid email"),
-
     body("display_name")
       .notEmpty()
       .withMessage("Display name is required")

@@ -118,7 +118,7 @@ class HouseDashboard extends StatelessWidget {
             itemBuilder: (context, index) {
               // get list of roommates
               return RoommateCard(
-                profilePicture: ProfilePicture(photoUrl: null, id: index + 500),
+                profilePicture: const ProfilePicture(photoUrl: null),
                 name: state.houseMembersList[index].nickname,
                 paymentMethod: "Preffered Payment Method: Zelle",
                 paymentMethodId: "831-xxx-xxxx",
