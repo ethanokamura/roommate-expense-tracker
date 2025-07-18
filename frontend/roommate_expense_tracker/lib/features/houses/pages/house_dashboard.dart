@@ -19,63 +19,67 @@ class HouseDashboard extends StatelessWidget {
 
   void _editHouseName(BuildContext context, String currentName) async {
     final controller = TextEditingController(text: currentName);
-
+    final token = context.read<UsersRepository>().credentials.credential?.accessToken ?? '';
     final newName = await showDialog<String>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Edit House Name'),
-        content: TextField(
-          controller: controller,
-          decoration: const InputDecoration(hintText: 'Enter new house name'),
-        ),
-        actions: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              TextButton(
-                onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
-                style: TextButton.styleFrom(
-                  backgroundColor: context.theme.surfaceColor,
-                  foregroundColor: context.theme.accentColor,
-                ),
-                child: const Text('Cancel'),
-              ),
-              const SizedBox(width: 8),
-              ElevatedButton(
-                onPressed: () {
-                  final trimmed = controller.text.trim();
-                  Navigator.of(context, rootNavigator: true).pop(trimmed);
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: context.theme.surfaceColor,
-                  foregroundColor: context.theme.accentColor,
-                ),
-                child: const Text('Save'),
-              ),
-            ],
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Edit House Name'),
+          content: TextField(
+            controller: controller,
+            decoration: InputDecoration(
+              hintStyle: TextStyle(color: context.theme.subtextColor),
+              hintText: 'Enter new house name',
+            ),
           ),
-        ],
-      ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              style: TextButton.styleFrom(
+                backgroundColor: Theme.of(context).colorScheme.primary,
+                foregroundColor: context.theme.accentColor
+              ),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.pop(context, controller.text.trim()),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Theme.of(context).colorScheme.primary,
+                foregroundColor: context.theme.accentColor,
+              ),
+              child: const Text('Save'),
+            ),
+          ],
+        );
+      },
     );
 
-    if (newName != null && newName.isNotEmpty) {
-      final token = context.read<UsersRepository>().credentials.credential?.accessToken ?? '';
-      final updated = Houses(name: newName); // Only updating name
-
+    if (newName != null && newName.isNotEmpty && newName != currentName) {
+      Houses updatedName = Houses(name : newName);
       context.read<HousesCubit>().updateHouses(
-        houseId: houseId,
-        newHousesData: updated,
+        houseId: houseId, 
+        newHousesData: updatedName, 
         token: token,
       );
-
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('House name updated')),
       );
     }
   }
 
-  void _showInviteCode(BuildContext context) {
+  Future<void> _showInviteCode(BuildContext context) async {
     const code = 'ABC123XYZ'; // Replace with dynamic value if needed
+    final userId = context.read<UsersRepository>().users.userId!;
+    final token = context.read<UsersRepository>().credentials.credential?.accessToken ?? '';
+
+    await context.read<UsersCubit>().fetchHouseMembersWithUserId(
+      userId: userId,
+      token: token,
+    );
+    final state = context.read<UsersCubit>().state;
+    final houseMember = state.houseMembers;
+
+    if(houseMember.isAdmin){
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
@@ -102,6 +106,7 @@ class HouseDashboard extends StatelessWidget {
         ),
       ),
     );
+    }
   }
 
   @override

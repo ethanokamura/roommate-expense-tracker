@@ -1,6 +1,7 @@
 import 'package:app_core/app_core.dart';
 import 'package:app_ui/app_ui.dart';
 import 'package:roommate_expense_tracker/app/cubit/app_cubit.dart';
+import 'package:roommate_expense_tracker/features/houses/pages/house_form.dart';
 import 'package:roommate_expense_tracker/features/users/cubit/users_cubit.dart';
 import 'package:users_repository/users_repository.dart';
 
@@ -31,8 +32,16 @@ class HouseSelectionPage extends StatelessWidget {
                   CustomButton(
                     icon: AppIcons.add,
                     text: 'Add House',
-                    onTap: () {
-                      // navigate to create a house
+                    onTap: () async {
+                          await Navigator.of(context).push(
+                            MaterialPageRoute(builder: (_) => const HouseFormPage()),
+                          );
+                          final userRepository = context.read<UsersRepository>();
+                          context.read<UsersCubit>().fetchUsersHouseData(
+                            userId: userRepository.users.userId!,
+                            token: userRepository.idToken ?? '',
+                            forceRefresh: true,
+                          );
                     },
                     color: context.theme.accentColor,
                   ),

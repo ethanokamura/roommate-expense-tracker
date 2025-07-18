@@ -10,7 +10,7 @@ import 'package:app_core/app_core.dart';
 //  is regenerated. If you need to modify behavior, update the source     //
 //                         template instead.                              //
 //                                                                        //
-//                Generated on: 2025-07-10 19:14:06 UTC                   //
+//                Generated on: 2025-07-08 21:21:03 UTC                   //
 //                                                                        //
 ////////////////////////////////////////////////////////////////////////////
 
@@ -24,8 +24,8 @@ class HouseMembers extends Equatable {
     this.userId, // FK
     this.houseId, // FK
     this.isAdmin = false,
-    this.createdAt,
-    this.updatedAt,
+    this.createdAt = '',
+    this.updatedAt = '',
     this.nickname = '',
     this.isActive = false,
   });
@@ -42,14 +42,8 @@ class HouseMembers extends Equatable {
       userId: json[userIdConverter]?.toString() ?? '',
       houseId: json[houseIdConverter]?.toString() ?? '',
       isAdmin: HouseMembers._parseBool(json[isAdminConverter]),
-      createdAt: json[createdAtConverter] != null
-          ? DateTime.tryParse(json[createdAtConverter].toString())?.toUtc() ??
-              DateTime.now().toUtc()
-          : DateTime.now().toUtc(),
-      updatedAt: json[updatedAtConverter] != null
-          ? DateTime.tryParse(json[updatedAtConverter].toString())?.toUtc() ??
-              DateTime.now().toUtc()
-          : DateTime.now().toUtc(),
+      createdAt: json[createdAtConverter]?.toString() ?? '',
+      updatedAt: json[updatedAtConverter]?.toString() ?? '',
       nickname: json[nicknameConverter]?.toString() ?? '',
       isActive: HouseMembers._parseBool(json[isActiveConverter]),
     );
@@ -78,8 +72,8 @@ class HouseMembers extends Equatable {
   final String? userId; // FK
   final String? houseId; // FK
   final bool isAdmin;
-  final DateTime? createdAt;
-  final DateTime? updatedAt;
+  final String createdAt;
+  final String updatedAt;
   final String nickname;
   final bool isActive;
 
@@ -95,6 +89,8 @@ class HouseMembers extends Equatable {
         nickname,
         isActive,
       ];
+
+  get houseName => null;
 
   // Helper function that converts a list of SQL objects to a list of our dart objects
   static List<HouseMembers> converter(List<Map<String, dynamic>> data) {
@@ -121,8 +117,8 @@ class HouseMembers extends Equatable {
     String? userId,
     String? houseId,
     bool? isAdmin,
-    DateTime? createdAt,
-    DateTime? updatedAt,
+    String? createdAt,
+    String? updatedAt,
     String? nickname,
     bool? isActive,
   }) {
