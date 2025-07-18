@@ -2,6 +2,7 @@
 
 require("dotenv").config();
 
+// create a new http server
 const http = require("http");
 const { Server: SocketIOServer } = require("socket.io");
 const { PrismaClient } = require("@prisma/client");
@@ -10,12 +11,16 @@ const app = require("./app");
 const prisma = new PrismaClient();
 const server = http.createServer(app);
 
+//supports both GET and POST requests
 const io = new SocketIOServer(server, {
   cors: {origin: "*", methods: ["GET", "POST"],
   },
 });
 
 let lastTaskId = null;
+
+// uses polling
+// sorts task in descending order
 
 setInterval(async () => {
   try {
