@@ -49,6 +49,6 @@ server.on("close", async () => {
   await prisma.$disconnect();
 });
 
-module.exports = { app, server };
+module.exports = {app, server };
 
 
