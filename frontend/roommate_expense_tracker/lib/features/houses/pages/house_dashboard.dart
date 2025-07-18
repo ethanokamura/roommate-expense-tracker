@@ -21,11 +21,18 @@ class HouseDashboard extends StatelessWidget {
     return BlocProvider(
       create: (context) => UsersCubit(
         usersRepository: userRepository,
-      )..fetchAllHouseMembersWithHouseId(
+      )
+        ..fetchAllHouseMembersWithHouseId(
           houseId: houseId,
           token: userRepository.idToken ?? '',
           orderBy: "nickname",
-          ascending: false,
+          ascending: true,
+        )
+        ..fetchAllHouseMembersPhotoUrls(
+          houseId: houseId,
+          orderBy: "nickname",
+          ascending: true,
+          token: userRepository.idToken ?? '',
         ),
       child: UsersCubitWrapper(
         builder: (context, state) {
@@ -116,11 +123,16 @@ class HouseDashboard extends StatelessWidget {
             ),
             itemCount: state.houseMembersList.length,
             itemBuilder: (context, index) {
+              final photoUrl = (state.photoUrlsList.isNotEmpty &&
+                      index < state.photoUrlsList.length)
+                  ? state.photoUrlsList[index]
+                  : null;
               // get list of roommates
               return RoommateCard(
-                profilePicture: const ProfilePicture(photoUrl: null),
+                profilePicture:
+                    ProfilePicture(photoUrl: photoUrl, id: index + 500),
                 name: state.houseMembersList[index].nickname,
-                paymentMethod: "Preffered Payment Method: Zelle",
+                paymentMethod: "Preffered Payment Method: ",
                 paymentMethodId: "831-xxx-xxxx",
               );
             },

@@ -447,4 +447,35 @@ class UsersCubit extends Cubit<UsersState> {
       emit(state.fromUsersFailure(failure));
     }
   }
+
+  /// Fetch list of all photo URLs of house members for a given houseId from Rds.
+  ///
+  /// Requires the [houseId] for lookup.
+  Future<void> fetchAllHouseMembersPhotoUrls({
+    required String houseId,
+    required String token,
+    required String orderBy,
+    required bool ascending,
+    bool forceRefresh = false,
+  }) async {
+    emit(state.fromLoading());
+    try {
+      final photoUrlsList =
+          await _usersRepository.fetchAllHouseMembersPhotoUrls(
+        houseId: houseId,
+        token: token,
+        orderBy: orderBy,
+        ascending: ascending,
+        forceRefresh: forceRefresh,
+      );
+      emit(
+        state.fromHouseMembersPhotoUrlsLoaded(
+          photoUrlsList: photoUrlsList,
+        ),
+      );
+    } on UsersFailure catch (failure) {
+      debugPrint('Failure to fetch house members photo URLs: $failure');
+      emit(state.fromUsersFailure(failure));
+    }
+  }
 }

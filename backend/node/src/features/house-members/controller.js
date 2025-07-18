@@ -26,12 +26,10 @@ class HouseMembersController {
       return res.status(201).json({ data: result.rows[0], success: true });
     } catch (error) {
       if (error.code === "23505") {
-        return res
-          .status(400)
-          .json({
-            error: "User is already a member of this house.",
-            success: false,
-          });
+        return res.status(400).json({
+          error: "User is already a member of this house.",
+          success: false,
+        });
       }
       if (error.code === "23503") {
         return res
@@ -111,6 +109,51 @@ class HouseMembersController {
       return res.status(200).json({ data: result.rows, success: true });
     } catch (error) {
       return next(error);
+    }
+  }
+
+  /**
+   * Handle GET /:house_id/photo-urls
+   * @param {*} req - Express request object
+   * @param {*} res - Express response object
+   * @param {*} next - Express next function
+   */
+  async getPhotoUrls(req, res, next) {
+    const { house_id } = req.params;
+    const sort_by = req.query.sort_by || "created_at";
+    const sort_order = req.query.sort_order || "desc";
+    const queryString = `
+  SELECT 
+    users.user_id, 
+    users.display_name, 
+    users.photo_url, 
+    users.payment_method,
+    users.payment_link,
+    house_members.nickname, 
+    house_members.is_admin
+  FROM house_members
+  JOIN users ON house_members.user_id = users.user_id
+  WHERE house_members.house_id = $1 
+    AND house_members.is_active = TRUE
+  ORDER BY house_members.${sort_by} ${sort_order};
+`;
+
+    try {
+      let result = await query(queryString, [house_id]);
+      const data = result.rows;
+      console.log(`Photo Urls fetched successfully`);
+      return res.status(200).json({
+        success: true,
+        data: data,
+      });
+    } catch (err) {
+      console.error(`Error getting photo urls: ${err.message}`);
+      return res.status(500).json({
+        success: false,
+        error: "Internal server error while fetching photo urls",
+        code: "INTERNAL_ERROR",
+        details: err.message,
+      });
     }
   }
 

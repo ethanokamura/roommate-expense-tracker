@@ -19,6 +19,7 @@ final class UsersState extends Equatable {
     this.houseMembers = HouseMembers.empty,
     this.houseMembersList = const [],
     this.failure = UsersFailure.empty,
+    this.photoUrlsList = const [],
   });
 
   /// Creates an initial [UsersState].
@@ -31,6 +32,7 @@ final class UsersState extends Equatable {
   final HouseMembers houseMembers;
   final List<HouseMembers> houseMembersList;
   final UsersFailure failure;
+  final List<String> photoUrlsList;
 
   // Rebuilds the widget when the props change
   @override
@@ -42,6 +44,7 @@ final class UsersState extends Equatable {
         userHouseDataList,
         houseMembersList,
         failure,
+        photoUrlsList,
       ];
 
   /// Creates a new [UsersState] with updated fields.
@@ -54,6 +57,7 @@ final class UsersState extends Equatable {
     HouseMembers? houseMembers,
     List<HouseMembers>? houseMembersList,
     UsersFailure? failure,
+    List<String>? photoUrlsList,
   }) {
     return UsersState._(
       status: status ?? this.status,
@@ -63,6 +67,7 @@ final class UsersState extends Equatable {
       userHouseDataList: userHouseDataList ?? this.userHouseDataList,
       houseMembersList: houseMembersList ?? this.houseMembersList,
       failure: failure ?? this.failure,
+      photoUrlsList: photoUrlsList ?? this.photoUrlsList,
     );
   }
 }
@@ -109,5 +114,13 @@ extension _UsersStateExtensions on UsersState {
   UsersState fromUsersFailure(UsersFailure failure) => copyWith(
         status: UsersStatus.failure,
         failure: failure,
+      );
+
+  UsersState fromHouseMembersPhotoUrlsLoaded({
+    required List<String> photoUrlsList,
+  }) =>
+      copyWith(
+        status: UsersStatus.loaded,
+        photoUrlsList: photoUrlsList,
       );
 }

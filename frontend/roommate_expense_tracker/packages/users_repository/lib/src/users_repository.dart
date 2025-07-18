@@ -1369,4 +1369,80 @@ extension Delete on UsersRepository {
       throw UsersFailure.fromGet();
     }
   }
+
+  /// Fetch list of all photo URLs of house members for a given houseId from Postgres.
+  ///
+  /// Requires the [houseId] for lookup.
+  Future<List<String>> fetchAllHouseMembersPhotoUrls({
+    required String houseId,
+    required String token,
+    required String orderBy,
+    required bool ascending,
+    bool forceRefresh = false,
+  }) async {
+    // Define cache key
+    final cacheKey = generateCacheKey({
+      'object': 'house_member_photo_urls',
+      'house_id': houseId,
+      'order_by': orderBy,
+      'ascending': ascending.toString(),
+    });
+
+    // Try to load from cache
+    if (!forceRefresh) {
+      final cachedData = await _cacheManager.getCachedHttpResponse(cacheKey);
+      if (cachedData != null) {
+        try {
+          final List<dynamic> jsonData = jsonDecode(cachedData);
+          final photoUrls = jsonData.cast<String>();
+          return photoUrls;
+        } catch (e) {
+          debugPrint(
+            'Error decoding cached photo URL list data for key $cacheKey: $e',
+          );
+        }
+      }
+    }
+
+    // Fallback to API call
+    try {
+      if (orderBy.isEmpty) orderBy = HouseMembers.createdAtConverter;
+      final ascendingQuery = ascending ? 'asc' : 'desc';
+      debugPrint("HOUSEID : $houseId");
+      final response = await dioRequest(
+        dio: Dio(),
+        apiEndpoint:
+            '/house-members/$houseId/photo-urls?sort_by=$orderBy&sort_order=$ascendingQuery',
+        method: 'GET',
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      debugPrint('Users GET house_members/photo_urls response: $response');
+
+      if (response['success'] != true || response['data'] == null) {
+        throw UsersFailure.fromGet();
+      }
+
+      final List<dynamic> jsonData = response['data']!;
+      final photoUrls = jsonData
+          .map((item) => item['photo_url'] as String?)
+          .whereType<String>()
+          .toList();
+
+      // Cache the response
+      final String responseBody = jsonEncode(photoUrls);
+      await _cacheManager.cacheHttpResponse(
+        key: cacheKey,
+        responseBody: responseBody,
+        cacheDuration: const Duration(minutes: 60),
+      );
+
+      return photoUrls;
+    } catch (e) {
+      debugPrint('Failure to fetch house member photo URLs: $e');
+      throw UsersFailure.fromGet();
+    }
+  }
 }
