@@ -1,11 +1,13 @@
 users	user_id	UUID	PK
 users	display_name	VARCHAR(100)
 users	email	VARCHAR(255)	UNIQUE
+users	photo_url	TEXT
+users	payment_method	TEXT
+users	payment_link	TEXT
 users	created_at	TIMESTAMP
 users	updated_at	TIMESTAMP
 houses	house_id	UUID	PK
 houses	name	VARCHAR(255)
-houses	invite_code	VARCHAR(50)	UNIQUE
 houses	user_id	UUID	FK
 houses	created_at	TIMESTAMP
 houses	updated_at	TIMESTAMP
