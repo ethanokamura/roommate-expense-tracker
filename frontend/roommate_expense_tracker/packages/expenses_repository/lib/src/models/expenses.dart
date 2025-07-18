@@ -10,7 +10,7 @@ import 'package:app_core/app_core.dart';
 //  is regenerated. If you need to modify behavior, update the source     //
 //                         template instead.                              //
 //                                                                        //
-//                Generated on: 2025-07-10 19:14:06 UTC                   //
+//                Generated on: 2025-07-18 03:23:05 UTC                   //
 //                                                                        //
 ////////////////////////////////////////////////////////////////////////////
 

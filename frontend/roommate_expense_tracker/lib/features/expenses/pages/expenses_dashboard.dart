@@ -2,6 +2,7 @@ import 'package:app_ui/app_ui.dart';
 import 'package:app_core/app_core.dart';
 import 'package:expenses_repository/expenses_repository.dart';
 import 'package:roommate_expense_tracker/features/expenses/cubit/expenses_cubit.dart';
+import 'package:roommate_expense_tracker/features/expenses/widgets/cards/cost_analysis.dart';
 import 'package:roommate_expense_tracker/features/expenses/widgets/widgets.dart';
 import 'package:users_repository/users_repository.dart';
 
@@ -23,7 +24,7 @@ class ExpensesDashboard extends StatelessWidget {
           token: userRepository.idToken ?? '',
           orderBy: Users.createdAtConverter,
           ascending: false,
-          forceRefresh: true,
+          forceRefresh: false,
         ),
       child: ExpensesCubitWrapper(
         builder: (context, state) {
@@ -37,6 +38,11 @@ class ExpensesDashboard extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
+                    // CostAnalysisWidget(
+                    //   field: Expenses.houseIdConverter,
+                    //   value: houseId,
+                    //   token: userRepository.idToken ?? '',
+                    // ),
                     SizedBox(
                       width: MediaQuery.sizeOf(context).width / 3 -
                           (defaultPadding * 2),
@@ -150,27 +156,54 @@ class ExpensesDashboard extends StatelessWidget {
                   DropDownItem(
                     icon: AppIcons.money,
                     text: 'Total Amount',
-                    onSelect: () async {},
+                    onSelect: () async => context
+                        .read<ExpensesCubit>()
+                        .fetchAllExpensesWithHouseId(
+                          houseId: houseId,
+                          token: userRepository.idToken ?? '',
+                          orderBy: Expenses.totalAmountConverter,
+                          ascending: false,
+                          forceRefresh: false,
+                        ),
                   ),
                   DropDownItem(
                     icon: AppIcons.calendar,
                     text: 'Created At',
-                    onSelect: () async {},
+                    onSelect: () async => context
+                        .read<ExpensesCubit>()
+                        .fetchAllExpensesWithHouseId(
+                          houseId: houseId,
+                          token: userRepository.idToken ?? '',
+                          orderBy: Expenses.createdAtConverter,
+                          ascending: false,
+                          forceRefresh: false,
+                        ),
                   ),
                   DropDownItem(
                     icon: AppIcons.calendar,
                     text: 'Updated At',
-                    onSelect: () async {},
-                  ),
-                  DropDownItem(
-                    icon: AppIcons.calendar,
-                    text: 'Settled At',
-                    onSelect: () async {},
+                    onSelect: () async => context
+                        .read<ExpensesCubit>()
+                        .fetchAllExpensesWithHouseId(
+                          houseId: houseId,
+                          token: userRepository.idToken ?? '',
+                          orderBy: Expenses.updatedAtConverter,
+                          ascending: false,
+                          forceRefresh: false,
+                        ),
                   ),
                   DropDownItem(
                     icon: AppIcons.calendar,
                     text: 'Due Date',
-                    onSelect: () async {},
+                    onSelect: () async => context
+                        .read<ExpensesCubit>()
+                        .fetchAllExpensesWithHouseId(
+                          houseId: houseId,
+                          token: userRepository.idToken ?? '',
+                          orderBy: Expenses.expenseDateConverter,
+                          ascending: false,
+                          forceRefresh: false,
+                        ),
                   ),
                 ])
               ],

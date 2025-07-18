@@ -1,7 +1,6 @@
 const { body, query, param } = require("express-validator");
 
 const MAX_NAME_LENGTH = 255;
-const MAX_INVITE_CODE_LENGTH = 50;
 
 const optionalFieldValidator = (location, field, max_length) =>
   location(field)
@@ -34,7 +33,6 @@ const housesValidators = {
   ],
   housesQuery: [
     optionalFieldValidator(query, "name", MAX_NAME_LENGTH),
-    optionalFieldValidator(query, "invite_code", MAX_INVITE_CODE_LENGTH),
     query("user_id")
       .optional()
       .notEmpty()
@@ -62,7 +60,6 @@ const housesValidators = {
   ],
   updateHouses: [
     optionalFieldValidator(body, "name", MAX_NAME_LENGTH),
-    optionalFieldValidator(body, "invite_code", MAX_INVITE_CODE_LENGTH),
     body("user_id")
       .optional()
       .notEmpty()
@@ -70,10 +67,7 @@ const housesValidators = {
       .isUUID()
       .withMessage("user_id must be a valid UUID"),
   ],
-  createHouses: [
-    requiredFieldValidator(body, "name", MAX_NAME_LENGTH),
-    requiredFieldValidator(body, "invite_code", MAX_INVITE_CODE_LENGTH),
-  ],
+  createHouses: [requiredFieldValidator(body, "name", MAX_NAME_LENGTH)],
 };
 
 module.exports = {

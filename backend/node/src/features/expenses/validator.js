@@ -4,6 +4,10 @@ const expensesValidators = {
   expensesId: [
     param("expense_id").isUUID().withMessage("Valid expense ID is required"),
   ],
+  weeklyExpenseQuery: [
+    param("key").isString().withMessage("Valid key is required"),
+    param("value").isUUID().withMessage("Valid ID is required"),
+  ],
   expensesQuery: [
     query("house_id")
       .optional()

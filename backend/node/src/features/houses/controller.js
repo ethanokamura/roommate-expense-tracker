@@ -9,12 +9,12 @@ class HousesController {
    * @param {*} next - Express next function
    */
   async createHouses(req, res, next) {
-    const { name, invite_code } = req.body;
+    const { name } = req.body;
     const user_id = req.user.user_id;
     try {
       const result = await query(
-        "INSERT INTO houses (name, invite_code, user_id) VALUES ($1, $2, $3) RETURNING *",
-        [name, invite_code, user_id]
+        "INSERT INTO houses (name, user_id) VALUES ($1, $2) RETURNING *",
+        [name, user_id]
       );
       return res.status(201).json({ data: result.rows[0], success: true });
     } catch (error) {
@@ -64,10 +64,6 @@ class HousesController {
       // returns houses with names that contain "name", case insensitive
       filters.push(`name = $${values.length}`);
     }
-    if (req.query.invite_code) {
-      values.push(req.query.invite_code);
-      filters.push(`invite_code = $${values.length}`);
-    }
     if (req.query.user_id) {
       values.push(req.query.user_id);
       filters.push(`user_id = $${values.length}`);
@@ -116,10 +112,6 @@ class HousesController {
       if (req.body.name) {
         values.push(req.body.name);
         updates.push(`name = $${values.length}`);
-      }
-      if (req.body.invite_code) {
-        values.push(req.body.invite_code);
-        updates.push(`invite_code = $${values.length}`);
       }
 
       // if switching head of house, ensure new user is in the house, and isnt current head
@@ -180,16 +172,7 @@ class HousesController {
       // else, house found with given parameters return it
       return res.status(200).json({ data: result.rows[0], success: true });
     } catch (error) {
-      // invite code not unique
-      if (error.code == "23505") {
-        const invite_code = req.body.invite_code ?? "(unknown)";
-        return res.status(409).json({
-          error: `House with invite_code "${invite_code}" already exists`,
-          success: false,
-        });
-      } else {
-        return next(error);
-      }
+      return next(error);
     }
   }
 

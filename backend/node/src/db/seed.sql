@@ -1,16 +1,16 @@
 -- USERS
-INSERT INTO users (user_id, display_name, email, created_at, updated_at) VALUES
-('9d7e114a-1cb3-4f61-8a9d-47fda72b2b88', 'Alice Johnson', 'alice@example.com', NOW(), NOW()),
-('c04355e1-9d60-4d79-a2e3-cbc773e66307', 'Bob Smith', 'bob@example.com', NOW(), NOW()),
-('3c63a392-f260-4b64-9627-64ef31e67ff5', 'Charlie Brown', 'charlie@example.com', NOW(), NOW()),
-('64a6bc4f-0e6f-4d11-bcae-087a54fa7f8e', 'Diana Prince', 'diana@example.com', NOW(), NOW()),
-('78e57b25-f5fc-4c18-8c9f-02467f340be0', 'Evan Lee', 'evan@example.com', NOW(), NOW());
+INSERT INTO users (user_id, display_name, email, photo_url, payment_method, payment_link, created_at, updated_at) VALUES
+('9d7e114a-1cb3-4f61-8a9d-47fda72b2b88', 'Alice Johnson', 'alice@example.com', 'https://picsum.photos/300/300', NULL, NULL, NOW(), NOW()),
+('c04355e1-9d60-4d79-a2e3-cbc773e66307', 'Bob Smith', 'bob@example.com', 'https://picsum.photos/300/300', 'Cash', 'My hand', NOW(), NOW()),
+('3c63a392-f260-4b64-9627-64ef31e67ff5', 'Charlie Brown', 'charlie@example.com', 'https://picsum.photos/300/300', 'Venmo', 'charile_mcmans', NOW(), NOW()),
+('64a6bc4f-0e6f-4d11-bcae-087a54fa7f8e', 'Diana Prince', 'diana@example.com', 'https://picsum.photos/300/300', 'Zelle', '+14085433452', NOW(), NOW()),
+('78e57b25-f5fc-4c18-8c9f-02467f340be0', 'Evan Lee', 'evan@example.com', 'https://picsum.photos/300/300', 'Zelle', '+18314193424', NOW(), NOW());
 
 -- HOUSES
-INSERT INTO houses (house_id, name, invite_code, user_id, created_at, updated_at) VALUES
-('bc0fca49-00c2-4c60-80ae-4e5df36e2054', 'Green Villa', 'GREEN123', '9d7e114a-1cb3-4f61-8a9d-47fda72b2b88', NOW(), NOW()),
-('c781b376-5c18-4d6f-a415-b6117fe8e4b5', 'Blue Cottage', 'BLUE456', 'c04355e1-9d60-4d79-a2e3-cbc773e66307', NOW(), NOW()),
-('a64f391d-e0e4-4cc4-9473-0508c247c57d', 'Red Mansion', 'RED789', '64a6bc4f-0e6f-4d11-bcae-087a54fa7f8e', NOW(), NOW());
+INSERT INTO houses (house_id, name, user_id, created_at, updated_at) VALUES
+('bc0fca49-00c2-4c60-80ae-4e5df36e2054', 'Green Villa', '9d7e114a-1cb3-4f61-8a9d-47fda72b2b88', NOW(), NOW()),
+('c781b376-5c18-4d6f-a415-b6117fe8e4b5', 'Blue Cottage', 'c04355e1-9d60-4d79-a2e3-cbc773e66307', NOW(), NOW()),
+('a64f391d-e0e4-4cc4-9473-0508c247c57d', 'Red Mansion', '64a6bc4f-0e6f-4d11-bcae-087a54fa7f8e', NOW(), NOW());
 
 -- HOUSE MEMBERS
 -- Green Villa

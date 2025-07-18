@@ -190,18 +190,36 @@ extension Auth on UsersRepository {
 
       if (_credentials.user != null) {
         _idToken = await _credentials.user!.getIdToken();
-        final user = await fetchUsersWithEmail(
+        Users user = await fetchUsersWithEmail(
           email: _credentials.user!.email!,
           token: _idToken ?? '',
         );
-        debugPrint('found user: $user');
         if (user.isEmpty) {
-          await createUsers(
+          debugPrint('user not found - creating new user');
+          user = await createUsers(
             displayName: _credentials.user!.displayName!,
             email: _credentials.user!.email!,
+            photoUrl: _credentials.user!.photoURL,
             token: _idToken ?? '',
           );
         }
+        if (user.photoUrl != _credentials.user!.photoURL &&
+            _credentials.user!.photoURL != null) {
+          debugPrint(_credentials.user!.photoURL);
+          final newUserData = Users.fromJson({
+            ...user.toJson(),
+            Users.photoUrlConverter: _credentials.user!.photoURL!,
+          });
+
+          debugPrint(newUserData.toJson().toString());
+
+          user = await updateUsers(
+            userId: user.userId!,
+            newUsersData: newUserData,
+            token: _idToken ?? '',
+          );
+        }
+        _users = user;
       }
     } catch (e) {
       debugPrint('Error during sign in: $e');
@@ -232,6 +250,7 @@ extension Create on UsersRepository {
     required String email,
     required String token,
     required String displayName,
+    required String? photoUrl,
     bool forceRefresh = true,
   }) async {
     // Get cache key
@@ -267,6 +286,7 @@ extension Create on UsersRepository {
         payload: {
           Users.emailConverter: email,
           Users.displayNameConverter: displayName,
+          Users.photoUrlConverter: photoUrl,
         },
       );
       debugPrint('Users post response: $response');
@@ -275,8 +295,7 @@ extension Create on UsersRepository {
       }
       // Success
       final Map<String, dynamic> jsonData = response['data']!;
-      final String responseBody =
-          jsonEncode(jsonData); // Encode to string for caching
+      final String responseBody = jsonEncode(jsonData);
 
       // Cache the successful response with a specific duration
       await _cacheManager.cacheHttpResponse(
@@ -665,7 +684,7 @@ extension Read on UsersRepository {
   Future<Users> fetchUsersWithEmail({
     required String email,
     required String token,
-    bool forceRefresh = false,
+    bool forceRefresh = true,
   }) async {
     // Get cache key
     final cacheKey = generateCacheKey({
@@ -1176,6 +1195,7 @@ extension Update on UsersRepository {
         'object': 'users',
         Users.userIdConverter: userId,
       });
+
       // Prepare data for insertion
       final data = newUsersData.toJson();
 
@@ -1198,7 +1218,7 @@ extension Update on UsersRepository {
       }
 
       // Success
-      final Map<String, dynamic>? jsonData = response['data'];
+      final Map<String, dynamic> jsonData = response['data'];
       final String responseBody = jsonEncode(jsonData);
 
       // Cache the successful response with a specific duration
@@ -1210,7 +1230,7 @@ extension Update on UsersRepository {
 
       // Update local object
       _users = response['data'] != null
-          ? Users.converterSingle(jsonData!)
+          ? Users.converterSingle(jsonData)
           : Users.empty;
 
       // Return data
