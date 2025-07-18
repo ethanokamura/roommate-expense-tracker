@@ -103,6 +103,7 @@ Future<Map<String, dynamic>> dioRequest({
         );
         break;
       case 'PATCH':
+        debugPrint('SENDING PATCH REQUEST!');
         response = await dio.patch(
           url,
           data: payload,
@@ -112,6 +113,8 @@ Future<Map<String, dynamic>> dioRequest({
       default:
         throw ArgumentError('Unsupported HTTP method: $method');
     }
+
+    debugPrint(response.toString());
     if (response.data is Map<String, dynamic>) {
       if (response.data.containsKey('success') &&
           response.data['success'] == false) {
@@ -132,6 +135,7 @@ Future<Map<String, dynamic>> dioRequest({
       );
     }
   } on DioException catch (e) {
+    debugPrint(e.toString());
     String errorMessage;
     if (e.response != null) {
       // Server responded with a status code other than 2xx

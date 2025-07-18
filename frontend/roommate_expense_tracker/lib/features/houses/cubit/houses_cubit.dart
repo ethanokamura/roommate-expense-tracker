@@ -20,10 +20,8 @@ class HousesCubit extends Cubit<HousesState> {
   /// Return data if successful, or an empty instance of [Houses].
   ///
   /// Requires the [name] to create the object
-  /// Requires the [inviteCode] to create the object
   Future<void> createHouses({
     required String name,
-    required String inviteCode,
     required String token,
     bool forceRefresh = true,
   }) async {
@@ -32,7 +30,6 @@ class HousesCubit extends Cubit<HousesState> {
       // Retrieve new row after inserting
       final houses = await _housesRepository.createHouses(
         name: name,
-        inviteCode: inviteCode,
         token: token,
         forceRefresh: forceRefresh,
       );
@@ -91,35 +88,6 @@ class HousesCubit extends Cubit<HousesState> {
       // Retrieve new row after inserting
       final houses = await _housesRepository.fetchHousesWithHouseId(
         houseId: houseId,
-        token: token,
-        forceRefresh: forceRefresh,
-      );
-      emit(
-        state.fromHousesLoaded(
-          houses: houses,
-        ),
-      );
-    } on HousesFailure catch (failure) {
-      debugPrint('Failure to create houses: $failure');
-      emit(state.fromHousesFailure(failure));
-    }
-  }
-
-  /// Fetch single() [Houses] object from Rds.
-  ///
-  /// Return data if exists, or an empty instance of [Houses].
-  ///
-  /// Requires the [inviteCode] for lookup
-  Future<void> fetchHousesWithInviteCode({
-    required String inviteCode,
-    required String token,
-    bool forceRefresh = false,
-  }) async {
-    emit(state.fromLoading());
-    try {
-      // Retrieve new row after inserting
-      final houses = await _housesRepository.fetchHousesWithInviteCode(
-        inviteCode: inviteCode,
         token: token,
         forceRefresh: forceRefresh,
       );

@@ -30,6 +30,14 @@ ExpensesRouter.get(
   expensesController.findExpenses
 );
 
+// Read
+ExpensesRouter.get(
+  "/this-week",
+  expensesValidators.weeklyExpenseQuery,
+  validateRequest,
+  expensesController.getWeeklyExpenses
+);
+
 // Update
 ExpensesRouter.patch(
   "/:id",
