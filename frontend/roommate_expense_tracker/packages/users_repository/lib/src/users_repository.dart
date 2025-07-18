@@ -195,6 +195,7 @@ extension Auth on UsersRepository {
           token: _idToken ?? '',
         );
         if (user.isEmpty) {
+          debugPrint('user not found - creating new user');
           user = await createUsers(
             displayName: _credentials.user!.displayName!,
             email: _credentials.user!.email!,
@@ -683,7 +684,7 @@ extension Read on UsersRepository {
   Future<Users> fetchUsersWithEmail({
     required String email,
     required String token,
-    bool forceRefresh = false,
+    bool forceRefresh = true,
   }) async {
     // Get cache key
     final cacheKey = generateCacheKey({
@@ -1194,6 +1195,7 @@ extension Update on UsersRepository {
         'object': 'users',
         Users.userIdConverter: userId,
       });
+
       // Prepare data for insertion
       final data = newUsersData.toJson();
 

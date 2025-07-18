@@ -38,11 +38,11 @@ class ExpensesDashboard extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    CostAnalysisWidget(
-                      field: Expenses.houseIdConverter,
-                      value: houseId,
-                      token: userRepository.idToken ?? '',
-                    ),
+                    // CostAnalysisWidget(
+                    //   field: Expenses.houseIdConverter,
+                    //   value: houseId,
+                    //   token: userRepository.idToken ?? '',
+                    // ),
                     SizedBox(
                       width: MediaQuery.sizeOf(context).width / 3 -
                           (defaultPadding * 2),

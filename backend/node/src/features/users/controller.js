@@ -100,29 +100,29 @@ class UserController {
    */
   async updateUser(req, res, next) {
     try {
-      const { user_id } = req.params;
+      const { id } = req.params;
       const { display_name, email, photo_url, payment_method, payment_link } =
         req.body;
       const fields = [];
       const params = [];
       if (display_name) {
-        fields.push(`display_name = ($${fields.length + 1})`);
+        fields.push(`display_name = $${fields.length + 1}`);
         params.push(display_name);
       }
       if (email) {
-        fields.push(`email = ($${fields.length + 1})`);
+        fields.push(`email = $${fields.length + 1}`);
         params.push(email);
       }
       if (photo_url) {
-        fields.push(`photo_url = ($${fields.length + 1})`);
+        fields.push(`photo_url = $${fields.length + 1}`);
         params.push(photo_url);
       }
       if (payment_method) {
-        fields.push(`payment_method = ($${fields.length + 1})`);
+        fields.push(`payment_method = $${fields.length + 1}`);
         params.push(payment_method);
       }
       if (payment_link) {
-        fields.push(`payment_link = ($${fields.length + 1})`);
+        fields.push(`payment_link = $${fields.length + 1}`);
         params.push(payment_link);
       }
       if (fields.length === 0) {
@@ -130,17 +130,13 @@ class UserController {
           .status(400)
           .json({ success: false, error: "No fields to update" });
       }
-      params.push(user_id);
+      params.push(id);
 
-      const sql = `UPDATE users SET ${fields.join(
-        ", "
-      )} WHERE user_id = $1 RETURNING *`;
+      const sql = `UPDATE users SET ${fields.join(", ")} WHERE user_id = $${
+        fields.length + 1
+      } RETURNING *`;
+
       const result = await query(sql, params);
-      if (result.affectedRows === 0) {
-        return res
-          .status(404)
-          .json({ success: false, error: "User not found" });
-      }
       res.status(200).json({
         success: true,
         data: result.rows[0],

@@ -130,8 +130,8 @@ class Users extends Equatable {
       if (photoUrl != null) photoUrlConverter: photoUrl,
       if (paymentMethod != null) paymentMethodConverter: paymentMethod,
       if (paymentLink != null) paymentLinkConverter: paymentLink,
-      if (createdAt != null) createdAtConverter: createdAt,
-      if (updatedAt != null) updatedAtConverter: updatedAt,
+      if (createdAt != null) createdAtConverter: createdAt.toIso8601String(),
+      if (updatedAt != null) updatedAtConverter: updatedAt.toIso8601String(),
     };
   }
 }

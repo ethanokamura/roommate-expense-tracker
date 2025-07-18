@@ -42,17 +42,11 @@ const userValidators = {
     body("payment_method")
       .optional()
       .isString()
-      .withMessage("if provided, payment_method by must be a string")
-      .trim()
-      .notEmpty()
-      .withMessage(`if provided, payment_method must not be empty`),
+      .withMessage("if provided, payment_method by must be a string"),
     body("payment_link")
       .optional()
       .isString()
-      .withMessage("if provided, payment_link by must be a string")
-      .trim()
-      .notEmpty()
-      .withMessage(`if provided, payment_link must not be empty`),
+      .withMessage("if provided, payment_link by must be a string"),
   ],
 
   createUser: [
