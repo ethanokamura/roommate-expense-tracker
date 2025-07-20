@@ -1,7 +1,6 @@
 const { body, query, param } = require("express-validator");
 
 const MAX_NAME_LENGTH = 255;
-const MAX_INVITE_CODE_LENGTH = 50;
 
 const optionalFieldValidator = (location, field, max_length) =>
   location(field)
@@ -34,28 +33,41 @@ const housesValidators = {
   ],
   housesQuery: [
     optionalFieldValidator(query, "name", MAX_NAME_LENGTH),
-    optionalFieldValidator(query, "invite_code", MAX_INVITE_CODE_LENGTH),
     query("user_id")
       .optional()
       .notEmpty()
       .withMessage("If provided, user_id must not be empty")
       .isUUID()
       .withMessage("User ID must be a valid UUID"),
+
+    query("sort_by")
+      .optional()
+      .isString()
+      .withMessage("Sort by must be a string")
+      .trim()
+      .notEmpty()
+      .withMessage(`sorty by must not be empty`)
+      .isIn(["created_at", "updated_at", "name"]),
+
+    query("sort_order")
+      .optional()
+      .isString()
+      .withMessage("Sort order must be a string")
+      .trim()
+      .notEmpty()
+      .withMessage("Sort order must be not be empty")
+      .isIn(["asc", "desc"]),
   ],
   updateHouses: [
     optionalFieldValidator(body, "name", MAX_NAME_LENGTH),
-    optionalFieldValidator(body, "invite_code", MAX_INVITE_CODE_LENGTH),
-    body("new_user_id")
+    body("user_id")
       .optional()
       .notEmpty()
-      .withMessage("If provided, new_user_id must not be empty")
+      .withMessage("If provided, user_id must not be empty")
       .isUUID()
-      .withMessage("New user ID must be a valid UUID"),
+      .withMessage("user_id must be a valid UUID"),
   ],
-  createHouses: [
-    requiredFieldValidator(body, "name", MAX_NAME_LENGTH),
-    requiredFieldValidator(body, "invite_code", MAX_INVITE_CODE_LENGTH),
-  ],
+  createHouses: [requiredFieldValidator(body, "name", MAX_NAME_LENGTH)],
 };
 
 module.exports = {

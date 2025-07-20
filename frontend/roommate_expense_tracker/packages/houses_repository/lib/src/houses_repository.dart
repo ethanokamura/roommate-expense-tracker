@@ -27,10 +27,8 @@ extension Create on HousesRepository {
   /// Return data if successful, or an empty instance of [Houses].
   ///
   /// Requires the [name] to create the object
-  /// Requires the [inviteCode] to create the object
   Future<Houses> createHouses({
     required String name,
-    required String inviteCode,
     required String token,
     bool forceRefresh = true,
   }) async {
@@ -38,7 +36,6 @@ extension Create on HousesRepository {
     final cacheKey = generateCacheKey({
       'object': 'houses',
       Houses.nameConverter: name,
-      Houses.inviteCodeConverter: inviteCode,
     });
 
     // Check cache if not forcing refresh
@@ -67,7 +64,6 @@ extension Create on HousesRepository {
         },
         payload: {
           'name': name,
-          'invite_code': inviteCode,
         },
       );
       debugPrint('Houses post response: $response');
@@ -223,79 +219,6 @@ extension Read on HousesRepository {
       return _houses;
     } catch (e) {
       debugPrint('Failure to fetch houses with houseId: $e');
-      throw HousesFailure.fromGet();
-    }
-  }
-
-  /// Fetch single() [Houses] object from Rds.
-  ///
-  /// Return data if exists, or an empty instance of [Houses].
-  ///
-  /// Requires the [inviteCode] for lookup
-  Future<Houses> fetchHousesWithInviteCode({
-    required String inviteCode,
-    required String token,
-    bool forceRefresh = false,
-  }) async {
-    // Get cache key
-    final cacheKey = generateCacheKey({
-      'object': 'houses',
-      Houses.inviteCodeConverter: inviteCode,
-    });
-
-    if (!forceRefresh) {
-      final cachedData = await _cacheManager.getCachedHttpResponse(cacheKey);
-      if (cachedData != null) {
-        try {
-          final Map<String, dynamic> jsonData = jsonDecode(cachedData);
-          _houses = Houses.converterSingle(jsonData);
-          return _houses;
-        } catch (e) {
-          debugPrint('Error decoding cached houses data for key $cacheKey: $e');
-        }
-      }
-    }
-
-    // No valid cache, or forceRefresh is true, fetch from API
-    try {
-      // Build query parameters
-      final queryParams = <String, dynamic>{'invite_code': inviteCode};
-      final queryString =
-          queryParams.entries.map((e) => '${e.key}=${e.value}').join('&');
-
-      // Retrieve new row after inserting
-      final response = await dioRequest(
-        dio: Dio(),
-        apiEndpoint: '/houses?$queryString',
-        method: 'GET',
-        headers: {
-          'Authorization': 'Bearer $token',
-        },
-      );
-
-      debugPrint('Houses GET response: $response');
-
-      // Failure
-      if (response['success'] != true) {
-        throw HousesFailure.fromGet();
-      }
-
-      // Success
-      final Map<String, dynamic> jsonData = response['data']!;
-      final String responseBody = jsonEncode(jsonData);
-
-      // Cache the successful response with a specific duration
-      await _cacheManager.cacheHttpResponse(
-        key: cacheKey,
-        responseBody: responseBody,
-        cacheDuration: const Duration(minutes: 60),
-      );
-
-      _houses = Houses.converterSingle(jsonData);
-
-      return _houses;
-    } catch (e) {
-      debugPrint('Failure to fetch houses with unique details: $e');
       throw HousesFailure.fromGet();
     }
   }

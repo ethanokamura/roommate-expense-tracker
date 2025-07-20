@@ -68,7 +68,7 @@ class HouseDashboard extends StatelessWidget {
   }
 
   Future<void> _showInviteCode(BuildContext context) async {
-    const code = 'ABC123XYZ'; // Replace with dynamic value if needed
+    final code = houseId;
     final userId = context.read<UsersRepository>().users.userId!;
     final token = context.read<UsersRepository>().credentials.credential?.accessToken ?? '';
 
@@ -86,7 +86,7 @@ class HouseDashboard extends StatelessWidget {
         title: const Text('Invite Code'),
         content: GestureDetector(
           onTap: () async {
-            await Clipboard.setData(const ClipboardData(text: code));
+            await Clipboard.setData(ClipboardData(text: code));
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('Copied to clipboard')),
             );
@@ -133,7 +133,7 @@ class HouseDashboard extends StatelessWidget {
       ],
       child: BlocBuilder<HousesCubit, HousesState>(
         builder: (context, houseState) {
-          final houseName = houseState.houses.name ?? 'My House';
+          final houseName = houseState.houses.name;
 
           return BlocBuilder<UsersCubit, UsersState>(
             builder: (context, usersState) {

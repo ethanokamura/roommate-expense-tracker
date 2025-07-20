@@ -10,7 +10,7 @@ import 'package:app_core/app_core.dart';
 //  is regenerated. If you need to modify behavior, update the source     //
 //                         template instead.                              //
 //                                                                        //
-//                Generated on: 2025-07-10 19:14:06 UTC                   //
+//                Generated on: 2025-07-18 03:23:05 UTC                   //
 //                                                                        //
 ////////////////////////////////////////////////////////////////////////////
 
@@ -22,7 +22,6 @@ class Houses extends Equatable {
   const Houses({
     this.houseId, // PK
     this.name = '',
-    this.inviteCode = '',
     this.userId,
     this.createdAt,
     this.updatedAt,
@@ -38,7 +37,6 @@ class Houses extends Equatable {
     return Houses(
       houseId: json[houseIdConverter]?.toString() ?? '',
       name: json[nameConverter]?.toString() ?? '',
-      inviteCode: json[inviteCodeConverter]?.toString() ?? '',
       userId: json[userIdConverter]?.toString() ?? '',
       createdAt: json[createdAtConverter] != null
           ? DateTime.tryParse(json[createdAtConverter].toString())?.toUtc() ??
@@ -54,7 +52,6 @@ class Houses extends Equatable {
   // JSON string equivalent for our data
   static String get houseIdConverter => 'house_id';
   static String get nameConverter => 'name';
-  static String get inviteCodeConverter => 'invite_code';
   static String get userIdConverter => 'user_id';
   static String get createdAtConverter => 'created_at';
   static String get updatedAtConverter => 'updated_at';
@@ -62,13 +59,11 @@ class Houses extends Equatable {
   // Defines the empty state for the Houses
   static const empty = Houses(
     name: '',
-    inviteCode: '',
   );
 
   // Data for Houses
   final String? houseId; // PK
   final String name;
-  final String inviteCode;
   final String? userId;
   final DateTime? createdAt;
   final DateTime? updatedAt;
@@ -78,7 +73,6 @@ class Houses extends Equatable {
   List<Object?> get props => [
         houseId,
         name,
-        inviteCode,
         userId,
         createdAt,
         updatedAt,
@@ -94,7 +88,6 @@ class Houses extends Equatable {
     return _generateMap(
       houseId: houseId,
       name: name,
-      inviteCode: inviteCode,
       userId: userId,
       createdAt: createdAt,
       updatedAt: updatedAt,
@@ -105,7 +98,6 @@ class Houses extends Equatable {
   static Map<String, dynamic> _generateMap({
     String? houseId,
     String? name,
-    String? inviteCode,
     String? userId,
     DateTime? createdAt,
     DateTime? updatedAt,
@@ -113,7 +105,6 @@ class Houses extends Equatable {
     return {
       if (houseId != null) houseIdConverter: houseId,
       if (name != null) nameConverter: name,
-      if (inviteCode != null) inviteCodeConverter: inviteCode,
       if (userId != null) userIdConverter: userId,
       if (createdAt != null) createdAtConverter: createdAt,
       if (updatedAt != null) updatedAtConverter: updatedAt,

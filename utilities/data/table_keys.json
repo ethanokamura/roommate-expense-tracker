@@ -8,8 +8,8 @@
   "houses": {
     "primary": ["house_id"],
     "foreign": [],
-    "not_null": ["name", "invite_code"],
-    "unique": ["invite_code"]
+    "not_null": ["name"],
+    "unique": []
   },
   "house_members": {
     "primary": ["house_member_id"],

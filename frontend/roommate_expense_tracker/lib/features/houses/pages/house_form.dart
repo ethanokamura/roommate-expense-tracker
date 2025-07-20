@@ -1,10 +1,10 @@
 import 'package:app_ui/app_ui.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:roommate_expense_tracker/features/users/cubit/users_cubit.dart';
 import 'package:roommate_expense_tracker/features/users/pages/house_selection.dart';
 import 'package:users_repository/users_repository.dart';
-import 'package:uuid/uuid.dart';
 import 'package:roommate_expense_tracker/features/houses/cubit/houses_cubit.dart';
 
 class HouseFormPage extends StatelessWidget {
@@ -16,7 +16,6 @@ class HouseFormPage extends StatelessWidget {
     final inviteCodeController = TextEditingController();
     final token = context.read<UsersRepository>().credentials.credential?.accessToken ?? '';
     final userId = context.read<UsersRepository>().users.userId;
-    const uuid = Uuid();
 
     return Scaffold(
       appBar: AppBar(
@@ -43,7 +42,6 @@ class HouseFormPage extends StatelessWidget {
             FilledButton(
               onPressed: () async {
                 final houseName = houseNameController.text.trim();
-                final inviteCode = uuid.v4();
 
                 if (houseName.isEmpty) {
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -54,7 +52,6 @@ class HouseFormPage extends StatelessWidget {
 
                 await context.read<HousesCubit>().createHouses(
                   name: houseName,
-                  inviteCode: inviteCode,
                   token: token,
                 );
 
@@ -91,16 +88,16 @@ class HouseFormPage extends StatelessWidget {
                 }
 
                 try {
-                  await context.read<HousesCubit>().fetchHousesWithInviteCode(
-                    inviteCode: code,
+                  await context.read<HousesCubit>().fetchHousesWithHouseId(
+                    houseId: code,
                     token: token,
                   );
                   final houseState = context.read<HousesCubit>().state;
 
                   await context.read<UsersCubit>().createHouseMembers(
                     userId: userId!,
-                    houseId: houseState.houses.houseId!,
-                    isAdmin: true.toString(),
+                    houseId: code,
+                    isAdmin: false.toString(),
                     isActive: true.toString(),
                     token: token,
                   );                

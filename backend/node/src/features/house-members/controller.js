@@ -12,7 +12,7 @@ class HouseMembersController {
     const { house_id, user_id, is_admin } = req.body;
     const current_user_id = req.user.user_id;
 
-    let nickname = '';
+    let nickname = "";
     if (req.user.name != null) {
       nickname = req.user.name;
     }
@@ -23,13 +23,20 @@ class HouseMembersController {
         "INSERT INTO house_members (house_id, user_id, is_admin, nickname) VALUES ($1, $2, $3, $4) RETURNING *",
         [house_id, user_id, is_admin, nickname]
       );
-      return res.status(201).json({ house_member: result.rows[0], success: true });
+      return res.status(201).json({ data: result.rows[0], success: true });
     } catch (error) {
-      if (error.code === '23505') {
-        return res.status(400).json({ error: "User is already a member of this house.", success: false });
+      if (error.code === "23505") {
+        return res
+          .status(400)
+          .json({
+            error: "User is already a member of this house.",
+            success: false,
+          });
       }
-      if (error.code === '23503') {
-        return res.status(400).json({ error: "Invalid house_id or user_id.", success: false });
+      if (error.code === "23503") {
+        return res
+          .status(400)
+          .json({ error: "Invalid house_id or user_id.", success: false });
       }
       return next(error);
     }
@@ -52,12 +59,12 @@ class HouseMembersController {
 
       if (result.rows.length === 0) {
         return res.status(404).json({
-          error: `House member with ID "${house_member_id}" not found`, success: false
+          error: `House member with ID "${house_member_id}" not found`,
+          success: false,
         });
       }
 
-      return res.status(200).json({ house_member: result.rows[0], success: true });
-
+      return res.status(200).json({ data: result.rows[0], success: true });
     } catch (error) {
       return next(error);
     }
@@ -95,13 +102,13 @@ class HouseMembersController {
       sql_query += " WHERE " + filters.join(" AND ");
     }
 
-    const sort_by = req.query.sort_by || 'created_at';
-    const sort_order = req.query.sort_order || 'desc';
+    const sort_by = req.query.sort_by || "created_at";
+    const sort_order = req.query.sort_order || "desc";
     sql_query += ` ORDER BY ${sort_by} ${sort_order.toUpperCase()}`;
 
     try {
       const result = await query(sql_query, values);
-      return res.status(200).json({ house_members: result.rows, success: true });
+      return res.status(200).json({ data: result.rows, success: true });
     } catch (error) {
       return next(error);
     }
@@ -137,7 +144,8 @@ class HouseMembersController {
 
     if (updates.length === 0) {
       return res.status(400).json({
-        error: "No valid fields to update", success: false
+        error: "No valid fields to update",
+        success: false,
       });
     }
 
@@ -152,7 +160,7 @@ class HouseMembersController {
 
     try {
       const result = await query(sql_query, values);
-      return res.status(200).json({ house_member: result.rows[0], success: true });
+      return res.status(200).json({ data: result.rows[0], success: true });
     } catch (error) {
       return next(error);
     }
@@ -177,7 +185,8 @@ class HouseMembersController {
 
       if (memberInfo.rows.length === 0) {
         return res.status(404).json({
-          error: `House member with ID "${house_member_id}" not found`, success: false
+          error: `House member with ID "${house_member_id}" not found`,
+          success: false,
         });
       }
 
@@ -189,14 +198,14 @@ class HouseMembersController {
         [house_id]
       );
 
-      const canDelete = (
+      const canDelete =
         isHouseHead.rows[0]?.user_id === current_user_id || // Is house head
-        user_id === current_user_id // Is removing themselves
-      );
+        user_id === current_user_id; // Is removing themselves
 
       if (!canDelete) {
         return res.status(403).json({
-          error: "Forbidden: You can only remove yourself or be the house head", success: false
+          error: "Forbidden: You can only remove yourself or be the house head",
+          success: false,
         });
       }
 
@@ -210,7 +219,9 @@ class HouseMembersController {
 
         if (parseInt(memberCount.rows[0].count) > 1) {
           return res.status(400).json({
-            error: "House head cannot leave while other members remain. Transfer ownership first.", success: false
+            error:
+              "House head cannot leave while other members remain. Transfer ownership first.",
+            success: false,
           });
         }
       }
@@ -222,12 +233,13 @@ class HouseMembersController {
       );
 
       return res.status(200).json({
-        message: "House member removed successfully", success: true
+        message: "House member removed successfully",
+        success: true,
       });
-
     } catch (error) {
       return res.status(error.status || 500).json({
-        error: error.message || "Internal Server Error", success: false
+        error: error.message || "Internal Server Error",
+        success: false,
       });
     }
   }

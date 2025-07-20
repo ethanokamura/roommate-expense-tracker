@@ -1,4 +1,5 @@
 import 'package:app_core/app_core.dart';
+import 'package:flutter/src/widgets/gesture_detector.dart';
 
 ////////////////////////////////////////////////////////////////////////////
 //                                                                        //
@@ -11,6 +12,7 @@ import 'package:app_core/app_core.dart';
 //                         template instead.                              //
 //                                                                        //
 //                Generated on: 2025-07-08 21:21:03 UTC                   //
+//                Generated on: 2025-07-18 03:23:05 UTC                   //
 //                                                                        //
 ////////////////////////////////////////////////////////////////////////////
 
@@ -150,6 +152,8 @@ class HouseMembers extends Equatable {
     }
     return false;
   }
+
+  map(GestureDetector Function(dynamic member) param0) {}
 }
 
 // Extensions to the object allowing a public getters
