@@ -65,6 +65,7 @@ class HouseDashboard extends StatelessWidget {
                     Expanded(
                       child: DefaultContainer(
                         child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             const CustomText(
                               text: 'House Name',
@@ -89,27 +90,23 @@ class HouseDashboard extends StatelessWidget {
                                   content: Text("Copied To Dashboard")));
                         },
                         child: DefaultContainer(
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: Column(
-                                  children: [
-                                    const CustomText(
-                                      text: 'Invite Code',
-                                      style: AppTextStyles.primary,
-                                      maxLines: 1,
-                                    ),
-                                    CustomText(
-                                      text: houseId,
-                                      style: AppTextStyles.primary,
-                                      color: context.theme.subtextColor,
-                                      maxLines: 1,
-                                    ),
-                                  ],
+                          child: Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                const CustomText(
+                                  text: 'Invite Code',
+                                  style: AppTextStyles.primary,
+                                  maxLines: 1,
                                 ),
-                              ),
-                              const HorizontalSpacer(),
-                            ],
+                                CustomText(
+                                  text: houseId,
+                                  style: AppTextStyles.primary,
+                                  color: context.theme.subtextColor,
+                                  maxLines: 1,
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ),
@@ -130,12 +127,18 @@ class HouseDashboard extends StatelessWidget {
                   DropDownItem(
                     icon: Icons.sort_by_alpha,
                     text: 'Alphabetical Order',
-                    onSelect: () async {},
+                    onSelect: () async {
+                      context
+                          .read<UsersCubit>()
+                          .sortHouseMembersAlphabetically();
+                    },
                   ),
                   DropDownItem(
                     icon: AppIcons.calendar,
                     text: 'Most Recently Added',
-                    onSelect: () async {},
+                    onSelect: () async {
+                      context.read<UsersCubit>().sortHouseMembersByRecent();
+                    },
                   ),
                 ])
               ],
@@ -144,10 +147,9 @@ class HouseDashboard extends StatelessWidget {
             itemBuilder: (context, index) {
               final photoUrl = state.houseMemberUserInfoList[index].photoUrl;
               final paymentMethod =
-                  state.houseMemberUserInfoList[index].paymentMethod ??
-                      'NOT SET';
+                  state.houseMemberUserInfoList[index].paymentMethod ?? "";
               final paymentLink =
-                  state.houseMemberUserInfoList[index].paymentLink ?? 'NOT SET';
+                  state.houseMemberUserInfoList[index].paymentLink ?? "";
               // get list of roommates
               return RoommateCard(
                 profilePicture:
