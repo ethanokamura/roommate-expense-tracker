@@ -1,8 +1,5 @@
-import 'package:app_core/app_core.dart';
 import 'package:app_ui/app_ui.dart';
 import 'package:flutter/material.dart';
-import 'package:roommate_expense_tracker/features/users/cubit/users_cubit.dart';
-import 'package:users_repository/users_repository.dart';
 
 class UserDashboard extends StatefulWidget {
   const UserDashboard({super.key});
@@ -12,78 +9,94 @@ class UserDashboard extends StatefulWidget {
 }
 
 class _UserDashboardState extends State<UserDashboard> {
+  String nickname = "John Doe";
+  String paymentMethod = "Venmo";
+  String paymentLink = "@johndoe";
+  
   bool isEditingNickname = false;
+  bool isEditingPaymentMethod = false;
+  bool isEditingPaymentLink = false;
+  
   late TextEditingController nicknameController;
+  late TextEditingController paymentMethodController;
+  late TextEditingController paymentLinkController;
+
+  // Mock data - replace with your house-members API
+  List<Map<String, dynamic>> userHouses = [
+    {
+      'house_id': '1',
+      'house_name': 'Cool House',
+      'role': 'head_of_house',
+      'member_count': 4,
+    },
+    {
+      'house_id': '2', 
+      'house_name': 'Beach House',
+      'role': 'member',
+      'member_count': 3,
+    }
+  ];
 
   @override
   void initState() {
     super.initState();
-    nicknameController = TextEditingController();
+    nicknameController = TextEditingController(text: nickname);
+    paymentMethodController = TextEditingController(text: paymentMethod);
+    paymentLinkController = TextEditingController(text: paymentLink);
   }
 
   @override
   void dispose() {
     nicknameController.dispose();
+    paymentMethodController.dispose();
+    paymentLinkController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final userRepository = context.read<UsersRepository>();
-    
-    return BlocProvider(
-      create: (context) => UsersCubit(
-        usersRepository: context.read<UsersRepository>(),
-      )..fetchUsersHouseData(
-          userId: userRepository.users.userId!,
-          token: userRepository.idToken ?? '',
-          forceRefresh: true,
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(defaultPadding),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Welcome Section
+            _buildWelcomeSection(context),
+            
+            const VerticalBar(),
+            
+            // Nickname Section (simple style)
+            _buildNicknameSection(context),
+            
+            const VerticalBar(),
+            
+            // Payment Method Section
+            _buildPaymentMethodSection(context),
+            
+            const VerticalBar(),
+            
+            // Payment Link Section
+            _buildPaymentLinkSection(context),
+            
+            const VerticalBar(),
+            
+            // Houses Section (with dashboard buttons)
+            _buildHousesSection(context),
+            
+            const VerticalBar(),
+            
+            // Logout Button
+            _buildLogoutButton(context),
+            
+            const VerticalSpacer(multiple: 6),
+          ],
         ),
-      child: BlocBuilder<UsersCubit, UsersState>(
-        builder: (context, state) {
-          // Get current user nickname from repository or state
-          final currentNickname = userRepository.users.nickname ?? 'User';
-          
-          // Update controller when nickname changes (only once)
-          if (nicknameController.text != currentNickname && !isEditingNickname) {
-            nicknameController.text = currentNickname;
-          }
-
-          return SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.all(defaultPadding),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Welcome Section
-                  _buildWelcomeSection(context, currentNickname, state.userHouseDataList),
-                  
-                  const VerticalBar(),
-                  
-                  // Nickname Section
-                  _buildNicknameSection(context, currentNickname, userRepository),
-                  
-                  const VerticalBar(),
-                  
-                  // Houses Section
-                  _buildHousesSection(context, state),
-                  
-                  const VerticalBar(),
-                  
-                  // Logout Button
-                  _buildLogoutButton(context),
-                  
-                  const VerticalSpacer(multiple: 6),
-                ],
-              ),
-            ),
-          );
-        },
       ),
     );
   }
 
-  Widget _buildWelcomeSection(BuildContext context, String nickname, List<UserHouseData> userHouses) {
+  Widget _buildWelcomeSection(BuildContext context) {
     return DefaultContainer(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -95,7 +108,7 @@ class _UserDashboardState extends State<UserDashboard> {
           ),
           const VerticalSpacer(),
           CustomText(
-            text: 'You\'re a part of ${userHouses.length} house${userHouses.length == 1 ? '' : 's'}',
+            text: 'You\'re part of ${userHouses.length} house${userHouses.length == 1 ? '' : 's'}',
             style: AppTextStyles.secondary,
             color: context.theme.subtextColor,
           ),
@@ -104,7 +117,7 @@ class _UserDashboardState extends State<UserDashboard> {
     );
   }
 
-  Widget _buildNicknameSection(BuildContext context, String currentNickname, UsersRepository userRepository) {
+  Widget _buildNicknameSection(BuildContext context) {
     return DefaultContainer(
       child: Row(
         children: [
@@ -121,7 +134,7 @@ class _UserDashboardState extends State<UserDashboard> {
                     onBackground: false,
                   )
                 : CustomText(
-                    text: currentNickname,
+                    text: nickname,
                     style: AppTextStyles.primary,
                   ),
           ),
@@ -130,10 +143,11 @@ class _UserDashboardState extends State<UserDashboard> {
             onTap: () {
               if (isEditingNickname) {
                 // Save nickname
-                _saveNickname(nicknameController.text, userRepository);
                 setState(() {
+                  nickname = nicknameController.text;
                   isEditingNickname = false;
                 });
+                _saveNickname(nickname);
               } else {
                 // Start editing
                 setState(() {
@@ -151,7 +165,109 @@ class _UserDashboardState extends State<UserDashboard> {
     );
   }
 
-  Widget _buildHousesSection(BuildContext context, UsersState state) {
+  Widget _buildPaymentMethodSection(BuildContext context) {
+    return DefaultContainer(
+      child: Row(
+        children: [
+          CustomText(
+            text: 'Pref. Payment Method: ',
+            style: AppTextStyles.primary,
+          ),
+          Expanded(
+            child: isEditingPaymentMethod
+                ? customTextFormField(
+                    context: context,
+                    label: '',
+                    controller: paymentMethodController,
+                    onBackground: false,
+                  )
+                : CustomText(
+                    text: paymentMethod.isEmpty ? 'Not set' : paymentMethod,
+                    style: AppTextStyles.primary,
+                    color: paymentMethod.isEmpty 
+                        ? context.theme.subtextColor 
+                        : null,
+                  ),
+          ),
+          const HorizontalSpacer(),
+          GestureDetector(
+            onTap: () {
+              if (isEditingPaymentMethod) {
+                // Save payment method
+                setState(() {
+                  paymentMethod = paymentMethodController.text;
+                  isEditingPaymentMethod = false;
+                });
+                _savePaymentMethod(paymentMethod);
+              } else {
+                // Start editing
+                setState(() {
+                  isEditingPaymentMethod = true;
+                });
+              }
+            },
+            child: Icon(
+              isEditingPaymentMethod ? Icons.check : Icons.edit,
+              color: context.theme.accentColor,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPaymentLinkSection(BuildContext context) {
+    return DefaultContainer(
+      child: Row(
+        children: [
+          CustomText(
+            text: 'Link: ',
+            style: AppTextStyles.primary,
+          ),
+          Expanded(
+            child: isEditingPaymentLink
+                ? customTextFormField(
+                    context: context,
+                    label: '',
+                    controller: paymentLinkController,
+                    onBackground: false,
+                  )
+                : CustomText(
+                    text: paymentLink.isEmpty ? 'Not set' : paymentLink,
+                    style: AppTextStyles.primary,
+                    color: paymentLink.isEmpty 
+                        ? context.theme.subtextColor 
+                        : null,
+                  ),
+          ),
+          const HorizontalSpacer(),
+          GestureDetector(
+            onTap: () {
+              if (isEditingPaymentLink) {
+                // Save payment link
+                setState(() {
+                  paymentLink = paymentLinkController.text;
+                  isEditingPaymentLink = false;
+                });
+                _savePaymentLink(paymentLink);
+              } else {
+                // Start editing
+                setState(() {
+                  isEditingPaymentLink = true;
+                });
+              }
+            },
+            child: Icon(
+              isEditingPaymentLink ? Icons.check : Icons.edit,
+              color: context.theme.accentColor,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHousesSection(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -160,30 +276,12 @@ class _UserDashboardState extends State<UserDashboard> {
           style: AppTextStyles.primary,
         ),
         const VerticalSpacer(),
-        
-        // Show loading state
-        if (state.isLoading)
-          const Center(child: CircularProgressIndicator())
-        
-        // Show empty state
-        else if (state.userHouseDataList.isEmpty)
-          DefaultContainer(
-            child: CustomText(
-              text: 'You are not a member of any houses yet!',
-              style: AppTextStyles.secondary,
-              color: context.theme.subtextColor,
-            ),
-          )
-        
-        // Show house cards
-        else
-          ...state.userHouseDataList.map((userHouse) => 
-            _buildHouseCard(context, userHouse)).toList(),
+        ...userHouses.map((house) => _buildHouseCard(context, house)).toList(),
       ],
     );
   }
 
-  Widget _buildHouseCard(BuildContext context, UserHouseData userHouse) {
+  Widget _buildHouseCard(BuildContext context, Map<String, dynamic> house) {
     return Container(
       margin: const EdgeInsets.only(bottom: defaultPadding),
       child: DefaultContainer(
@@ -195,13 +293,13 @@ class _UserDashboardState extends State<UserDashboard> {
               children: [
                 Expanded(
                   child: CustomText(
-                    text: userHouse.houseName,
+                    text: house['house_name'],
                     style: AppTextStyles.title,
                   ),
                 ),
-                if (!userHouse.isAdmin)
+                if (house['role'] != 'head_of_house')
                   GestureDetector(
-                    onTap: () => _leaveHouse(userHouse.houseMemberId),
+                    onTap: () => _leaveHouse(house['house_id']),
                     child: Container(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 8,
@@ -235,7 +333,7 @@ class _UserDashboardState extends State<UserDashboard> {
                 ),
                 const HorizontalSpacer(multiple: 0.5),
                 CustomText(
-                  text: 'Joined ${DateFormatter.formatTimestamp(userHouse.memberCreatedAt!)}',
+                  text: '${house['member_count']} members',
                   style: AppTextStyles.secondary,
                   color: context.theme.subtextColor,
                 ),
@@ -244,7 +342,7 @@ class _UserDashboardState extends State<UserDashboard> {
             const VerticalSpacer(),
             CustomButton(
               text: 'View House Dashboard',
-              onTap: () => _navigateToHouseDashboard(userHouse.houseId, userHouse.houseMemberId),
+              onTap: () => _navigateToHouseDashboard(house['house_id']),
               color: context.theme.primaryColor,
             ),
           ],
@@ -264,21 +362,27 @@ class _UserDashboardState extends State<UserDashboard> {
     );
   }
 
-  // Updated methods to work with real data
-  void _saveNickname(String newNickname, UsersRepository userRepository) async {
-    try {
-      // Update through your repository/API
-      await userRepository.updateUserNickname(newNickname);
-      // The repository should update its internal state
-    } catch (e) {
-      // Handle error - maybe show a snackbar
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to update nickname: $e')),
-      );
-    }
+  // API Integration Methods
+  void _saveNickname(String newNickname) {
+    // TODO: Call API to update user nickname
+    // PATCH /users/:id with {"nickname": newNickname}
+    print('Saving nickname: $newNickname');
   }
 
-  void _leaveHouse(String houseMemberId) {
+  void _savePaymentMethod(String newPaymentMethod) {
+    // TODO: Call API to update user payment method
+    // PATCH /users/:id with {"payment_method": newPaymentMethod}
+    print('Saving payment method: $newPaymentMethod');
+  }
+
+  void _savePaymentLink(String newPaymentLink) {
+    // TODO: Call API to update user payment link
+    // PATCH /users/:id with {"payment_link": newPaymentLink}
+    print('Saving payment link: $newPaymentLink');
+  }
+
+  void _leaveHouse(String houseId) {
+    // TODO: Call your house-members DELETE API
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -300,24 +404,12 @@ class _UserDashboardState extends State<UserDashboard> {
             ),
           ),
           TextButton(
-            onPressed: () async {
+            onPressed: () {
+              // Call DELETE /house-members/:id API  
               Navigator.pop(context);
-              try {
-                // Call your real API to leave house
-                final userRepository = context.read<UsersRepository>();
-                await userRepository.leaveHouse(houseMemberId);
-                
-                // Refresh the data
-                context.read<UsersCubit>().fetchUsersHouseData(
-                  userId: userRepository.users.userId!,
-                  token: userRepository.idToken ?? '',
-                  forceRefresh: true,
-                );
-              } catch (e) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Failed to leave house: $e')),
-                );
-              }
+              setState(() {
+                userHouses.removeWhere((house) => house['house_id'] == houseId);
+              });
             },
             child: const CustomText(
               text: 'Leave',
@@ -330,15 +422,13 @@ class _UserDashboardState extends State<UserDashboard> {
     );
   }
 
-  void _navigateToHouseDashboard(String houseId, String memberId) {
-    // Use the same pattern as HouseSelectionPage
-    context.read<AppCubit>().selectedHouse(
-      houseId: houseId,
-      memberId: memberId,
-    );
+  void _navigateToHouseDashboard(String houseId) {
+    // Navigate to house-specific dashboard
+    print('Navigate to house dashboard: $houseId');
   }
 
   void _logout() {
+    // TODO: Clear auth and navigate to login
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -360,20 +450,10 @@ class _UserDashboardState extends State<UserDashboard> {
             ),
           ),
           TextButton(
-            onPressed: () async {
+            onPressed: () {
+              // Clear auth and navigate to login
               Navigator.pop(context);
-              try {
-                // Clear auth and navigate to login
-                final userRepository = context.read<UsersRepository>();
-                await userRepository.logout();
-                
-                // Navigate to login screen
-                context.read<AppCubit>().logout();
-              } catch (e) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Logout failed: $e')),
-                );
-              }
+              print('Logging out...');
             },
             child: const CustomText(
               text: 'Logout',
