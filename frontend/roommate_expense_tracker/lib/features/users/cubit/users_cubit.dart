@@ -439,43 +439,58 @@ class UsersCubit extends Cubit<UsersState> {
         token: token,
         forceRefresh: forceRefresh,
       );
+      debugPrint("Emitting state with ${userHouseDataList.length} items");
       emit(state.fromUserHouseDataListLoaded(
         userHouseDataList: userHouseDataList,
       ));
+      debugPrint("State emitted");
     } on UsersFailure catch (failure) {
       debugPrint('Failure to create houseMembers: $failure');
       emit(state.fromUsersFailure(failure));
     }
   }
 
-  /// Fetch list of all photo URLs of house members for a given houseId from Rds.
-  ///
-  /// Requires the [houseId] for lookup.
-  Future<void> fetchAllHouseMembersPhotoUrls({
+  Future<void> fetchAllHouseData({
     required String houseId,
+    required String userId,
     required String token,
-    required String orderBy,
-    required bool ascending,
-    bool forceRefresh = false,
   }) async {
     emit(state.fromLoading());
+
     try {
-      final photoUrlsList =
-          await _usersRepository.fetchAllHouseMembersPhotoUrls(
+      final userHouseDataList = await _usersRepository.fetchUserHouseData(
+        userId: userId,
+        token: token,
+        forceRefresh: true,
+      );
+
+      final houseMembersList =
+          await _usersRepository.fetchAllHouseMembersWithHouseId(
         houseId: houseId,
         token: token,
-        orderBy: orderBy,
-        ascending: ascending,
-        forceRefresh: forceRefresh,
+        orderBy: "nickname",
+        ascending: true,
+        forceRefresh: true,
       );
-      emit(
-        state.fromHouseMembersPhotoUrlsLoaded(
-          photoUrlsList: photoUrlsList,
-        ),
+
+      final houseMemberUserInfoList =
+          await _usersRepository.fetchAllHouseMembersUserInfo(
+        houseId: houseId,
+        orderBy: "nickname",
+        ascending: true,
+        token: token,
+        forceRefresh: true,
       );
-    } on UsersFailure catch (failure) {
-      debugPrint('Failure to fetch house members photo URLs: $failure');
-      emit(state.fromUsersFailure(failure));
+
+      emit(state.copyWith(
+        userHouseDataList: userHouseDataList,
+        houseMembersList: houseMembersList,
+        houseMemberUserInfoList: houseMemberUserInfoList,
+        status: UsersStatus.loaded,
+      ));
+    } catch (e) {
+      debugPrint('Error fetching all house data: $e');
+      emit(state.fromUsersFailure(UsersFailure.fromGet()));
     }
   }
 }

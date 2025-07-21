@@ -24,10 +24,10 @@ HouseMembersRouter.get(
 
 // Read with filters
 HouseMembersRouter.get(
-  "/:house_id/photo-urls",
-  houseMembersValidators.houseMembersPhotoUrl,
+  "/:house_id/user-info",
+  houseMembersValidators.houseMembersUserInfo,
   validateRequest,
-  houseMembersController.getPhotoUrls
+  houseMembersController.getHouseMembersUserInfo
 );
 
 // Read

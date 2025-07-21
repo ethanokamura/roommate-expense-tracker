@@ -96,7 +96,7 @@ const houseMembersValidators = {
       .withMessage(`must be at most 100 characters`),
   ],
 
-  houseMembersPhotoUrl: [
+  houseMembersUserInfo: [
     param("house_id")
       .notEmpty()
       .withMessage("House ID is required")

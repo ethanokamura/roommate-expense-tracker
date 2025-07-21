@@ -113,24 +113,18 @@ class HouseMembersController {
   }
 
   /**
-   * Handle GET /:house_id/photo-urls
+   * Handle GET /:house_id/user-info
    * @param {*} req - Express request object
    * @param {*} res - Express response object
    * @param {*} next - Express next function
    */
-  async getPhotoUrls(req, res, next) {
+  async getHouseMembersUserInfo(req, res, next) {
     const { house_id } = req.params;
     const sort_by = req.query.sort_by || "created_at";
     const sort_order = req.query.sort_order || "desc";
     const queryString = `
   SELECT 
-    users.user_id, 
-    users.display_name, 
-    users.photo_url, 
-    users.payment_method,
-    users.payment_link,
-    house_members.nickname, 
-    house_members.is_admin
+  users.*
   FROM house_members
   JOIN users ON house_members.user_id = users.user_id
   WHERE house_members.house_id = $1 

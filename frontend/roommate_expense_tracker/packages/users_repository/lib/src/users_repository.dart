@@ -4,6 +4,7 @@ import 'package:app_core/app_core.dart';
 import 'package:flutter/foundation.dart';
 import 'models/users.dart';
 import 'models/house_members.dart';
+import 'models/house_members_user_info.dart';
 import 'failures.dart';
 
 class UserHouseData {
@@ -1370,78 +1371,67 @@ extension Delete on UsersRepository {
     }
   }
 
-  /// Fetch list of all photo URLs of house members for a given houseId from Postgres.
-  ///
-  /// Requires the [houseId] for lookup.
-  Future<List<String>> fetchAllHouseMembersPhotoUrls({
+  Future<List<HouseMembersUserInfo>> fetchAllHouseMembersUserInfo({
     required String houseId,
     required String token,
     required String orderBy,
     required bool ascending,
     bool forceRefresh = false,
   }) async {
-    // Define cache key
     final cacheKey = generateCacheKey({
-      'object': 'house_member_photo_urls',
+      'object': 'house_member_user_info',
       'house_id': houseId,
       'order_by': orderBy,
       'ascending': ascending.toString(),
     });
 
-    // Try to load from cache
     if (!forceRefresh) {
       final cachedData = await _cacheManager.getCachedHttpResponse(cacheKey);
       if (cachedData != null) {
         try {
           final List<dynamic> jsonData = jsonDecode(cachedData);
-          final photoUrls = jsonData.cast<String>();
-          return photoUrls;
+          final userList = jsonData
+              .map((item) => HouseMembersUserInfo.fromJson(item))
+              .toList();
+          return List<HouseMembersUserInfo>.from(userList);
         } catch (e) {
-          debugPrint(
-            'Error decoding cached photo URL list data for key $cacheKey: $e',
-          );
+          debugPrint('Error decoding cached user info for key $cacheKey: $e');
         }
       }
     }
 
-    // Fallback to API call
     try {
       if (orderBy.isEmpty) orderBy = HouseMembers.createdAtConverter;
       final ascendingQuery = ascending ? 'asc' : 'desc';
-      debugPrint("HOUSEID : $houseId");
+
       final response = await dioRequest(
         dio: Dio(),
         apiEndpoint:
-            '/house-members/$houseId/photo-urls?sort_by=$orderBy&sort_order=$ascendingQuery',
+            '/house-members/$houseId/user-info?sort_by=$orderBy&sort_order=$ascendingQuery',
         method: 'GET',
         headers: {
           'Authorization': 'Bearer $token',
         },
       );
 
-      debugPrint('Users GET house_members/photo_urls response: $response');
-
       if (response['success'] != true || response['data'] == null) {
         throw UsersFailure.fromGet();
       }
 
       final List<dynamic> jsonData = response['data']!;
-      final photoUrls = jsonData
-          .map((item) => item['photo_url'] as String?)
-          .whereType<String>()
-          .toList();
+      final userList =
+          jsonData.map((item) => HouseMembersUserInfo.fromJson(item)).toList();
 
       // Cache the response
-      final String responseBody = jsonEncode(photoUrls);
+      final responseBody = jsonEncode(userList.map((e) => e.toJson()).toList());
       await _cacheManager.cacheHttpResponse(
         key: cacheKey,
         responseBody: responseBody,
         cacheDuration: const Duration(minutes: 60),
       );
-
-      return photoUrls;
+      return userList;
     } catch (e) {
-      debugPrint('Failure to fetch house member photo URLs: $e');
+      debugPrint('Failure to fetch house member user info: $e');
       throw UsersFailure.fromGet();
     }
   }

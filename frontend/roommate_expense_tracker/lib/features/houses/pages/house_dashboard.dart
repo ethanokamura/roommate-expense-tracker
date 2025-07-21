@@ -1,7 +1,6 @@
 //import 'package:app_core/app_core.dart';
 import 'package:app_ui/app_ui.dart';
 import 'package:app_core/app_core.dart';
-// import 'package:houses_repository/houses_repository.dart';
 import 'package:roommate_expense_tracker/features/users/cubit/users_cubit.dart';
 import 'package:roommate_expense_tracker/features/users/widgets/user_cubit_wrapper.dart';
 import 'package:users_repository/users_repository.dart';
@@ -10,32 +9,52 @@ import 'package:roommate_expense_tracker/features/houses/widgets/roommate_card.d
 import 'package:roommate_expense_tracker/features/users/widgets/profile_picture.dart';
 
 class HouseDashboard extends StatelessWidget {
-  const HouseDashboard({required this.houseId, super.key});
+  const HouseDashboard(
+      {required this.houseId, required this.userId, super.key});
   final String houseId;
-  final String houseName = "PLACEHOLDER";
-  final String inviteCode = "PLACEHOLDER";
+  final String userId;
 
   @override
   Widget build(BuildContext context) {
     final userRepository = context.read<UsersRepository>();
-    return BlocProvider(
-      create: (context) => UsersCubit(
-        usersRepository: userRepository,
-      )
-        ..fetchAllHouseMembersWithHouseId(
-          houseId: houseId,
-          token: userRepository.idToken ?? '',
-          orderBy: "nickname",
-          ascending: true,
-        )
-        ..fetchAllHouseMembersPhotoUrls(
-          houseId: houseId,
-          orderBy: "nickname",
-          ascending: true,
-          token: userRepository.idToken ?? '',
-        ),
+    final token = userRepository.idToken ?? '';
+    final usersCubit = UsersCubit(usersRepository: userRepository);
+    usersCubit.fetchAllHouseData(
+      houseId: houseId,
+      userId: userId,
+      token: token,
+    );
+    return BlocProvider.value(
+      value: usersCubit,
       child: UsersCubitWrapper(
         builder: (context, state) {
+          UserHouseData? houseData;
+          for (final data in state.userHouseDataList) {
+            if (data.houseId == houseId) {
+              houseData = data;
+              break;
+            }
+          }
+          if (houseData == null) {
+            if (state.isLoading) {
+              return Center(
+                  child: CircularProgressIndicator(
+                constraints: const BoxConstraints(
+                    minHeight: 100,
+                    minWidth: 100,
+                    maxHeight: 100,
+                    maxWidth: 100),
+                color: context.theme.accentColor,
+              ));
+            } else {
+              return Center(
+                  child: CustomText(
+                text: "ERROR: HOUSE DATA COULDN'T BE LOADED",
+                style: AppTextStyles.primary,
+                color: context.theme.errorColor,
+              ));
+            }
+          }
           return NestedPageBuilder(
             title: "House Dashboard",
             sectionsData: {
@@ -52,7 +71,7 @@ class HouseDashboard extends StatelessWidget {
                               style: AppTextStyles.primary,
                             ),
                             CustomText(
-                              text: houseName,
+                              text: houseData.houseName,
                               style: AppTextStyles.primary,
                               color: context.theme.subtextColor,
                             ),
@@ -64,7 +83,7 @@ class HouseDashboard extends StatelessWidget {
                     Expanded(
                       child: GestureDetector(
                         onTap: () {
-                          Clipboard.setData(ClipboardData(text: inviteCode));
+                          Clipboard.setData(ClipboardData(text: houseId));
                           ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
                                   content: Text("Copied To Dashboard")));
@@ -81,7 +100,7 @@ class HouseDashboard extends StatelessWidget {
                                       maxLines: 1,
                                     ),
                                     CustomText(
-                                      text: inviteCode,
+                                      text: houseId,
                                       style: AppTextStyles.primary,
                                       color: context.theme.subtextColor,
                                       maxLines: 1,
@@ -123,17 +142,19 @@ class HouseDashboard extends StatelessWidget {
             ),
             itemCount: state.houseMembersList.length,
             itemBuilder: (context, index) {
-              final photoUrl = (state.photoUrlsList.isNotEmpty &&
-                      index < state.photoUrlsList.length)
-                  ? state.photoUrlsList[index]
-                  : null;
+              final photoUrl = state.houseMemberUserInfoList[index].photoUrl;
+              final paymentMethod =
+                  state.houseMemberUserInfoList[index].paymentMethod ??
+                      'NOT SET';
+              final paymentLink =
+                  state.houseMemberUserInfoList[index].paymentLink ?? 'NOT SET';
               // get list of roommates
               return RoommateCard(
                 profilePicture:
                     ProfilePicture(photoUrl: photoUrl, id: index + 500),
                 name: state.houseMembersList[index].nickname,
-                paymentMethod: "Preffered Payment Method: ",
-                paymentMethodId: "831-xxx-xxxx",
+                paymentMethod: paymentMethod,
+                paymentLink: paymentLink,
               );
             },
             isLoading: state.isLoading,
