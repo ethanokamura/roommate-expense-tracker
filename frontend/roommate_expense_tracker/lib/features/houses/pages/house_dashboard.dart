@@ -1,8 +1,6 @@
-import 'package:api_client/api_client.dart';
 import 'package:app_core/app_core.dart';
 import 'package:flutter/services.dart';
 import 'package:app_ui/app_ui.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:houses_repository/houses_repository.dart';
 import 'package:users_repository/users_repository.dart';
 import 'package:roommate_expense_tracker/features/houses/cubit/houses_cubit.dart';
@@ -16,11 +14,12 @@ class HouseDashboard extends StatelessWidget {
   });
 
   final String houseId;
-
+  
   void _editHouseName(BuildContext context, String currentName) async {
     final controller = TextEditingController(text: currentName);
-    final token = context.read<UsersRepository>().credentials.credential?.accessToken ?? '';
-    final newName = await showDialog<String>(
+    final token = context.read<UsersRepository>().idToken ?? '';
+
+    final result = await showDialog<Map<String, dynamic>>(
       context: context,
       builder: (context) {
         return AlertDialog(
@@ -37,12 +36,15 @@ class HouseDashboard extends StatelessWidget {
               onPressed: () => Navigator.pop(context),
               style: TextButton.styleFrom(
                 backgroundColor: Theme.of(context).colorScheme.primary,
-                foregroundColor: context.theme.accentColor
+                foregroundColor: context.theme.accentColor,
               ),
               child: const Text('Cancel'),
             ),
             ElevatedButton(
-              onPressed: () => Navigator.pop(context, controller.text.trim()),
+              onPressed: () => Navigator.pop(context, {
+                'name': controller.text.trim(),
+                'forceRefresh': true,
+              }),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Theme.of(context).colorScheme.primary,
                 foregroundColor: context.theme.accentColor,
@@ -54,23 +56,39 @@ class HouseDashboard extends StatelessWidget {
       },
     );
 
+    final newName = result?['name']?.toString().trim();
+    final shouldRefresh = result?['forceRefresh'] == true;
+
     if (newName != null && newName.isNotEmpty && newName != currentName) {
-      Houses updatedName = Houses(name : newName);
-      context.read<HousesCubit>().updateHouses(
-        houseId: houseId, 
-        newHousesData: updatedName, 
+      final updatedName = Houses(name: newName);
+      await context.read<HousesCubit>().updateHouses(
+        houseId: houseId,
+        newHousesData: updatedName,
         token: token,
       );
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('House name updated')),
-      );
+
+      if (shouldRefresh) {
+        final userRepo = context.read<UsersRepository>();
+        await context.read<UsersCubit>().fetchUsersHouseData(
+          userId: userRepo.users.userId!,
+          token: token,
+          forceRefresh: true,
+        );
+      }
+
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('House name updated')),
+        );
+      }
     }
   }
+
 
   Future<void> _showInviteCode(BuildContext context) async {
     final code = houseId;
     final userId = context.read<UsersRepository>().users.userId!;
-    final token = context.read<UsersRepository>().credentials.credential?.accessToken ?? '';
+    final token = context.read<UsersRepository>().idToken ?? '';
 
     await context.read<UsersCubit>().fetchHouseMembersWithUserId(
       userId: userId,
@@ -79,7 +97,7 @@ class HouseDashboard extends StatelessWidget {
     final state = context.read<UsersCubit>().state;
     final houseMember = state.houseMembers;
 
-    if(houseMember.isAdmin){
+    // if(houseMember.isAdmin){
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
@@ -106,22 +124,23 @@ class HouseDashboard extends StatelessWidget {
         ),
       ),
     );
-    }
+    // }
   }
 
   @override
   Widget build(BuildContext context) {
     final userRepository = context.read<UsersRepository>();
+    final token = context.read<UsersRepository>().idToken ?? '';
     final housesCubit = HousesCubit(housesRepository: context.read<HousesRepository>())
       ..fetchHousesWithHouseId(
         houseId: houseId,
-        token: userRepository.credentials.credential?.accessToken ?? '',
+        token: token,
       );
 
     final usersCubit = UsersCubit(usersRepository: userRepository)
       ..fetchAllHouseMembersWithHouseId(
         houseId: houseId,
-        token: userRepository.credentials.credential?.accessToken ?? '',
+        token: token,
         orderBy: Users.createdAtConverter,
         ascending: false,
       );

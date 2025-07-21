@@ -1,6 +1,8 @@
 import 'package:app_core/app_core.dart';
 import 'package:app_ui/app_ui.dart';
+import 'package:houses_repository/houses_repository.dart';
 import 'package:roommate_expense_tracker/app/cubit/app_cubit.dart';
+import 'package:roommate_expense_tracker/features/houses/cubit/houses_cubit.dart';
 import 'package:roommate_expense_tracker/features/houses/pages/house_form.dart';
 import 'package:roommate_expense_tracker/features/users/cubit/users_cubit.dart';
 import 'package:users_repository/users_repository.dart';
@@ -18,9 +20,7 @@ class HouseSelectionPage extends StatelessWidget {
         create: (context) => UsersCubit(
           usersRepository: context.read<UsersRepository>(),
         )..fetchUsersHouseData(
-            userId:
-                // userRepository.users.userId!, // use this
-                'c04355e1-9d60-4d79-a2e3-cbc773e66307',
+            userId: userRepository.users.userId!,
             token: userRepository.idToken ?? '',
             forceRefresh: true,
           ),
@@ -33,16 +33,32 @@ class HouseSelectionPage extends StatelessWidget {
                     icon: AppIcons.add,
                     text: 'Add House',
                     onTap: () async {
-                          await Navigator.of(context).push(
-                            MaterialPageRoute(builder: (_) => const HouseFormPage()),
-                          );
-                          final userRepository = context.read<UsersRepository>();
-                          context.read<UsersCubit>().fetchUsersHouseData(
-                            userId: userRepository.users.userId!,
-                            token: userRepository.idToken ?? '',
-                            forceRefresh: true,
-                          );
+                      final userRepository = context.read<UsersRepository>();
+                      final housesRepository = context.read<HousesRepository>();
+
+                      await Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => MultiBlocProvider(
+                            providers: [
+                              BlocProvider.value(
+                                value: context.read<UsersCubit>(),
+                              ),
+                              BlocProvider(
+                                create: (_) => HousesCubit(housesRepository: housesRepository),
+                              ),
+                            ],
+                            child: const HouseFormPage(),
+                          ),
+                        ),
+                      );
+
+                      await context.read<UsersCubit>().fetchUsersHouseData(
+                        userId: userRepository.users.userId!,
+                        token: userRepository.idToken ?? '',
+                        forceRefresh: true,
+                      );
                     },
+
                     color: context.theme.accentColor,
                   ),
                 ],

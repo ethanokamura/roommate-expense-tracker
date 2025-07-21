@@ -67,7 +67,7 @@ const houseMembersValidators = {
       .notEmpty()
       .withMessage("is_admin is required")
       .isBoolean()
-      .withMessage("must be a boolean")
+      .withMessage("must be a boolean"),
   ],
 
   updateHouseMembers: [
@@ -94,7 +94,30 @@ const houseMembersValidators = {
       .withMessage(`nickname must not be empty`)
       .isLength({ max: 100 })
       .withMessage(`must be at most 100 characters`),
+  ],
 
+  houseMembersUserInfo: [
+    param("house_id")
+      .notEmpty()
+      .withMessage("House ID is required")
+      .isUUID()
+      .withMessage("House ID must be a valid UUID"),
+    query("sort_by")
+      .optional()
+      .isString()
+      .withMessage("Sort by must be a string")
+      .trim()
+      .notEmpty()
+      .withMessage(`sorty by must not be empty`)
+      .isIn(["created_at", "updated_at", "nickname"]),
+    query("sort_order")
+      .optional()
+      .isString()
+      .withMessage("Sort order must be a string")
+      .trim()
+      .notEmpty()
+      .withMessage("Sort order must be not be empty")
+      .isIn(["asc", "desc"]),
   ],
 };
 

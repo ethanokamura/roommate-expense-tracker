@@ -41,9 +41,9 @@ class UserController {
    */
   async getUser(req, res, next) {
     try {
-      const { user_id } = req.params;
+      const { id } = req.params;
       const result = await query("SELECT * FROM users WHERE user_id = $1", [
-        user_id,
+        id,
       ]);
       if (result.length === 0) {
         return res.status(404).json({

@@ -25,7 +25,9 @@ class HomePage extends StatelessWidget {
       create: (_) => NavBarController(),
       child: DefaultPageView(
         title: 'RET',
-        body: HomeBody(houseId: houseId),
+        body: HomeBody(
+          houseId: houseId,
+        ),
         actions: [
           AppBarButton(
             icon: Icons.code_rounded,
@@ -59,6 +61,7 @@ class HomeBody extends StatelessWidget {
   });
 
   final String houseId;
+
   @override
   Widget build(BuildContext context) {
     // final userEmail = context.read<UsersRepository>().currentUser!.email;
@@ -67,10 +70,12 @@ class HomeBody extends StatelessWidget {
     return PageView(
       controller: pageController,
       physics: const NeverScrollableScrollPhysics(),
-      children: const [
-        ExpensesDashboard(houseId: 'e4ifg4d3-3g4f-7i5g-b1i2-2e3d4f5g6h7i'),
-        HouseDashboard(houseId: 'c781b376-5c18-4d6f-a415-b6117fe8e4b5',),
-        UserDashboard(),
+      children: [
+        ExpensesDashboard(houseId: houseId),
+        HouseDashboard(
+          houseId: houseId,
+        ),
+        const UserDashboard(),
       ],
     );
   }

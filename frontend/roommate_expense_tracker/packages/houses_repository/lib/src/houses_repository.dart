@@ -30,6 +30,7 @@ extension Create on HousesRepository {
   Future<Houses> createHouses({
     required String name,
     required String token,
+    required String userId,
     bool forceRefresh = true,
   }) async {
     // Get cache key
@@ -64,6 +65,7 @@ extension Create on HousesRepository {
         },
         payload: {
           'name': name,
+          'user_id': userId,
         },
       );
       debugPrint('Houses post response: $response');

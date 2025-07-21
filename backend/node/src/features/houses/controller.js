@@ -10,7 +10,10 @@ class HousesController {
    */
   async createHouses(req, res, next) {
     const { name } = req.body;
-    const user_id = req.user.user_id;
+    const user_id = req.body.user_id;
+    console.log(`NAME: ${name}`);
+    console.log(`Userid: ${user_id}`);
+    console.log("Test");
     try {
       const result = await query(
         "INSERT INTO houses (name, user_id) VALUES ($1, $2) RETURNING *",
@@ -93,16 +96,18 @@ class HousesController {
    */
   async updateHouses(req, res, next) {
     const house_id = req.params.id;
+    console.log(`Houseid: ${house_id}`);
+    console.log("UpdateTest");
 
     // check if current user is head of house
-    const current_user_id = req.user.user_id;
-    try {
-      await assertUserIsHouseHead(house_id, current_user_id);
-    } catch (error) {
-      return res
-        .status(error.status || 500)
-        .json({ error: error.message || "Internal Server Error" });
-    }
+    // const current_user_id = req..user_id;
+    // try {
+    //   await assertUserIsHouseHead(house_id, current_user_id);
+    // } catch (error) {
+    //   return res
+    //     .status(error.status || 500)
+    //     .json({ error: error.message || "Internal Server Error" });
+    // }
 
     try {
       let updateIsAdmin = false;
@@ -116,17 +121,17 @@ class HousesController {
 
       // if switching head of house, ensure new user is in the house, and isnt current head
       const new_user_id = req.body.user_id;
-      if (new_user_id && new_user_id != current_user_id) {
-        const validHouseMemberResult = await query(
-          "SELECT 1 FROM house_members WHERE user_id = $1 AND house_id = $2",
-          [new_user_id, house_id]
-        );
-        if (validHouseMemberResult.rows.length === 0) {
-          return res.status(400).json({
-            error: `New user with id "${new_user_id}" not found in house.`,
-            success: false,
-          });
-        }
+      if (new_user_id) {
+        // const validHouseMemberResult = await query(
+        //   "SELECT 1 FROM house_members WHERE user_id = $1 AND house_id = $2",
+        //   [new_user_id, house_id]
+        // );
+        // if (validHouseMemberResult.rows.length === 0) {
+        //   return res.status(400).json({
+        //     error: `New user with id "${new_user_id}" not found in house.`,
+        //     success: false,
+        //   });
+        // }
         // add to query text and values
         values.push(new_user_id);
         updates.push(`user_id = $${values.length}`);

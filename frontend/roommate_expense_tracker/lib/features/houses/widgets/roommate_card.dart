@@ -1,18 +1,19 @@
 import 'package:app_ui/app_ui.dart';
+import 'package:flutter/services.dart';
 
 class RoommateCard extends StatelessWidget {
   const RoommateCard({
     required this.profilePicture,
     required this.name,
-    this.paymentMethod,
-    this.paymentMethodId,
+    required this.paymentMethod,
+    required this.paymentLink,
     super.key,
   });
 
   final Widget profilePicture;
   final String name;
-  final String? paymentMethod;
-  final String? paymentMethodId;
+  final String paymentMethod;
+  final String paymentLink;
 
   @override
   Widget build(BuildContext context) {
@@ -20,28 +21,61 @@ class RoommateCard extends StatelessWidget {
       child: Row(
         children: [
           profilePicture,
-          const HorizontalSpacer(),
+          const HorizontalSpacer(
+            multiple: 1.5,
+          ),
           Expanded(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Expanded(
-                  child: Column(
-                    children: [
-                      CustomText(text: name, style: AppTextStyles.primary),
-                      if (paymentMethod != null)
-                        CustomText(
-                          text: paymentMethod!,
+                CustomText(
+                  text: name,
+                  style: AppTextStyles.primary,
+                ),
+                Row(
+                  children: [
+                    const CustomText(
+                      text: "Pref. Payment Method: ",
+                      style: AppTextStyles.primary,
+                    ),
+                    Expanded(
+                      child: CustomText(
+                        text: paymentMethod,
+                        style: AppTextStyles.primary,
+                        color: (paymentMethod != "NOT SET")
+                            ? context.theme.textColor
+                            : context.theme.errorColor,
+                      ),
+                    ),
+                  ],
+                ),
+                Row(
+                  children: [
+                    const CustomText(
+                      text: "Link: ",
+                      style: AppTextStyles.primary,
+                    ),
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          if (paymentMethod != "NOT SET" &&
+                              paymentLink != "NOT SET") {
+                            Clipboard.setData(ClipboardData(text: paymentLink));
+                            ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                    content: Text("Copied To Dashboard")));
+                          }
+                        },
+                        child: CustomText(
+                          text: paymentLink,
                           style: AppTextStyles.primary,
+                          color: (paymentLink != "NOT SET")
+                              ? context.theme.accentColor
+                              : context.theme.errorColor,
                         ),
-                      if (paymentMethod != null && paymentMethodId != null)
-                        CustomText(
-                          text: paymentMethodId!,
-                          style: AppTextStyles.primary,
-                        ),
-                    ],
-                  ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),

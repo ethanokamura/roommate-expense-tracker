@@ -23,6 +23,7 @@ class HousesCubit extends Cubit<HousesState> {
   Future<void> createHouses({
     required String name,
     required String token,
+    required String userId,
     bool forceRefresh = true,
   }) async {
     emit(state.fromLoading());
@@ -30,6 +31,7 @@ class HousesCubit extends Cubit<HousesState> {
       // Retrieve new row after inserting
       final houses = await _housesRepository.createHouses(
         name: name,
+        userId: userId,
         token: token,
         forceRefresh: forceRefresh,
       );

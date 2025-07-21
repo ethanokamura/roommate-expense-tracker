@@ -1,4 +1,5 @@
 import 'package:app_core/app_core.dart';
+import 'package:flutter/src/widgets/gesture_detector.dart';
 
 ////////////////////////////////////////////////////////////////////////////
 //                                                                        //
@@ -10,7 +11,7 @@ import 'package:app_core/app_core.dart';
 //  is regenerated. If you need to modify behavior, update the source     //
 //                         template instead.                              //
 //                                                                        //
-//                Generated on: 2025-07-18 03:23:05 UTC                   //
+//                Generated on: 2025-07-10 19:14:06 UTC                   //
 //                                                                        //
 ////////////////////////////////////////////////////////////////////////////
 
@@ -23,9 +24,6 @@ class Users extends Equatable {
     this.userId, // PK
     this.displayName = '',
     this.email = '',
-    this.photoUrl = '',
-    this.paymentMethod = '',
-    this.paymentLink = '',
     this.createdAt,
     this.updatedAt,
   });
@@ -41,9 +39,6 @@ class Users extends Equatable {
       userId: json[userIdConverter]?.toString() ?? '',
       displayName: json[displayNameConverter]?.toString() ?? '',
       email: json[emailConverter]?.toString() ?? '',
-      photoUrl: json[photoUrlConverter]?.toString() ?? '',
-      paymentMethod: json[paymentMethodConverter]?.toString() ?? '',
-      paymentLink: json[paymentLinkConverter]?.toString() ?? '',
       createdAt: json[createdAtConverter] != null
           ? DateTime.tryParse(json[createdAtConverter].toString())?.toUtc() ??
               DateTime.now().toUtc()
@@ -59,9 +54,6 @@ class Users extends Equatable {
   static String get userIdConverter => 'user_id';
   static String get displayNameConverter => 'display_name';
   static String get emailConverter => 'email';
-  static String get photoUrlConverter => 'photo_url';
-  static String get paymentMethodConverter => 'payment_method';
-  static String get paymentLinkConverter => 'payment_link';
   static String get createdAtConverter => 'created_at';
   static String get updatedAtConverter => 'updated_at';
 
@@ -74,9 +66,6 @@ class Users extends Equatable {
   final String? userId; // PK
   final String displayName;
   final String email;
-  final String photoUrl;
-  final String paymentMethod;
-  final String paymentLink;
   final DateTime? createdAt;
   final DateTime? updatedAt;
 
@@ -86,9 +75,6 @@ class Users extends Equatable {
         userId,
         displayName,
         email,
-        photoUrl,
-        paymentMethod,
-        paymentLink,
         createdAt,
         updatedAt,
       ];
@@ -104,9 +90,6 @@ class Users extends Equatable {
       userId: userId,
       displayName: displayName,
       email: email,
-      photoUrl: photoUrl,
-      paymentMethod: paymentMethod,
-      paymentLink: paymentLink,
       createdAt: createdAt,
       updatedAt: updatedAt,
     );
@@ -117,9 +100,6 @@ class Users extends Equatable {
     String? userId,
     String? displayName,
     String? email,
-    String? photoUrl,
-    String? paymentMethod,
-    String? paymentLink,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
@@ -127,13 +107,12 @@ class Users extends Equatable {
       if (userId != null) userIdConverter: userId,
       if (displayName != null) displayNameConverter: displayName,
       if (email != null) emailConverter: email,
-      if (photoUrl != null) photoUrlConverter: photoUrl,
-      if (paymentMethod != null) paymentMethodConverter: paymentMethod,
-      if (paymentLink != null) paymentLinkConverter: paymentLink,
-      if (createdAt != null) createdAtConverter: createdAt.toIso8601String(),
-      if (updatedAt != null) updatedAtConverter: updatedAt.toIso8601String(),
+      if (createdAt != null) createdAtConverter: createdAt,
+      if (updatedAt != null) updatedAtConverter: updatedAt,
     };
   }
+
+  map(GestureDetector Function(dynamic member) param0) {}
 }
 
 // Extensions to the object allowing a public getters

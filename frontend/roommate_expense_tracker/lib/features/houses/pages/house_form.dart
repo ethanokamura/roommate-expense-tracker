@@ -1,7 +1,7 @@
+import 'package:api_client/api_client.dart';
 import 'package:app_ui/app_ui.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:houses_repository/houses_repository.dart';
 import 'package:roommate_expense_tracker/features/users/cubit/users_cubit.dart';
 import 'package:roommate_expense_tracker/features/users/pages/house_selection.dart';
 import 'package:users_repository/users_repository.dart';
@@ -14,22 +14,28 @@ class HouseFormPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final houseNameController = TextEditingController();
     final inviteCodeController = TextEditingController();
-    final token = context.read<UsersRepository>().credentials.credential?.accessToken ?? '';
-    final userId = context.read<UsersRepository>().users.userId;
+    final token = context.read<UsersRepository>().idToken ?? '';
+    final userId = context.read<UsersRepository>().users.userId ??'';
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Create/Join House'),
-        backgroundColor: context.theme.backgroundColor,
-        foregroundColor: context.theme.surfaceColor,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_rounded),
+          color: context.theme.subtextColor,
+          onPressed: () => Navigator.pop(context, true),
+        ),
+        backgroundColor: context.theme.surfaceColor,
+        foregroundColor: context.theme.textColor,
       ),
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
-            const CustomText(
+            CustomText(
               text: 'Create a House',
               style: AppTextStyles.title,
+              color: context.theme.accentColor,
             ),
             const SizedBox(height: 12),
             TextField(
@@ -52,22 +58,46 @@ class HouseFormPage extends StatelessWidget {
 
                 await context.read<HousesCubit>().createHouses(
                   name: houseName,
+                  userId: userId,
+                  token: token,
+                );
+                final houseState = context.read<HousesCubit>().state;
+                
+                await context.read<UsersCubit>().createHouseMembers(
+                  userId: userId, 
+                  houseId: houseState.houses.houseId??'', 
+                  isAdmin: true.toString(), 
+                  isActive: true.toString(), 
+                  token: token,
+                );
+                final userState = context.read<UsersCubit>().state;
+
+                await context.read<UsersCubit>().updateHouseMembers(
+                  houseMemberId: userState.houseMembers.houseMemberId ?? '', 
+                  newHouseMembersData: userState.houseMembers, 
                   token: token,
                 );
 
+                // await context.read<HousesCubit>().updateHouses(
+                //   houseId: houseId,
+                //   newHousesData: houseState.houses, 
+                //   token: token,
+                // );
+
                 if (context.mounted) {
-                  Navigator.pushReplacement(
+                  Navigator.pop(
                     context,
-                    MaterialPageRoute(builder: (_) => const HouseSelectionPage()),
+                    true,
                   );
                 }
               },
               child: const Text("Create House"),
             ),
             const Divider(height: 40),
-            const CustomText(
+            CustomText(
               text: 'Join a House',
               style: AppTextStyles.title,
+              color: context.theme.accentColor,
             ),
             const SizedBox(height: 12),
             TextField(
@@ -88,12 +118,6 @@ class HouseFormPage extends StatelessWidget {
                 }
 
                 try {
-                  await context.read<HousesCubit>().fetchHousesWithHouseId(
-                    houseId: code,
-                    token: token,
-                  );
-                  final houseState = context.read<HousesCubit>().state;
-
                   await context.read<UsersCubit>().createHouseMembers(
                     userId: userId!,
                     houseId: code,
