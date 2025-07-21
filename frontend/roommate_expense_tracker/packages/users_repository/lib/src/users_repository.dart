@@ -4,6 +4,7 @@ import 'package:app_core/app_core.dart';
 import 'package:flutter/foundation.dart';
 import 'models/users.dart';
 import 'models/house_members.dart';
+import 'models/house_members_user_info.dart';
 import 'failures.dart';
 
 class UserHouseData {
@@ -1366,6 +1367,71 @@ extension Delete on UsersRepository {
       return response['message']!;
     } catch (e) {
       debugPrint('Failure to delete houseMembers: $e');
+      throw UsersFailure.fromGet();
+    }
+  }
+
+  Future<List<HouseMembersUserInfo>> fetchAllHouseMembersUserInfo({
+    required String houseId,
+    required String token,
+    required String orderBy,
+    required bool ascending,
+    bool forceRefresh = false,
+  }) async {
+    final cacheKey = generateCacheKey({
+      'object': 'house_member_user_info',
+      'house_id': houseId,
+      'order_by': orderBy,
+      'ascending': ascending.toString(),
+    });
+
+    if (!forceRefresh) {
+      final cachedData = await _cacheManager.getCachedHttpResponse(cacheKey);
+      if (cachedData != null) {
+        try {
+          final List<dynamic> jsonData = jsonDecode(cachedData);
+          final userList = jsonData
+              .map((item) => HouseMembersUserInfo.fromJson(item))
+              .toList();
+          return List<HouseMembersUserInfo>.from(userList);
+        } catch (e) {
+          debugPrint('Error decoding cached user info for key $cacheKey: $e');
+        }
+      }
+    }
+
+    try {
+      if (orderBy.isEmpty) orderBy = HouseMembers.createdAtConverter;
+      final ascendingQuery = ascending ? 'asc' : 'desc';
+
+      final response = await dioRequest(
+        dio: Dio(),
+        apiEndpoint:
+            '/house-members/$houseId/user-info?sort_by=$orderBy&sort_order=$ascendingQuery',
+        method: 'GET',
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response['success'] != true || response['data'] == null) {
+        throw UsersFailure.fromGet();
+      }
+
+      final List<dynamic> jsonData = response['data']!;
+      final userList =
+          jsonData.map((item) => HouseMembersUserInfo.fromJson(item)).toList();
+
+      // Cache the response
+      final responseBody = jsonEncode(userList.map((e) => e.toJson()).toList());
+      await _cacheManager.cacheHttpResponse(
+        key: cacheKey,
+        responseBody: responseBody,
+        cacheDuration: const Duration(minutes: 60),
+      );
+      return userList;
+    } catch (e) {
+      debugPrint('Failure to fetch house member user info: $e');
       throw UsersFailure.fromGet();
     }
   }

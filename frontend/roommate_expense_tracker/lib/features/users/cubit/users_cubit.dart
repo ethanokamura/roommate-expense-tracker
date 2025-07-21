@@ -439,12 +439,58 @@ class UsersCubit extends Cubit<UsersState> {
         token: token,
         forceRefresh: forceRefresh,
       );
+      debugPrint("Emitting state with ${userHouseDataList.length} items");
       emit(state.fromUserHouseDataListLoaded(
         userHouseDataList: userHouseDataList,
       ));
+      debugPrint("State emitted");
     } on UsersFailure catch (failure) {
       debugPrint('Failure to create houseMembers: $failure');
       emit(state.fromUsersFailure(failure));
+    }
+  }
+
+  Future<void> fetchAllHouseData({
+    required String houseId,
+    required String userId,
+    required String token,
+  }) async {
+    emit(state.fromLoading());
+
+    try {
+      final userHouseDataList = await _usersRepository.fetchUserHouseData(
+        userId: userId,
+        token: token,
+        forceRefresh: true,
+      );
+
+      final houseMembersList =
+          await _usersRepository.fetchAllHouseMembersWithHouseId(
+        houseId: houseId,
+        token: token,
+        orderBy: "nickname",
+        ascending: true,
+        forceRefresh: true,
+      );
+
+      final houseMemberUserInfoList =
+          await _usersRepository.fetchAllHouseMembersUserInfo(
+        houseId: houseId,
+        orderBy: "nickname",
+        ascending: true,
+        token: token,
+        forceRefresh: true,
+      );
+
+      emit(state.copyWith(
+        userHouseDataList: userHouseDataList,
+        houseMembersList: houseMembersList,
+        houseMemberUserInfoList: houseMemberUserInfoList,
+        status: UsersStatus.loaded,
+      ));
+    } catch (e) {
+      debugPrint('Error fetching all house data: $e');
+      emit(state.fromUsersFailure(UsersFailure.fromGet()));
     }
   }
 }

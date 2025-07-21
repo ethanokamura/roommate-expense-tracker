@@ -17,9 +17,7 @@ class HouseSelectionPage extends StatelessWidget {
         create: (context) => UsersCubit(
           usersRepository: context.read<UsersRepository>(),
         )..fetchUsersHouseData(
-            userId:
-                // userRepository.users.userId!, // use this
-                'c04355e1-9d60-4d79-a2e3-cbc773e66307',
+            userId: userRepository.users.userId!,
             token: userRepository.idToken ?? '',
             forceRefresh: true,
           ),
