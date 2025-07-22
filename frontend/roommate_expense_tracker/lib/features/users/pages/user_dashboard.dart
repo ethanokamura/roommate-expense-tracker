@@ -1,6 +1,9 @@
 import 'package:app_ui/app_ui.dart';
 import 'package:app_core/app_core.dart';
+import 'package:roommate_expense_tracker/app/cubit/app_cubit.dart';
+import 'package:roommate_expense_tracker/features/houses/widgets/roommate_card.dart';
 import 'package:roommate_expense_tracker/features/users/cubit/users_cubit.dart';
+import 'package:roommate_expense_tracker/features/users/widgets/profile_picture.dart';
 import 'package:roommate_expense_tracker/features/users/widgets/user_cubit_wrapper.dart';
 import 'package:users_repository/users_repository.dart';
 import 'package:roommate_expense_tracker/features/users/widgets/user_house_card.dart';
@@ -14,241 +17,257 @@ class UserDashboard extends StatelessWidget {
     final userRepository = context.read<UsersRepository>();
     final token = userRepository.idToken ?? '';
     final usersCubit = UsersCubit(usersRepository: userRepository);
-    usersCubit.fetchAllHouseData(
-      houseId: houseId,
-      userId: userId,
-      token: token,
-    );
-    return BlocProvider.value(
-      value: usersCubit,
+    return BlocProvider<UsersCubit>(
+      create: (context) => usersCubit
+        ..fetchAllHouseData(
+          houseId: houseId,
+          userId: userId,
+          token: token,
+        ),
       child: UsersCubitWrapper(
         builder: (context, state) {
-          if (state.isLoading) {
-            return Center(
-                child: CircularProgressIndicator(
-              constraints: const BoxConstraints(
-                  minHeight: 100, minWidth: 100, maxHeight: 100, maxWidth: 100),
-              color: context.theme.accentColor,
-            ));
-          } else {
-            final houseMemberUserInfo = state.houseMemberUserInfoList
-                .firstWhere((m) => m.userId == userId,
-                    orElse: () => HouseMembersUserInfo(userId: userId));
-            final houseMember = state.houseMembersList.firstWhere(
-                (m) => m.userId == userId,
-                orElse: () => const HouseMembers());
-            String? paymentMethod = houseMemberUserInfo.paymentMethod ?? '';
-            String? paymentLink = houseMemberUserInfo.paymentLink ?? '';
-            String nickname = houseMember.nickname;
-            return NestedPageBuilder(
-              title: "User Dashboard",
-              sectionsData: {
-                'Your Info': [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      DefaultContainer(
-                        child: Row(
-                          children: [
-                            const CustomText(
-                              text: "Nickname: ",
-                              style: AppTextStyles.primary,
-                            ),
-                            Expanded(
-                              child: CustomText(
-                                text: nickname,
-                                style: AppTextStyles.primary,
-                                color: context.theme.accentColor,
-                              ),
-                            ),
-                            GestureDetector(
-                              onTap: () async {
-                                try {
-                                  final updated = await _editUserInfoDialog(
-                                    context: context,
-                                    key: "Nickname",
-                                    value: nickname,
-                                  );
-                                  if (updated != null) {
-                                    HouseMembers newHouseMembersData =
-                                        houseMember.copyWith(
-                                      nickname: updated["Nickname"] ?? '',
-                                    );
-                                    await usersCubit.updateHouseMembers(
-                                      houseMemberId:
-                                          houseMember.houseMemberId ?? '',
-                                      newHouseMembersData: newHouseMembersData,
-                                      token: token,
-                                    );
-                                    await usersCubit.fetchAllHouseData(
-                                        houseId: houseId,
-                                        token: token,
-                                        userId: userId);
-                                  }
-                                } catch (e) {
-                                  debugPrint(
-                                      'Failure editing $key ${e.toString()}');
-                                }
-                              },
-                              child: const Padding(
-                                padding: EdgeInsets.all(1), // Small padding
-                                child: Icon(
-                                  Icons.edit,
-                                  size: 12,
-                                  color: CustomColors.lightPrimary,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
+          final houseMemberUserInfo = state.houseMemberUserInfoList.firstWhere(
+              (m) => m.userId == userId,
+              orElse: () => HouseMembersUserInfo(userId: userId));
+          final houseMember = state.houseMembersList.firstWhere(
+              (m) => m.userId == userId,
+              orElse: () => const HouseMembers());
+          String? paymentMethod = houseMemberUserInfo.paymentMethod ?? '';
+          String? paymentLink = houseMemberUserInfo.paymentLink ?? '';
+          String nickname = houseMember.nickname;
+          return NestedPageBuilder(
+            title: "User Dashboard",
+            sectionsData: {
+              'Your Info': [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    RoommateCard(
+                      key: ObjectKey(userId),
+                      profilePicture: ProfilePicture(
+                        photoUrl: houseMemberUserInfo.photoUrl,
+                        id: 500,
                       ),
-                      DefaultContainer(
-                        child: Row(
-                          children: [
-                            const CustomText(
-                              text: "Payment Method: ",
-                              style: AppTextStyles.primary,
-                            ),
-                            Expanded(
-                              child: CustomText(
-                                text: (paymentMethod == '')
-                                    ? "NOT SET"
-                                    : paymentMethod,
-                                style: AppTextStyles.primary,
-                                color: (paymentMethod != '')
-                                    ? context.theme.accentColor
-                                    : context.theme.errorColor,
-                              ),
-                            ),
-                            GestureDetector(
-                              onTap: () async {
-                                try {
-                                  final updated = await _editUserInfoDialog(
-                                    context: context,
-                                    key: "Payment Method",
-                                    value: paymentMethod,
-                                  );
-                                  if (updated != null) {
-                                    Users newUsersData = state.users.copyWith(
-                                        paymentMethod:
-                                            updated["Payment Method"]);
-                                    await usersCubit.updateUsers(
-                                      userId: userId,
-                                      newUsersData: newUsersData,
-                                      token: token,
-                                    );
-                                    await usersCubit.fetchAllHouseData(
-                                        houseId: houseId,
-                                        token: token,
-                                        userId: userId);
-                                  }
-                                } catch (e) {
-                                  debugPrint(
-                                      'Failure editing $key ${e.toString()}');
-                                }
-                              },
-                              child: const Padding(
-                                padding: EdgeInsets.all(1), // Small padding
-                                child: Icon(
-                                  Icons.edit,
-                                  size: 12,
-                                  color: CustomColors.lightPrimary,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      DefaultContainer(
-                        child: Row(
-                          children: [
-                            const CustomText(
-                              text: "Payment Info: ",
-                              style: AppTextStyles.primary,
-                            ),
-                            Expanded(
-                              child: CustomText(
-                                text: (paymentLink == "")
-                                    ? "NOT SET"
-                                    : paymentLink,
-                                style: AppTextStyles.primary,
-                                color: (paymentLink != "")
-                                    ? context.theme.accentColor
-                                    : context.theme.errorColor,
-                              ),
-                            ),
-                            GestureDetector(
-                              onTap: () async {
-                                try {
-                                  final updated = await _editUserInfoDialog(
-                                    context: context,
-                                    key: "Payment Info",
-                                    value: paymentLink,
-                                  );
-                                  if (updated != null) {
-                                    Users newUsersData = state.users.copyWith(
-                                        paymentLink: updated["Payment Info"]);
-                                    await usersCubit.updateUsers(
-                                      userId: userId,
-                                      newUsersData: newUsersData,
-                                      token: token,
-                                    );
-                                    await usersCubit.fetchAllHouseData(
-                                        houseId: houseId,
-                                        token: token,
-                                        userId: userId);
-                                  }
-                                } catch (e) {
-                                  debugPrint(
-                                      'Failure editing $key ${e.toString()}');
-                                }
-                              },
-                              child: const Padding(
-                                padding: EdgeInsets.all(1), // Small padding
-                                child: Icon(
-                                  Icons.edit,
-                                  size: 12,
-                                  color: CustomColors.lightPrimary,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              },
-              filter: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  CustomText(
-                    text: "Houses You're In",
-                    style: AppTextStyles.title,
-                    color: context.theme.accentColor,
-                  ),
-                  DropDown(dropDownItems: [
-                    DropDownItem(
-                      icon: Icons.sort_by_alpha,
-                      text: 'Alphabetical Order',
-                      onSelect: () async {},
+                      name: nickname,
+                      paymentMethod: paymentMethod,
+                      paymentLink: paymentLink,
                     ),
-                    DropDownItem(
-                      icon: AppIcons.calendar,
-                      text: 'Most Recently Joined',
-                      onSelect: () async {},
+                    const VerticalSpacer(),
+                    DefaultContainer(
+                      child: Row(
+                        children: [
+                          const CustomText(
+                            text: "Nickname: ",
+                            style: AppTextStyles.primary,
+                          ),
+                          Expanded(
+                            child: CustomText(
+                              text: state.isLoading ? '' : nickname,
+                              style: AppTextStyles.primary,
+                              color: context.theme.accentColor,
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: () async {
+                              try {
+                                final updated = await _editUserInfoDialog(
+                                  context: context,
+                                  key: "Nickname",
+                                  value: nickname,
+                                );
+                                if (updated != null) {
+                                  HouseMembers newHouseMembersData =
+                                      houseMember.copyWith(
+                                    nickname: updated["Nickname"] ?? '',
+                                  );
+                                  await usersCubit.updateHouseMembers(
+                                    houseMemberId:
+                                        houseMember.houseMemberId ?? '',
+                                    newHouseMembersData: newHouseMembersData,
+                                    token: token,
+                                  );
+                                  if (!context.mounted) return;
+                                  await usersCubit.fetchAllHouseData(
+                                    houseId: houseId,
+                                    userId: userId,
+                                    token: token,
+                                  );
+                                }
+                              } catch (e) {
+                                debugPrint(
+                                    'Failure editing $key ${e.toString()}');
+                              }
+                            },
+                            child: const Padding(
+                              padding: EdgeInsets.all(1), // Small padding
+                              child: Icon(
+                                Icons.edit,
+                                size: 12,
+                                color: CustomColors.lightPrimary,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ])
-                ],
-              ),
-              itemBuilder: (context, index) => UsersHouseCard(
-                userHouse: state.userHouseDataList[index],
-              ),
-              itemCount: state.userHouseDataList.length,
-              isLoading: state.isLoading,
-              emptyMessage: 'You are not a member of any houses yet!',
-            );
-          }
+                    DefaultContainer(
+                      child: Row(
+                        children: [
+                          const CustomText(
+                            text: "Payment Method: ",
+                            style: AppTextStyles.primary,
+                          ),
+                          Expanded(
+                            child: CustomText(
+                              text: state.isLoading
+                                  ? ''
+                                  : (paymentMethod == '')
+                                      ? "NOT SET"
+                                      : paymentMethod,
+                              style: AppTextStyles.primary,
+                              color: (paymentMethod != '')
+                                  ? context.theme.accentColor
+                                  : context.theme.errorColor,
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: () async {
+                              try {
+                                final updated = await _editUserInfoDialog(
+                                  context: context,
+                                  key: "Payment Method",
+                                  value: paymentMethod,
+                                );
+                                if (updated != null) {
+                                  Users newUsersData = state.users.copyWith(
+                                      paymentMethod: updated["Payment Method"]);
+                                  await usersCubit.updateUsers(
+                                    userId: userId,
+                                    newUsersData: newUsersData,
+                                    token: token,
+                                  );
+                                  if (!context.mounted) return;
+                                  await usersCubit.fetchAllHouseData(
+                                    houseId: houseId,
+                                    userId: userId,
+                                    token: token,
+                                  );
+                                }
+                              } catch (e) {
+                                debugPrint(
+                                    'Failure editing $key ${e.toString()}');
+                              }
+                            },
+                            child: const Padding(
+                              padding: EdgeInsets.all(1), // Small padding
+                              child: Icon(
+                                Icons.edit,
+                                size: 12,
+                                color: CustomColors.lightPrimary,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    DefaultContainer(
+                      child: Row(
+                        children: [
+                          const CustomText(
+                            text: "Payment Info: ",
+                            style: AppTextStyles.primary,
+                          ),
+                          Expanded(
+                            child: CustomText(
+                              text: state.isLoading
+                                  ? ''
+                                  : (paymentLink == "")
+                                      ? "NOT SET"
+                                      : paymentLink,
+                              style: AppTextStyles.primary,
+                              color: (paymentLink != "")
+                                  ? context.theme.accentColor
+                                  : context.theme.errorColor,
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: () async {
+                              try {
+                                final updated = await _editUserInfoDialog(
+                                  context: context,
+                                  key: "Payment Info",
+                                  value: paymentLink,
+                                );
+                                if (updated != null) {
+                                  Users newUsersData = state.users.copyWith(
+                                      paymentLink: updated["Payment Info"]);
+                                  await usersCubit.updateUsers(
+                                    userId: userId,
+                                    newUsersData: newUsersData,
+                                    token: token,
+                                  );
+                                  if (!context.mounted) return;
+                                  await usersCubit.fetchAllHouseData(
+                                    houseId: houseId,
+                                    userId: userId,
+                                    token: token,
+                                  );
+                                }
+                              } catch (e) {
+                                debugPrint(
+                                    'Failure editing $key ${e.toString()}');
+                              }
+                            },
+                            child: const Padding(
+                              padding: EdgeInsets.all(1), // Small padding
+                              child: Icon(
+                                Icons.edit,
+                                size: 12,
+                                color: CustomColors.lightPrimary,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                CustomButton(
+                  onTap: () async => context.read<AppCubit>().signOut(),
+                  text: 'Sign Out',
+                  icon: AppIcons.logOut,
+                ),
+              ],
+            },
+            filter: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                CustomText(
+                  text: "Houses You're In",
+                  style: AppTextStyles.title,
+                  color: context.theme.accentColor,
+                ),
+                DropDown(dropDownItems: [
+                  DropDownItem(
+                    icon: Icons.sort_by_alpha,
+                    text: 'Alphabetical Order',
+                    onSelect: () async {},
+                  ),
+                  DropDownItem(
+                    icon: AppIcons.calendar,
+                    text: 'Most Recently Joined',
+                    onSelect: () async {},
+                  ),
+                ])
+              ],
+            ),
+            itemBuilder: (context, index) => UsersHouseCard(
+              userHouse: state.userHouseDataList[index],
+            ),
+            itemCount: state.userHouseDataList.length,
+            isLoading: state.isLoading,
+            emptyMessage: 'You are not a member of any houses yet!',
+          );
         },
       ),
     );
@@ -274,7 +293,12 @@ class UserDashboard extends StatelessWidget {
               key: formKey,
               child: TextFormField(
                 controller: valueController,
+                cursorColor: context.theme.subtextColor,
                 maxLength: 99,
+                decoration: defaultTextFormFieldDecoration(
+                  context: context,
+                  label: key,
+                ),
                 validator: (value) {
                   if (key == "Nickname" &&
                       (value == null || value.trim().isEmpty)) {
@@ -286,25 +310,30 @@ class UserDashboard extends StatelessWidget {
             ),
           ),
           actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const CustomText(
-                text: 'Cancel',
-                style: AppTextStyles.button,
-              ),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                if (formKey.currentState!.validate()) {
-                  Navigator.of(context).pop({
-                    key: valueController.text,
-                  });
-                }
-              },
-              child: const CustomText(
-                text: 'Save',
-                style: AppTextStyles.button,
-              ),
+            Row(
+              children: [
+                Expanded(
+                  child: CustomButton(
+                    onTap: () => Navigator.of(context).pop(),
+                    text: 'Cancel',
+                    color: context.theme.backgroundColor,
+                  ),
+                ),
+                const HorizontalSpacer(),
+                Expanded(
+                  child: CustomButton(
+                    onTap: () {
+                      if (formKey.currentState!.validate()) {
+                        Navigator.of(context).pop({
+                          key: valueController.text,
+                        });
+                      }
+                    },
+                    text: 'Save',
+                    color: context.theme.accentColor,
+                  ),
+                ),
+              ],
             ),
           ],
         );

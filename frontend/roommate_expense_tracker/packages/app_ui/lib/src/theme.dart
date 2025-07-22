@@ -4,6 +4,10 @@ import 'package:google_fonts/google_fonts.dart';
 
 // create custom themes that adapt to user brightness mode
 extension CustomThemeData on ThemeData {
+  /// [defaultImagePath]
+  /// Show different images based on brightness mode
+  String get defaultImagePath => 'assets/logos/ret_logo_no_bg.png';
+
   /// [accentColor]
   /// Gives the signature look to the app
   Color get accentColor => brightness == Brightness.dark

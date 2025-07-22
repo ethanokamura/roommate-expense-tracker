@@ -1,4 +1,6 @@
 //import 'package:app_core/app_core.dart';
+import 'dart:math';
+
 import 'package:app_ui/app_ui.dart';
 import 'package:app_core/app_core.dart';
 import 'package:roommate_expense_tracker/features/users/cubit/users_cubit.dart';
@@ -18,43 +20,16 @@ class HouseDashboard extends StatelessWidget {
   Widget build(BuildContext context) {
     final userRepository = context.read<UsersRepository>();
     final token = userRepository.idToken ?? '';
-    final usersCubit = UsersCubit(usersRepository: userRepository);
-    usersCubit.fetchAllHouseData(
-      houseId: houseId,
-      userId: userId,
-      token: token,
-    );
-    return BlocProvider.value(
-      value: usersCubit,
+    return BlocProvider<UsersCubit>(
+      create: (context) => UsersCubit(
+        usersRepository: userRepository,
+      )..fetchAllHouseData(houseId: houseId, userId: userId, token: token),
       child: UsersCubitWrapper(
         builder: (context, state) {
-          UserHouseData? houseData;
-          for (final data in state.userHouseDataList) {
-            if (data.houseId == houseId) {
-              houseData = data;
-              break;
-            }
-          }
-          if (houseData == null) {
-            if (state.isLoading) {
-              return Center(
-                  child: CircularProgressIndicator(
-                constraints: const BoxConstraints(
-                    minHeight: 100,
-                    minWidth: 100,
-                    maxHeight: 100,
-                    maxWidth: 100),
-                color: context.theme.accentColor,
-              ));
-            } else {
-              return Center(
-                  child: CustomText(
-                text: "ERROR: HOUSE DATA COULDN'T BE LOADED",
-                style: AppTextStyles.primary,
-                color: context.theme.errorColor,
-              ));
-            }
-          }
+          UserHouseData houseData = state.userHouseDataList.firstWhere(
+            (element) => element.houseId == houseId,
+            orElse: () => UserHouseData.empty,
+          );
           return NestedPageBuilder(
             title: "House Dashboard",
             sectionsData: {
@@ -63,53 +38,58 @@ class HouseDashboard extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Expanded(
-                      child: DefaultContainer(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            const CustomText(
-                              text: 'House Name',
-                              style: AppTextStyles.primary,
+                      child: state.isLoading
+                          ? const SkeletonCard(lines: 2)
+                          : DefaultContainer(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  const CustomText(
+                                    text: 'House Name',
+                                    style: AppTextStyles.primary,
+                                  ),
+                                  CustomText(
+                                    text: houseData.houseName,
+                                    style: AppTextStyles.primary,
+                                    color: context.theme.subtextColor,
+                                  ),
+                                ],
+                              ),
                             ),
-                            CustomText(
-                              text: houseData.houseName,
-                              style: AppTextStyles.primary,
-                              color: context.theme.subtextColor,
-                            ),
-                          ],
-                        ),
-                      ),
                     ),
                     const HorizontalSpacer(),
                     Expanded(
-                      child: GestureDetector(
-                        onTap: () {
-                          Clipboard.setData(ClipboardData(text: houseId));
-                          ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                  content: Text("Copied To Dashboard")));
-                        },
-                        child: DefaultContainer(
-                          child: Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                const CustomText(
-                                  text: 'Invite Code',
-                                  style: AppTextStyles.primary,
-                                  maxLines: 1,
+                      child: state.isLoading
+                          ? const SkeletonCard(lines: 2)
+                          : GestureDetector(
+                              onTap: () {
+                                Clipboard.setData(ClipboardData(text: houseId));
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                        content: Text("Copied To Dashboard")));
+                              },
+                              child: DefaultContainer(
+                                child: Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      const CustomText(
+                                        text: 'Invite Code',
+                                        style: AppTextStyles.primary,
+                                        maxLines: 1,
+                                      ),
+                                      CustomText(
+                                        text: houseId,
+                                        style: AppTextStyles.primary,
+                                        color: context.theme.subtextColor,
+                                        maxLines: 1,
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                                CustomText(
-                                  text: houseId,
-                                  style: AppTextStyles.primary,
-                                  color: context.theme.subtextColor,
-                                  maxLines: 1,
-                                ),
-                              ],
+                              ),
                             ),
-                          ),
-                        ),
-                      ),
                     ),
                   ],
                 ),
@@ -143,7 +123,8 @@ class HouseDashboard extends StatelessWidget {
                 ])
               ],
             ),
-            itemCount: state.houseMembersList.length,
+            itemCount: min(state.houseMembersList.length,
+                state.houseMemberUserInfoList.length),
             itemBuilder: (context, index) {
               final photoUrl = state.houseMemberUserInfoList[index].photoUrl;
               final paymentMethod =
@@ -152,6 +133,7 @@ class HouseDashboard extends StatelessWidget {
                   state.houseMemberUserInfoList[index].paymentLink ?? "";
               // get list of roommates
               return RoommateCard(
+                key: ObjectKey(state.houseMembersList[index].userId),
                 profilePicture:
                     ProfilePicture(photoUrl: photoUrl, id: index + 500),
                 name: state.houseMembersList[index].nickname,

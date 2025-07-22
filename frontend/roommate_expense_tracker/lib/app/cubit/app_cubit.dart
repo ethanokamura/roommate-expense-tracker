@@ -28,6 +28,11 @@ class AppCubit extends Cubit<AppState> {
         : emit(const AppState.unauthenticated());
   }
 
+  Future<void> signOut() async {
+    await _usersRepository.signOut();
+    verifyAuthentication();
+  }
+
   Future<void> selectedHouse({
     required String houseId,
     required String memberId,

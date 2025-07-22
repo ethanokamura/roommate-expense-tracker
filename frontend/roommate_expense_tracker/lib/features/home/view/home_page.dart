@@ -1,13 +1,10 @@
 import 'package:app_core/app_core.dart';
 import 'package:app_ui/app_ui.dart';
-import 'package:roommate_expense_tracker/features/demo_page.dart';
 import 'package:roommate_expense_tracker/features/expenses/expenses.dart';
 import 'package:roommate_expense_tracker/features/home/view/bottom_nav_bar.dart';
 import 'package:roommate_expense_tracker/features/houses/houses.dart';
 import 'package:roommate_expense_tracker/features/users/users.dart';
 import 'package:users_repository/users_repository.dart';
-// import 'package:roommate_expense_tracker/theme/theme_button.dart';
-// import 'package:users_repository/users_repository.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({
@@ -24,20 +21,9 @@ class HomePage extends StatelessWidget {
     return ListenableProvider(
       create: (_) => NavBarController(),
       child: DefaultPageView(
-        title: 'RET',
-        centerTitle: false,
         body: HomeBody(
           houseId: houseId,
         ),
-        actions: [
-          AppBarButton(
-            icon: Icons.code_rounded,
-            onTap: () => Navigator.push(
-              context,
-              fadeThroughTransition(const DemoPage()),
-            ),
-          ),
-        ],
         floatingActionButton: FloatingActionTransitionContainer(
           page: CreateExpensePage(
             houseId: houseId,

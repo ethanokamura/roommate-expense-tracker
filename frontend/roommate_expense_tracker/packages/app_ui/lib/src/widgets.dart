@@ -141,7 +141,7 @@ class DefaultPageView extends StatelessWidget {
       floatingActionButton: floatingActionButton,
       body: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: maxScreenWidth),
-        child: body,
+        child: SafeArea(child: body),
       ),
       bottomNavigationBar: bottomNavigationBar,
     );

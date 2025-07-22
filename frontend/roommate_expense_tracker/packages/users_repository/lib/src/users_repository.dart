@@ -77,6 +77,8 @@ class UserHouseData {
     return data.map(UserHouseData.fromJson).toList();
   }
 
+  static const empty = UserHouseData();
+
   // Helper function to safely parse boolean values, handling various input types
   static bool _parseBool(dynamic value) {
     if (value == null) {
@@ -234,6 +236,9 @@ extension Auth on UsersRepository {
       await Future.wait([
         _googleSignIn.signOut(),
       ]);
+      _currentUser = null;
+      _houseId = '';
+      _memberId = '';
     } on Exception catch (e, st) {
       debugPrint('Error during signOut: $e, $st');
       throw UsersFailure.fromSignOut();
