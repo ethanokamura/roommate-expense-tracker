@@ -35,15 +35,15 @@ class RoommateCard extends StatelessWidget {
                 Row(
                   children: [
                     const CustomText(
-                      text: "Pref. Payment Method: ",
+                      text: "Payment Method: ",
                       style: AppTextStyles.primary,
                     ),
                     Expanded(
                       child: CustomText(
-                        text: paymentMethod,
+                        text: (paymentMethod == '') ? "NOT SET" : paymentMethod,
                         style: AppTextStyles.primary,
-                        color: (paymentMethod != "NOT SET")
-                            ? context.theme.textColor
+                        color: (paymentMethod != '')
+                            ? context.theme.accentColor
                             : context.theme.errorColor,
                       ),
                     ),
@@ -52,29 +52,35 @@ class RoommateCard extends StatelessWidget {
                 Row(
                   children: [
                     const CustomText(
-                      text: "Link: ",
+                      text: "Payment Info: ",
                       style: AppTextStyles.primary,
                     ),
                     Expanded(
-                      child: GestureDetector(
-                        onTap: () {
-                          if (paymentMethod != "NOT SET" &&
-                              paymentLink != "NOT SET") {
-                            Clipboard.setData(ClipboardData(text: paymentLink));
-                            ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                    content: Text("Copied To Dashboard")));
-                          }
-                        },
-                        child: CustomText(
-                          text: paymentLink,
-                          style: AppTextStyles.primary,
-                          color: (paymentLink != "NOT SET")
-                              ? context.theme.accentColor
-                              : context.theme.errorColor,
-                        ),
+                      child: CustomText(
+                        text: (paymentLink == "") ? "NOT SET" : paymentLink,
+                        style: AppTextStyles.primary,
+                        color: (paymentLink != "")
+                            ? context.theme.accentColor
+                            : context.theme.errorColor,
                       ),
                     ),
+                    if (paymentLink != "")
+                      GestureDetector(
+                        onTap: () {
+                          Clipboard.setData(ClipboardData(text: paymentLink));
+                          ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content: Text("Copied To Dashboard")));
+                        },
+                        child: const Padding(
+                          padding: EdgeInsets.all(1), // Small padding
+                          child: Icon(
+                            Icons.copy,
+                            size: 12,
+                            color: CustomColors.lightPrimary,
+                          ),
+                        ),
+                      ),
                   ],
                 ),
               ],

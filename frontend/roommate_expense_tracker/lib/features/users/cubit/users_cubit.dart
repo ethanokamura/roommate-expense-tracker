@@ -493,4 +493,40 @@ class UsersCubit extends Cubit<UsersState> {
       emit(state.fromUsersFailure(UsersFailure.fromGet()));
     }
   }
+
+  void sortHouseMembersAlphabetically() {
+    final sortedMembers = List<HouseMembers>.from(state.houseMembersList)
+      ..sort((a, b) =>
+          (a.nickname).toLowerCase().compareTo((b.nickname).toLowerCase()));
+
+    final sortedUserInfo = sortedMembers.map((member) {
+      return state.houseMemberUserInfoList.firstWhere(
+        (user) => user.userId == member.userId,
+        orElse: () => HouseMembersUserInfo.empty,
+      );
+    }).toList();
+
+    emit(state.copyWith(
+      houseMembersList: sortedMembers,
+      houseMemberUserInfoList: sortedUserInfo,
+    ));
+  }
+
+  void sortHouseMembersByRecent() {
+    final sortedMembers = List<HouseMembers>.from(state.houseMembersList)
+      ..sort((a, b) => (b.createdAt ?? DateTime.now())
+          .compareTo(a.createdAt ?? DateTime.now()));
+
+    final sortedUserInfo = sortedMembers.map((member) {
+      return state.houseMemberUserInfoList.firstWhere(
+        (user) => user.userId == member.userId,
+        orElse: () => HouseMembersUserInfo.empty,
+      );
+    }).toList();
+
+    emit(state.copyWith(
+      houseMembersList: sortedMembers,
+      houseMemberUserInfoList: sortedUserInfo,
+    ));
+  }
 }

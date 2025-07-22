@@ -4,12 +4,18 @@ class HouseMembersUserInfo {
   final String? paymentMethod;
   final String? paymentLink;
 
-  HouseMembersUserInfo({
+  const HouseMembersUserInfo({
     required this.userId,
     this.photoUrl,
     this.paymentMethod,
     this.paymentLink,
   });
+
+  static const empty = HouseMembersUserInfo(
+    userId: '',
+    photoUrl: '',
+    paymentLink: '',
+  );
 
   factory HouseMembersUserInfo.fromJson(Map<String, dynamic> json) {
     return HouseMembersUserInfo(

@@ -10,7 +10,6 @@ class HouseMembersController {
    */
   async createHouseMembers(req, res, next) {
     const { house_id, user_id, is_admin } = req.body;
-    const current_user_id = req.user.user_id;
 
     let nickname = "";
     if (req.user.name != null) {
@@ -123,31 +122,24 @@ class HouseMembersController {
     const sort_by = req.query.sort_by || "created_at";
     const sort_order = req.query.sort_order || "desc";
     const queryString = `
-  SELECT 
-  users.*
-  FROM house_members
-  JOIN users ON house_members.user_id = users.user_id
-  WHERE house_members.house_id = $1 
-    AND house_members.is_active = TRUE
-  ORDER BY house_members.${sort_by} ${sort_order};
-`;
+      SELECT 
+      users.*
+      FROM house_members
+      JOIN users ON house_members.user_id = users.user_id
+      WHERE house_members.house_id = $1 
+      AND house_members.is_active = TRUE
+      ORDER BY house_members.${sort_by} ${sort_order};
+    `;
 
     try {
       let result = await query(queryString, [house_id]);
       const data = result.rows;
-      console.log(`Photo Urls fetched successfully`);
       return res.status(200).json({
         success: true,
         data: data,
       });
-    } catch (err) {
-      console.error(`Error getting photo urls: ${err.message}`);
-      return res.status(500).json({
-        success: false,
-        error: "Internal server error while fetching photo urls",
-        code: "INTERNAL_ERROR",
-        details: err.message,
-      });
+    } catch (error) {
+      return next(error);
     }
   }
 
@@ -211,73 +203,19 @@ class HouseMembersController {
    */
   async deleteHouseMembers(req, res, next) {
     const house_member_id = req.params.id;
-    const current_user_id = req.user.user_id;
-
     try {
-      // Get house member info
-      const memberInfo = await query(
-        "SELECT house_id, user_id FROM house_members WHERE house_member_id = $1",
-        [house_member_id]
-      );
-
-      if (memberInfo.rows.length === 0) {
-        return res.status(404).json({
-          error: `House member with ID "${house_member_id}" not found`,
-          success: false,
-        });
-      }
-
-      const { house_id, user_id } = memberInfo.rows[0];
-
-      // Either house head can remove anyone, or users can remove themselves
-      const isHouseHead = await query(
-        "SELECT user_id FROM houses WHERE house_id = $1",
-        [house_id]
-      );
-
-      const canDelete =
-        isHouseHead.rows[0]?.user_id === current_user_id || // Is house head
-        user_id === current_user_id; // Is removing themselves
-
-      if (!canDelete) {
-        return res.status(403).json({
-          error: "Forbidden: You can only remove yourself or be the house head",
-          success: false,
-        });
-      }
-
-      // Check if this is the house head trying to leave
-      if (user_id === isHouseHead.rows[0]?.user_id) {
-        // Count remaining members
-        const memberCount = await query(
-          "SELECT COUNT(*) FROM house_members WHERE house_id = $1",
-          [house_id]
-        );
-
-        if (parseInt(memberCount.rows[0].count) > 1) {
-          return res.status(400).json({
-            error:
-              "House head cannot leave while other members remain. Transfer ownership first.",
-            success: false,
-          });
-        }
-      }
-
       // Delete the house member
       const result = await query(
         "DELETE FROM house_members WHERE house_member_id = $1 RETURNING *",
         [house_member_id]
       );
-
       return res.status(200).json({
         message: "House member removed successfully",
+        data: result.rows[0],
         success: true,
       });
     } catch (error) {
-      return res.status(error.status || 500).json({
-        error: error.message || "Internal Server Error",
-        success: false,
-      });
+      return next(error);
     }
   }
 }
