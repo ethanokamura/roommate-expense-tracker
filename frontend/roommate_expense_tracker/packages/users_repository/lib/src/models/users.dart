@@ -30,6 +30,28 @@ class Users extends Equatable {
     this.updatedAt,
   });
 
+  Users copyWith({
+    String? userId,
+    String? displayName,
+    String? email,
+    String? photoUrl,
+    String? paymentMethod,
+    String? paymentLink,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+  }) {
+    return Users(
+      userId: userId ?? this.userId,
+      displayName: displayName ?? this.displayName,
+      email: email ?? this.email,
+      photoUrl: photoUrl ?? this.photoUrl,
+      paymentMethod: paymentMethod ?? this.paymentMethod,
+      paymentLink: paymentLink ?? this.paymentLink,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+    );
+  }
+
   // Helper function that converts a single SQL object to our dart object
   factory Users.converterSingle(Map<String, dynamic> data) {
     return Users.fromJson(data);

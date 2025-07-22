@@ -76,7 +76,10 @@ class HomeBody extends StatelessWidget {
           houseId: houseId,
           userId: context.read<UsersRepository>().users.userId ?? '',
         ),
-        const UserDashboard(),
+        UserDashboard(
+          houseId: houseId,
+          userId: context.read<UsersRepository>().users.userId ?? '',
+        ),
       ],
     );
   }
