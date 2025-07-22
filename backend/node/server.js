@@ -28,4 +28,4 @@ server.listen(PORT, () => {
 server.on("close", async () => {});
 
 
-module.exports = {app, server};
+module.exports = {app, server, io};
