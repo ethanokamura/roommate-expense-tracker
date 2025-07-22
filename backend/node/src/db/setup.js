@@ -6,26 +6,26 @@ const path = require("path");
 
 async function setupDatabase() {
   try {
-    console.log("🚀 Setting up database tables...");
+    // console.log("🚀 Setting up database tables...");
 
-    // Read the schema.sql file
-    const schemaPath = path.join(__dirname, "schema.sql");
-    const schema = fs.readFileSync(schemaPath, "utf8");
+    // // Read the schema.sql file
+    // const schemaPath = path.join(__dirname, "schema.sql");
+    // const schema = fs.readFileSync(schemaPath, "utf8");
 
-    // Execute the schema
-    await query(schema);
+    // // Execute the schema
+    // await query(schema);
 
-    console.log("✅ Database tables created successfully!");
+    // console.log("✅ Database tables created successfully!");
 
-    // Test with a simple query
-    const result = await query(
-      "SELECT table_name FROM information_schema.tables WHERE table_schema = $1",
-      ["public"]
-    );
-    console.log(
-      "📋 Created tables:",
-      result.rows.map((row) => row.table_name)
-    );
+    // // Test with a simple query
+    // const result = await query(
+    //   "SELECT table_name FROM information_schema.tables WHERE table_schema = $1",
+    //   ["public"]
+    // );
+    // console.log(
+    //   "📋 Created tables:",
+    //   result.rows.map((row) => row.table_name)
+    // );
 
     console.log("🌱 Seeding database...");
     const seedPath = path.join(__dirname, "seed.sql");

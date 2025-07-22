@@ -15,6 +15,8 @@ final class ExpensesState extends Equatable {
     this.status = ExpensesStatus.initial,
     this.expenses = Expenses.empty,
     this.expensesList = const [],
+    this.weeklyExpenses = const [],
+    this.expenseCategories = const [],
     this.failure = ExpensesFailure.empty,
   });
 
@@ -24,6 +26,8 @@ final class ExpensesState extends Equatable {
   final ExpensesStatus status;
   final Expenses expenses;
   final List<Expenses> expensesList;
+  final List<Map<String, dynamic>> weeklyExpenses;
+  final List<Map<String, dynamic>> expenseCategories;
   final ExpensesFailure failure;
 
   // Rebuilds the widget when the props change
@@ -32,6 +36,8 @@ final class ExpensesState extends Equatable {
         status,
         expenses,
         expensesList,
+        weeklyExpenses,
+        expenseCategories,
         failure,
       ];
 
@@ -41,12 +47,16 @@ final class ExpensesState extends Equatable {
     ExpensesStatus? status,
     Expenses? expenses,
     List<Expenses>? expensesList,
+    List<Map<String, dynamic>>? weeklyExpenses,
+    List<Map<String, dynamic>>? expenseCategories,
     ExpensesFailure? failure,
   }) {
     return ExpensesState._(
       status: status ?? this.status,
       expenses: expenses ?? this.expenses,
       expensesList: expensesList ?? this.expensesList,
+      weeklyExpenses: weeklyExpenses ?? this.weeklyExpenses,
+      expenseCategories: expenseCategories ?? this.expenseCategories,
       failure: failure ?? this.failure,
     );
   }
@@ -73,6 +83,23 @@ extension _ExpensesStateExtensions on ExpensesState {
         status: ExpensesStatus.loaded,
         expensesList: expensesList,
       );
+
+  ExpensesState fromWeeklyExpensesLoaded({
+    required List<Map<String, dynamic>> weeklyExpenses,
+  }) =>
+      copyWith(
+        status: ExpensesStatus.loaded,
+        weeklyExpenses: weeklyExpenses,
+      );
+
+  ExpensesState fromWeeklyExpenseCategoriesLoaded({
+    required List<Map<String, dynamic>> expenseCategories,
+  }) =>
+      copyWith(
+        status: ExpensesStatus.loaded,
+        expenseCategories: expenseCategories,
+      );
+
   ExpensesState fromExpensesFailure(ExpensesFailure failure) => copyWith(
         status: ExpensesStatus.failure,
         failure: failure,

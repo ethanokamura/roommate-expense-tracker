@@ -33,7 +33,7 @@ class ExpensesCubit extends Cubit<ExpensesState> {
     required List<ExpenseSplit> splits,
     required String isSettled,
     required String token,
-    bool forceRefresh = true,
+    bool forceRefresh = false,
   }) async {
     emit(state.fromLoading());
     try {
@@ -53,7 +53,6 @@ class ExpensesCubit extends Cubit<ExpensesState> {
           Expenses.isSettledConverter: isSettled,
         },
         token: token,
-        forceRefresh: forceRefresh,
       );
       emit(
         state.fromExpensesLoaded(
@@ -120,6 +119,51 @@ class ExpensesCubit extends Cubit<ExpensesState> {
       );
     } on ExpensesFailure catch (failure) {
       debugPrint('Failure to create expenses: $failure');
+      emit(state.fromExpensesFailure(failure));
+    }
+  }
+
+  Future<void> fetchWeeklyExpenses({
+    required String key,
+    required String value,
+    required String token,
+    bool forceRefresh = false,
+  }) async {
+    emit(state.fromLoading());
+    try {
+      final expenses = await _expensesRepository.fetchWeeklyExpenses(
+        key: key,
+        value: value,
+        token: token,
+        forceRefresh: forceRefresh,
+      );
+      emit(state.fromWeeklyExpensesLoaded(
+        weeklyExpenses: expenses,
+      ));
+    } on ExpensesFailure catch (failure) {
+      emit(state.fromExpensesFailure(failure));
+    }
+  }
+
+  Future<void> fetchWeeklyExpenseCategories({
+    required String key,
+    required String value,
+    required String token,
+    bool forceRefresh = false,
+  }) async {
+    emit(state.fromLoading());
+    try {
+      final expenseCategories =
+          await _expensesRepository.fetchWeeklyExpenseCategories(
+        key: key,
+        value: value,
+        token: token,
+        forceRefresh: forceRefresh,
+      );
+      emit(state.fromWeeklyExpenseCategoriesLoaded(
+        expenseCategories: expenseCategories,
+      ));
+    } on ExpensesFailure catch (failure) {
       emit(state.fromExpensesFailure(failure));
     }
   }

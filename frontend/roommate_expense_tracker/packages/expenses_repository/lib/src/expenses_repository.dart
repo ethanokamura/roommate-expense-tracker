@@ -87,29 +87,7 @@ extension Create on ExpensesRepository {
   Future<Expenses> createExpenses({
     required Map<String, dynamic> data,
     required String token,
-    bool forceRefresh = true,
   }) async {
-    // Get cache key
-    final cacheKey = generateCacheKey({
-      'object': 'expenses',
-      ...data,
-    });
-
-    // Check cache if not forcing refresh
-    if (!forceRefresh) {
-      final cachedData = await _cacheManager.getCachedHttpResponse(cacheKey);
-      if (cachedData != null) {
-        try {
-          final Map<String, dynamic> jsonData = jsonDecode(cachedData);
-          _expenses = Expenses.converterSingle(jsonData);
-          return _expenses;
-        } catch (e) {
-          debugPrint(
-              'Error decoding cached expenses data for key $cacheKey: $e');
-        }
-      }
-    }
-
     // No valid cache, or forceRefresh is true, fetch from API
     try {
       // Retrieve new row after inserting
@@ -130,14 +108,16 @@ extension Create on ExpensesRepository {
       final String responseBody =
           jsonEncode(jsonData); // Encode to string for caching
 
+      _expenses = Expenses.converterSingle(jsonData);
       // Cache the successful response with a specific duration
       await _cacheManager.cacheHttpResponse(
-        key: cacheKey,
+        key: generateCacheKey({
+          'expense_id': _expenses.expenseId!,
+        }),
         responseBody: responseBody,
         cacheDuration: const Duration(minutes: 60),
       );
 
-      _expenses = Expenses.converterSingle(jsonData);
       return _expenses;
     } catch (e) {
       debugPrint('Failure to create expenses: $e');
@@ -223,37 +203,7 @@ extension Read on ExpensesRepository {
     required String expenseId,
     required String token,
     bool forceRefresh = false,
-    bool useTestData = true,
   }) async {
-    if (useTestData) {
-      debugPrint('Loading test data for expenses');
-      try {
-        const assetPath = 'assets/data/expenses.json';
-        final String responseBody = await rootBundle.loadString(assetPath);
-        final Map<String, dynamic> rawJsonData = jsonDecode(responseBody);
-        if (!rawJsonData.containsKey('expenses')) {
-          debugPrint(
-              'Error loading test data from asset: key - "expenses" does not exist.');
-          throw ExpensesFailure.fromGet();
-        }
-        final List<dynamic> jsonData = rawJsonData['expenses'];
-        _expensesList =
-            Expenses.converter(jsonData.cast<Map<String, dynamic>>());
-        // Now, search for the specific expense in the loaded list
-        _expenses = _expensesList.firstWhere(
-          (exp) => exp.expenseId == expenseId,
-          orElse: () {
-            debugPrint('Expense with ID $expenseId not found in test data.');
-            return Expenses.empty;
-          },
-        );
-        return _expenses;
-      } catch (e) {
-        debugPrint('Error loading test data from asset: $e');
-        throw ExpensesFailure.fromGet();
-      }
-    }
-
     // Get cache key
     final cacheKey = generateCacheKey({
       'object': 'expenses',
@@ -437,9 +387,6 @@ extension Read on ExpensesRepository {
     try {
       if (orderBy.isEmpty) orderBy = Expenses.createdAtConverter;
       final ascendingQuery = ascending ? 'asc' : 'desc';
-      debugPrint(
-        'sending request GET /expenses?house_id=$houseId&sort_by=$orderBy&sort_order=$ascendingQuery',
-      );
       final response = await dioRequest(
         dio: Dio(),
         apiEndpoint:
@@ -477,7 +424,7 @@ extension Read on ExpensesRepository {
   }
 
   /// Fetch list of all [Expenses] objects from Rds.
-  Future<Map<String, dynamic>> fetchWeeklyExpensesWithForeignKey({
+  Future<List<Map<String, dynamic>>> fetchWeeklyExpenseCategories({
     required String key,
     required String value,
     required String token,
@@ -486,7 +433,7 @@ extension Read on ExpensesRepository {
   }) async {
     // Get cache key
     final cacheKey = generateCacheKey({
-      'object': 'weekly_expenses',
+      'object': 'weekly_expense_categories',
       key: value,
     });
 
@@ -494,8 +441,8 @@ extension Read on ExpensesRepository {
       final cachedData = await _cacheManager.getCachedHttpResponse(cacheKey);
       if (cachedData != null) {
         try {
-          final Map<String, dynamic> jsonData = jsonDecode(cachedData);
-          return jsonData;
+          final List<dynamic> jsonData = jsonDecode(cachedData);
+          return jsonData.cast<Map<String, dynamic>>();
         } catch (e) {
           debugPrint(
               'Error decoding cached expenses list data for key $cacheKey: $e');
@@ -507,14 +454,12 @@ extension Read on ExpensesRepository {
     try {
       final response = await dioRequest(
         dio: Dio(),
-        apiEndpoint: '/expenses/this-week?key=$key&value=$value',
+        apiEndpoint: '/expenses/categories?key=$key&value=$value',
         method: 'GET',
         headers: {
           'Authorization': 'Bearer $token',
         },
       );
-
-      debugPrint(response.toString());
 
       if (response['success'] != true) {
         throw ExpensesFailure.fromGet();
@@ -536,7 +481,7 @@ extension Read on ExpensesRepository {
         cacheDuration: const Duration(minutes: 60),
       );
 
-      return jsonData.first;
+      return jsonData.cast<Map<String, dynamic>>();
     } catch (e) {
       debugPrint('Failure to fetch all expenses: $e');
       throw ExpensesFailure.fromGet();
@@ -547,6 +492,71 @@ extension Read on ExpensesRepository {
     if (!splitsJson.containsKey('member_splits')) return [];
     List<dynamic> splitList = splitsJson['member_splits'];
     return ExpenseSplit.converter(splitList.cast<Map<String, dynamic>>());
+  }
+
+  /// Fetch list of all [Expenses] objects from Rds.
+  Future<List<Map<String, dynamic>>> fetchWeeklyExpenses({
+    required String key,
+    required String value,
+    required String token,
+    bool forceRefresh = false,
+    bool useTestData = false,
+  }) async {
+    // Get cache key
+    final cacheKey = generateCacheKey({
+      'object': 'weekly_expenses',
+      key: value,
+    });
+
+    if (!forceRefresh) {
+      final cachedData = await _cacheManager.getCachedHttpResponse(cacheKey);
+      if (cachedData != null) {
+        try {
+          final List<dynamic> jsonData = jsonDecode(cachedData);
+          return jsonData.cast<Map<String, dynamic>>();
+        } catch (e) {
+          debugPrint(
+              'Error decoding cached expenses list data for key $cacheKey: $e');
+        }
+      }
+    }
+
+    // No valid cache, or forceRefresh is true, fetch from API
+    try {
+      final response = await dioRequest(
+        dio: Dio(),
+        apiEndpoint: '/expenses/this-week?key=$key&value=$value',
+        method: 'GET',
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response['success'] != true) {
+        throw ExpensesFailure.fromGet();
+      }
+
+      if (response['data'] == null) {
+        throw ExpensesFailure.fromGet();
+      }
+
+      final List<dynamic> jsonData = response['data']!;
+
+      // Success
+      final String responseBody = jsonEncode(jsonData);
+
+      // Cache the successful response with a specific duration
+      await _cacheManager.cacheHttpResponse(
+        key: cacheKey,
+        responseBody: responseBody,
+        cacheDuration: const Duration(minutes: 60),
+      );
+
+      return jsonData.cast<Map<String, dynamic>>();
+    } catch (e) {
+      debugPrint('Failure to fetch all expenses: $e');
+      throw ExpensesFailure.fromGet();
+    }
   }
 }
 

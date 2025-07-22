@@ -28,7 +28,7 @@ Future<Isar> openIsar() async {
   return Isar.open(
     [CachedHttpResponseSchema],
     directory: dir.path,
-    inspector: kDebugMode, // Only enable Isar Inspector in debug mode
+    inspector: false, // Only enable Isar Inspector in debug mode
   );
 }
 

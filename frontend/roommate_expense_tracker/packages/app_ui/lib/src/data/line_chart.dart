@@ -93,7 +93,7 @@ List<FlSpot> getSpots(List<double> values) {
 List<int> getDatesList(DateTime startDate, int len) {
   List<int> dates = [];
   for (int i = len; i >= 0; i--) {
-    dates.add(DateTime.now().subtract(Duration(days: i)).day);
+    dates.add(DateTime.now().subtract(Duration(days: i)).weekday - 1);
   }
   return dates;
 }
@@ -113,7 +113,7 @@ LineTouchData lineTouchData(
     LineTouchData(
       handleBuiltInTouches: true,
       touchTooltipData: LineTouchTooltipData(
-        getTooltipColor: (touchedSpot) => context.theme.primaryColor,
+        getTooltipColor: (touchedSpot) => context.theme.backgroundColor,
         getTooltipItems: (touchedSpots) => touchedSpots.map((barSpot) {
           String toolTipText = '';
           switch (dataType) {
@@ -213,7 +213,7 @@ LineChartData _mainData(
         leftTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
         bottomTitles: AxisTitles(
           sideTitles: SideTitles(
-            showTitles: titles.isNotEmpty,
+            showTitles: true,
             interval: 1,
             getTitlesWidget: (value, meta) =>
                 bottomTitleWidgets(value, meta, values.length, titles),
@@ -302,11 +302,12 @@ Widget bottomTitleWidgets(
   List<String> titles,
 ) {
   final dates = getDatesList(DateTime.now(), len);
+  final weekDays = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
   return SideTitleWidget(
     meta: meta,
     child: CustomText(
       text: titles.isEmpty
-          ? dates[value.toInt()].toString()
+          ? weekDays[dates[value.toInt()]]
           : titles[value.toInt()],
       style: AppTextStyles.secondary,
       fontSize: 12,

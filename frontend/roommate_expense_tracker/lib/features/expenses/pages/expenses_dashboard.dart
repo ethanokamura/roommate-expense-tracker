@@ -2,7 +2,6 @@ import 'package:app_ui/app_ui.dart';
 import 'package:app_core/app_core.dart';
 import 'package:expenses_repository/expenses_repository.dart';
 import 'package:roommate_expense_tracker/features/expenses/cubit/expenses_cubit.dart';
-import 'package:roommate_expense_tracker/features/expenses/widgets/cards/cost_analysis.dart';
 import 'package:roommate_expense_tracker/features/expenses/widgets/widgets.dart';
 import 'package:users_repository/users_repository.dart';
 
@@ -19,18 +18,32 @@ class ExpensesDashboard extends StatelessWidget {
     return BlocProvider(
       create: (context) => ExpensesCubit(
         expensesRepository: context.read<ExpensesRepository>(),
-      )..fetchAllExpensesWithHouseId(
+      )
+        ..fetchAllExpensesWithHouseId(
           houseId: houseId,
           token: userRepository.idToken ?? '',
           orderBy: Users.createdAtConverter,
           ascending: false,
-          forceRefresh: false,
+          forceRefresh: true,
+        )
+        ..fetchWeeklyExpenses(
+          key: Expenses.houseIdConverter,
+          value: houseId,
+          token: userRepository.idToken ?? '',
+        )
+        ..fetchWeeklyExpenseCategories(
+          key: Expenses.houseIdConverter,
+          value: houseId,
+          token: userRepository.idToken ?? '',
+          forceRefresh: true,
         ),
       child: ExpensesCubitWrapper(
         builder: (context, state) {
-          List<double> values = [12.3, 70, 50.4, 45, 90, 21, 47];
-          final total = values.reduce((value, element) => value += element);
-          final average = total / values.length;
+          final values = _formatResponse(state.weeklyExpenses);
+          final total = totalExpenses(state.weeklyExpenses);
+          final min = minExpenses(state.weeklyExpenses);
+          final max = maxExpenses(state.weeklyExpenses);
+
           return NestedPageBuilder(
             title: 'Expense Dashboard',
             sectionsData: {
@@ -38,11 +51,6 @@ class ExpensesDashboard extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    // CostAnalysisWidget(
-                    //   field: Expenses.houseIdConverter,
-                    //   value: houseId,
-                    //   token: userRepository.idToken ?? '',
-                    // ),
                     SizedBox(
                       width: MediaQuery.sizeOf(context).width / 3 -
                           (defaultPadding * 2),
@@ -55,7 +63,7 @@ class ExpensesDashboard extends StatelessWidget {
                               style: AppTextStyles.primary,
                             ),
                             CustomText(
-                              text: formatCurrency(average),
+                              text: formatCurrency(total / 7),
                               style: AppTextStyles.primary,
                               color: context.theme.subtextColor,
                             ),
@@ -75,7 +83,7 @@ class ExpensesDashboard extends StatelessWidget {
                               style: AppTextStyles.primary,
                             ),
                             CustomText(
-                              text: formatCurrency(12.3),
+                              text: formatCurrency(min),
                               style: AppTextStyles.primary,
                               color: context.theme.successColor,
                             ),
@@ -95,7 +103,7 @@ class ExpensesDashboard extends StatelessWidget {
                               style: AppTextStyles.primary,
                             ),
                             CustomText(
-                              text: formatCurrency(90),
+                              text: formatCurrency(max),
                               style: AppTextStyles.primary,
                               color: context.theme.errorColor,
                             ),
@@ -108,20 +116,41 @@ class ExpensesDashboard extends StatelessWidget {
                 LargeCustomLineChart(
                   title: 'Expenses This Week',
                   unit: formatCurrency(total),
-                  values: values,
+                  values: values.isEmpty
+                      ? [0, 0, 0, 0, 0, 0, 0]
+                      : values.values.toList(),
+                  // titles: values.isEmpty
+                  //     ? days
+                  //     : values.keys
+                  //         .map(
+                  //           (key) => (days[
+                  //               (DateTime.tryParse(key.toString())?.toUtc() ??
+                  //                           DateTime.now().toUtc())
+                  //                       .weekday -
+                  //                   1]),
+                  //         )
+                  //         .toList(),
                   dataType: ChartDataType.isCurrency,
-                )
+                ),
+                // ExpensesChart(
+                //   field: Expenses.houseIdConverter,
+                //   value: houseId,
+                //   token: userRepository.idToken ?? '',
+                // )
               ],
-              'Expense Distribution': const [
+              'Expense Distribution': [
                 Center(
-                  child: CustomPieChart(title: 'Expense Distribution', data: {
-                    "groceries": 304.37,
-                    "rent": 1000,
-                    "utilities": 200,
-                    "toiletries": 56.4,
-                    "food": 79.35,
-                    "random": 103.34,
-                  }),
+                  child: state.expenseCategories.isEmpty
+                      ? const SizedBox(
+                          height: 100,
+                          width: double.infinity,
+                          child: Center(child: CircularProgressIndicator()),
+                        )
+                      : CustomPieChart(
+                          title: 'Expense Distribution',
+                          data:
+                              _formatCategoryResponse(state.expenseCategories),
+                        ),
                 )
               ],
             },
@@ -163,7 +192,7 @@ class ExpensesDashboard extends StatelessWidget {
                           token: userRepository.idToken ?? '',
                           orderBy: Expenses.totalAmountConverter,
                           ascending: false,
-                          forceRefresh: false,
+                          forceRefresh: true,
                         ),
                   ),
                   DropDownItem(
@@ -176,7 +205,7 @@ class ExpensesDashboard extends StatelessWidget {
                           token: userRepository.idToken ?? '',
                           orderBy: Expenses.createdAtConverter,
                           ascending: false,
-                          forceRefresh: false,
+                          forceRefresh: true,
                         ),
                   ),
                   DropDownItem(
@@ -189,7 +218,7 @@ class ExpensesDashboard extends StatelessWidget {
                           token: userRepository.idToken ?? '',
                           orderBy: Expenses.updatedAtConverter,
                           ascending: false,
-                          forceRefresh: false,
+                          forceRefresh: true,
                         ),
                   ),
                   DropDownItem(
@@ -202,7 +231,7 @@ class ExpensesDashboard extends StatelessWidget {
                           token: userRepository.idToken ?? '',
                           orderBy: Expenses.expenseDateConverter,
                           ascending: false,
-                          forceRefresh: false,
+                          forceRefresh: true,
                         ),
                   ),
                 ])
@@ -215,3 +244,39 @@ class ExpensesDashboard extends StatelessWidget {
     );
   }
 }
+
+Map<String, double> _formatResponse(List<Map<String, dynamic>> response) {
+  Map<String, double> values = {};
+  for (int i = 0; i < response.length; i++) {
+    values[response[i]["day"].toString()] =
+        double.tryParse(response[i]["total"].toString()) ?? 0.0;
+  }
+  return values;
+}
+
+Map<String, double> _formatCategoryResponse(
+  List<Map<String, dynamic>> response,
+) {
+  Map<String, double> values = {};
+  for (int i = 0; i < response.length; i++) {
+    values[response[i]["category"].toString()] =
+        double.tryParse(response[i]["total"].toString()) ?? 0.0;
+  }
+  return values;
+}
+
+double maxExpenses(List<Map<String, dynamic>> data) => data.isEmpty
+    ? 0.0
+    : data.map((map) => double.tryParse(map['total']) ?? 0.0).reduce(
+        (currentMax, element) => element > currentMax ? element : currentMax);
+
+double minExpenses(List<Map<String, dynamic>> data) => data.isEmpty
+    ? 0.0
+    : data.map((map) => double.tryParse(map['total']) ?? 0.0).reduce(
+        (currentMin, element) => element < currentMin ? element : currentMin);
+
+double totalExpenses(List<Map<String, dynamic>> data) => data.isEmpty
+    ? 0.0
+    : data
+        .map((map) => double.tryParse(map['total']) ?? 0.0)
+        .reduce((sum, element) => sum + element);
