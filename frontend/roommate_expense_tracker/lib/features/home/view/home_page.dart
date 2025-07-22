@@ -25,6 +25,7 @@ class HomePage extends StatelessWidget {
       create: (_) => NavBarController(),
       child: DefaultPageView(
         title: 'RET',
+        centerTitle: false,
         body: HomeBody(
           houseId: houseId,
         ),
