@@ -30,26 +30,31 @@ class ExpenseCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    CustomText(
-                      text: expense.title,
-                      style: AppTextStyles.primary,
-                    ),
-                    CustomText(
-                      text: expense.description,
-                      style: AppTextStyles.secondary,
-                    ),
-                  ],
+                Flexible(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      CustomText(
+                        text: expense.title,
+                        style: AppTextStyles.primary,
+                      ),
+                      CustomText(
+                        text: expense.description,
+                        style: AppTextStyles.secondary,
+                      ),
+                    ],
+                  ),
                 ),
+                const HorizontalSpacer(multiple: 2),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     CustomText(
-                      text: '-${formatCurrency(expense.totalAmount)}',
+                      text: formatCurrency(expense.totalAmount),
                       style: AppTextStyles.primary,
-                      color: context.theme.accentColor,
+                      color: expense.isSettled
+                          ? context.theme.accentColor
+                          : context.theme.errorColor,
                     ),
                     CustomText(
                       text: DateFormatter.formatTimestamp(

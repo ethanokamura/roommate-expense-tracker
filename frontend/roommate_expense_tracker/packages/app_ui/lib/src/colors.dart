@@ -4,13 +4,12 @@ import 'package:flutter/material.dart';
 // defines custom colors for the app
 abstract class CustomColors {
   static const List<Color> chartColors = [
-    Color(0xff3d7f84),
-    Color(0xff469297),
-    Color(0xff4ea4aa),
     Color(0xff57b6bd),
-    Color(0xff68bdc4),
-    Color(0xff79c5ca),
-    Color(0xff89ccd1),
+    Color(0xff2a9d8f),
+    Color(0xff8ab17d),
+    Color(0xffe9c46a),
+    Color(0xfff4a261),
+    Color(0xffe76f51),
   ];
   // universal accent
   static const Color accent = Color(0xff57b6bd);

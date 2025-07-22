@@ -87,7 +87,7 @@ class _CreateExpensePageState extends State<CreateExpensePage> {
                         decimal: true,
                       ),
                       onChanged: (amount) => setState(() {
-                        totalAmount = double.tryParse(amount.trim());
+                        totalAmount = double.tryParse(amount.trim()) ?? 0.0;
                       }),
                       onBackground: true,
                     ),
@@ -219,23 +219,36 @@ class _CreateExpensePageState extends State<CreateExpensePage> {
                           descriptionController.clear();
                           totalAmountController.clear();
                           splitAmountController.clear();
-                          context.read<ExpensesRepository>().createExpenses(
-                            data: {
-                              Expenses.houseIdConverter: widget.houseId,
-                              Expenses.houseMemberIdConverter: widget.memberId,
-                              Expenses.totalAmountConverter: totalAmount,
-                              Expenses.titleConverter: title,
-                              Expenses.descriptionConverter: description,
-                              Expenses.categoryConverter: category,
-                              Expenses.isSettledConverter: false,
-                              Expenses.splitsConverter: {"splits": splits},
-                            },
-                            token:
-                                context.read<UsersRepository>().idToken ?? '',
-                          );
+                          try {
+                            await context
+                                .read<ExpensesRepository>()
+                                .createExpenses(
+                              data: {
+                                Expenses.houseIdConverter: widget.houseId,
+                                Expenses.houseMemberIdConverter:
+                                    widget.memberId,
+                                Expenses.totalAmountConverter: totalAmount,
+                                Expenses.titleConverter: title,
+                                Expenses.descriptionConverter: description,
+                                Expenses.categoryConverter: category,
+                                Expenses.isSettledConverter: false,
+                                Expenses.expenseDateConverter: '2025-07-22',
+                                Expenses.splitsConverter: {
+                                  "member_splits": splits.isEmpty ? [] : splits
+                                },
+                              },
+                              token:
+                                  context.read<UsersRepository>().idToken ?? '',
+                            );
+                          } catch (e) {
+                            debugPrint(e.toString());
+                          }
                           setState(() {
                             splits.clear();
                           });
+                          if (context.mounted) {
+                            Navigator.pop(context);
+                          }
                         },
                       ),
                   ],

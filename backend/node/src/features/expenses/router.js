@@ -24,6 +24,14 @@ ExpensesRouter.get(
 
 // Read
 ExpensesRouter.get(
+  "/categories",
+  expensesValidators.weeklyExpenseQuery,
+  validateRequest,
+  expensesController.getExpenseCategories
+);
+
+// Read
+ExpensesRouter.get(
   "/:id",
   expensesValidators.expensesId,
   validateRequest,

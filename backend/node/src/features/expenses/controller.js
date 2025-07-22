@@ -11,16 +11,18 @@ class ExpensesController {
     const {
       house_id,
       house_member_id,
+      title,
       total_amount,
       expense_date,
       description,
+      splits,
       category,
       is_settled = false,
     } = req.body;
 
     let queryString = `
-      INSERT INTO expenses (house_id, house_member_id, total_amount, expense_date, description, category, is_settled)
-      VALUES ($1, $2, $3, $4, $5, $6, $7)
+      INSERT INTO expenses (house_id, house_member_id, total_amount, expense_date, description, category, is_settled, title, splits)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
       RETURNING *
     `;
 
@@ -33,6 +35,8 @@ class ExpensesController {
         description,
         category,
         is_settled,
+        title,
+        splits,
       ]);
 
       const data = result.rows[0];
@@ -186,7 +190,7 @@ class ExpensesController {
    * @param {*} next - Express next function
    */
   async getWeeklyExpenses(req, res, next) {
-    const { key, value } = req.params;
+    const { key, value } = req.query;
     const queryString = `
       SELECT
           created_at::DATE AS day,
@@ -194,9 +198,9 @@ class ExpensesController {
       FROM
           expenses
       WHERE
-          $1 = $2
-          AND created_at >= (CURRENT_DATE - INTERVAL '6 day') -- Start of 7 days ago (including today)
-          AND created_at < (CURRENT_DATE + INTERVAL '1 day') -- End of today
+          ${key} = $1
+          AND created_at >= (CURRENT_DATE - INTERVAL '6 day')
+          AND created_at < (CURRENT_DATE + INTERVAL '1 day')
       GROUP BY
           day
       ORDER BY
@@ -204,8 +208,9 @@ class ExpensesController {
     `;
 
     try {
-      let result = await query(queryString, [key, value]);
-      const data = result;
+      console.log(`fetching weekly expenses given ${key} and ${value}`);
+      let result = await query(queryString, [value]);
+      const data = result.rows;
       console.log(`Week of expenses fetched successfully`);
       return res.status(201).json({
         success: true,
@@ -215,7 +220,51 @@ class ExpensesController {
       console.error(`Error getting expense: ${err.message}`);
       return res.status(500).json({
         success: false,
-        error: "Internal server error while creating expense",
+        error: "Internal server error while fetching weekly expense",
+        code: "INTERNAL_ERROR",
+        details: err.message,
+      });
+    }
+  }
+
+  /**
+   * Handle GET /expenses/categories with house_id
+   * @param {*} req - Express request object
+   * @param {*} res - Express response object
+   * @param {*} next - Express next function
+   */
+  async getExpenseCategories(req, res, next) {
+    const { key, value } = req.query;
+    const queryString = `
+      SELECT
+          LOWER(category) AS category,
+          SUM(total_amount) AS total
+      FROM
+          expenses
+      WHERE
+          ${key} = $1
+      GROUP BY
+          LOWER(category)
+      ORDER BY
+          LOWER(category); 
+    `;
+
+    try {
+      console.log(
+        `fetching weekly expense categories given ${key} and ${value}`
+      );
+      let result = await query(queryString, [value]);
+      const data = result.rows;
+      console.log(`Week of expense categories fetched successfully`);
+      return res.status(201).json({
+        success: true,
+        data: data,
+      });
+    } catch (err) {
+      console.error(`Error getting expense: ${err.message}`);
+      return res.status(500).json({
+        success: false,
+        error: "Internal server error while fetching expense categories",
         code: "INTERNAL_ERROR",
         details: err.message,
       });
