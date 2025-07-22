@@ -28,12 +28,15 @@ const userValidators = {
 
   updateUser: [
     body("display_name")
-      .optional()
+      .optional({ checkFalsy: true })
       .isString()
       .withMessage("Display name must be a string"),
-    body("email").optional().isEmail().withMessage("Valid email is required"),
+    body("email")
+      .optional({ checkFalsy: true })
+      .isEmail()
+      .withMessage("Valid email is required"),
     body("photo_url")
-      .optional()
+      .optional({ checkFalsy: true })
       .isString()
       .withMessage("if provided, photo_url by must be a string")
       .trim(),

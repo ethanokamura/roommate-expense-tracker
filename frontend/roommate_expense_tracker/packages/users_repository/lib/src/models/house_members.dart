@@ -30,6 +30,28 @@ class HouseMembers extends Equatable {
     this.isActive = false,
   });
 
+  HouseMembers copyWith({
+    String? houseMemberId,
+    String? userId,
+    String? houseId,
+    bool? isAdmin,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    String? nickname,
+    bool? isActive,
+  }) {
+    return HouseMembers(
+      houseMemberId: houseMemberId ?? this.houseMemberId,
+      userId: userId ?? this.userId,
+      houseId: houseId ?? this.houseId,
+      isAdmin: isAdmin ?? this.isAdmin,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      nickname: nickname ?? this.nickname,
+      isActive: isActive ?? this.isActive,
+    );
+  }
+
   // Helper function that converts a single SQL object to our dart object
   factory HouseMembers.converterSingle(Map<String, dynamic> data) {
     return HouseMembers.fromJson(data);
@@ -108,8 +130,8 @@ class HouseMembers extends Equatable {
       userId: userId,
       houseId: houseId,
       isAdmin: isAdmin,
-      createdAt: createdAt,
-      updatedAt: updatedAt,
+      createdAt: createdAt?.toIso8601String(),
+      updatedAt: updatedAt?.toIso8601String(),
       nickname: nickname,
       isActive: isActive,
     );
@@ -121,8 +143,8 @@ class HouseMembers extends Equatable {
     String? userId,
     String? houseId,
     bool? isAdmin,
-    DateTime? createdAt,
-    DateTime? updatedAt,
+    String? createdAt,
+    String? updatedAt,
     String? nickname,
     bool? isActive,
   }) {

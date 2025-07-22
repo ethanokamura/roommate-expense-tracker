@@ -117,11 +117,11 @@ class UserController {
         fields.push(`photo_url = $${fields.length + 1}`);
         params.push(photo_url);
       }
-      if (payment_method) {
+      if (payment_method != null) {
         fields.push(`payment_method = $${fields.length + 1}`);
         params.push(payment_method);
       }
-      if (payment_link) {
+      if (payment_link != null) {
         fields.push(`payment_link = $${fields.length + 1}`);
         params.push(payment_link);
       }
