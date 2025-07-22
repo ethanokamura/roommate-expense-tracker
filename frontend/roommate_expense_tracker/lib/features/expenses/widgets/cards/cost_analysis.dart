@@ -24,6 +24,7 @@ class CostAnalysisWidget extends StatelessWidget {
                 token: token,
               ),
       builder: (context, snapshot) {
+        debugPrint(snapshot.data.toString());
         return Placeholder();
       },
     );

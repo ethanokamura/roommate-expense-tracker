@@ -504,6 +504,7 @@ extension Read on ExpensesRepository {
     }
 
     // No valid cache, or forceRefresh is true, fetch from API
+    debugPrint('/expenses/this-week?key=$key&value=$value');
     try {
       final response = await dioRequest(
         dio: Dio(),
