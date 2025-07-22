@@ -330,6 +330,145 @@ extension Read on ExpensesRepository {
 
   /// Fetch list of all [Expenses] objects from Rds.
   ///
+  /// Requires the [houseMemberId] for lookup
+  /// Requires the [houseId] for lookup
+  Future<List<Expenses>> fetchMyExpenses({
+    required String houseMemberId,
+    required String houseId,
+    required String token,
+    bool forceRefresh = false,
+  }) async {
+    // Get cache key
+    final cacheKey = generateCacheKey({
+      'object': 'expenses',
+      'house_member_id': houseMemberId,
+      'house_id': houseId,
+    });
+
+    if (!forceRefresh) {
+      final cachedData = await _cacheManager.getCachedHttpResponse(cacheKey);
+      if (cachedData != null) {
+        try {
+          final List<dynamic> jsonData = jsonDecode(cachedData);
+          _expensesList =
+              Expenses.converter(jsonData.cast<Map<String, dynamic>>());
+          return _expensesList;
+        } catch (e) {
+          debugPrint(
+              'Error decoding cached expenses list data for key $cacheKey: $e');
+        }
+      }
+    }
+
+    // No valid cache, or forceRefresh is true, fetch from API
+    try {
+      final response = await dioRequest(
+        dio: Dio(),
+        apiEndpoint:
+            '/expenses/my-expenses?house_member_id=$houseMemberId&house_id=$houseId',
+        method: 'GET',
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      );
+      if (response['success'] != true) {
+        throw ExpensesFailure.fromGet();
+      }
+
+      final List<dynamic> jsonData = response['data']!;
+      // Success
+      final String responseBody =
+          jsonEncode(jsonData); // Encode to string for caching
+
+      // Cache the successful response with a specific duration
+      await _cacheManager.cacheHttpResponse(
+        key: cacheKey,
+        responseBody: responseBody,
+        cacheDuration: const Duration(minutes: 60),
+      );
+
+      _expensesList = Expenses.converter(jsonData.cast<Map<String, dynamic>>());
+      return _expensesList;
+    } catch (e) {
+      debugPrint('Failure to fetch all expenses: $e');
+      throw ExpensesFailure.fromGet();
+    }
+  }
+
+  /// Fetch list of all [Expenses] objects from Rds.
+  ///
+  /// Requires the [houseMemberId] for lookup
+  /// Requires the [houseId] for lookup
+  Future<double> fetchMyTotalExpenses({
+    required String houseMemberId,
+    required String houseId,
+    required String token,
+    bool forceRefresh = false,
+  }) async {
+    // Get cache key
+    final cacheKey = generateCacheKey({
+      'object': 'expenses',
+      'house_member_id': houseMemberId,
+      'house_id': houseId,
+    });
+
+    if (!forceRefresh) {
+      final cachedData = await _cacheManager.getCachedHttpResponse(cacheKey);
+      if (cachedData != null) {
+        try {
+          final Map<String, dynamic> response = jsonDecode(cachedData);
+          final double total = double.tryParse(
+                  response['total_amount_owed']?.toString() ?? '') ??
+              0.0;
+          return total;
+        } catch (e) {
+          debugPrint(
+              'Error decoding cached expenses list data for key $cacheKey: $e');
+        }
+      }
+    }
+
+    // No valid cache, or forceRefresh is true, fetch from API
+    try {
+      final response = await dioRequest(
+        dio: Dio(),
+        apiEndpoint:
+            '/expenses/my-total-expenses?house_member_id=$houseMemberId&house_id=$houseId',
+        method: 'GET',
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      );
+      if (response['success'] != true) {
+        throw ExpensesFailure.fromGet();
+      }
+
+      final List<dynamic> data = response['data'];
+
+      final double total =
+          double.tryParse(data.first['total_amount_owed']?.toString() ?? '') ??
+              0.0;
+
+      // Success
+      final String responseBody = jsonEncode(
+          {'total_amount_owed': total}); // Encode to string for caching
+
+      // Cache the successful response with a specific duration
+      await _cacheManager.cacheHttpResponse(
+        key: cacheKey,
+        responseBody: responseBody,
+        cacheDuration: const Duration(minutes: 60),
+      );
+
+      return total;
+    } catch (e) {
+      debugPrint('Failure to fetch all expenses: $e');
+      throw ExpensesFailure.fromGet();
+    }
+  }
+
+  /// Fetch list of all [Expenses] objects from Rds.
+  ///
   /// Requires the [houseId] for lookup
   Future<List<Expenses>> fetchAllExpensesWithHouseId({
     required String houseId,

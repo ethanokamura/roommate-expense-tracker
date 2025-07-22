@@ -2,47 +2,59 @@ import 'package:app_ui/app_ui.dart';
 import 'package:app_core/app_core.dart';
 import 'package:expenses_repository/expenses_repository.dart';
 import 'package:roommate_expense_tracker/features/expenses/cubit/expenses_cubit.dart';
+import 'package:roommate_expense_tracker/features/expenses/widgets/cards/total_expenses.dart';
 import 'package:roommate_expense_tracker/features/expenses/widgets/widgets.dart';
+import 'package:roommate_expense_tracker/features/users/users.dart';
 import 'package:users_repository/users_repository.dart';
 
 class ExpensesDashboard extends StatelessWidget {
-  const ExpensesDashboard({
-    required this.houseId,
-    super.key,
-  });
+  const ExpensesDashboard({super.key});
 
-  final String houseId;
   @override
   Widget build(BuildContext context) {
     final userRepository = context.read<UsersRepository>();
-    return BlocProvider(
-      create: (context) => ExpensesCubit(
-        expensesRepository: context.read<ExpensesRepository>(),
-      )
-        ..fetchAllExpensesWithHouseId(
-          houseId: houseId,
-          token: userRepository.idToken ?? '',
-          orderBy: Users.createdAtConverter,
-          ascending: false,
-          forceRefresh: true,
-        )
-        ..fetchWeeklyExpenses(
-          key: Expenses.houseIdConverter,
-          value: houseId,
-          token: userRepository.idToken ?? '',
-        )
-        ..fetchWeeklyExpenseCategories(
-          key: Expenses.houseIdConverter,
-          value: houseId,
-          token: userRepository.idToken ?? '',
-          forceRefresh: true,
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<ExpensesCubit>(
+          create: (context) => ExpensesCubit(
+            expensesRepository: context.read<ExpensesRepository>(),
+          )
+            ..fetchMyExpenses(
+              houseMemberId: userRepository.getMemberId,
+              houseId: userRepository.getHouseId,
+              token: userRepository.idToken ?? '',
+              forceRefresh: true,
+            )
+            ..fetchWeeklyExpenses(
+              key: Expenses.houseIdConverter,
+              value: userRepository.getHouseId,
+              token: userRepository.idToken ?? '',
+            )
+            ..fetchWeeklyExpenseCategories(
+              key: Expenses.houseIdConverter,
+              value: userRepository.getHouseId,
+              token: userRepository.idToken ?? '',
+            ),
         ),
-      child: ExpensesCubitWrapper(
-        builder: (context, state) {
-          final values = _formatResponse(state.weeklyExpenses);
-          final total = totalExpenses(state.weeklyExpenses);
-          final min = minExpenses(state.weeklyExpenses);
-          final max = maxExpenses(state.weeklyExpenses);
+        BlocProvider<UsersCubit>(
+          create: (context) =>
+              UsersCubit(usersRepository: context.read<UsersRepository>())
+                ..fetchAllHouseMembersWithHouseId(
+                  houseId: userRepository.getHouseId,
+                  token: userRepository.idToken ?? '',
+                  orderBy: HouseMembers.createdAtConverter,
+                  ascending: false,
+                ),
+        )
+      ],
+      child: Builder(
+        builder: (context) {
+          final expenseState = context.watch<ExpensesCubit>().state;
+          final userState = context.watch<UsersCubit>().state;
+          final values = _formatResponse(expenseState.weeklyExpenses);
+          final total = totalExpenses(expenseState.weeklyExpenses);
+          final min = minExpenses(expenseState.weeklyExpenses);
+          final max = maxExpenses(expenseState.weeklyExpenses);
 
           return NestedPageBuilder(
             title: 'Expense Dashboard',
@@ -119,44 +131,33 @@ class ExpensesDashboard extends StatelessWidget {
                   values: values.isEmpty
                       ? [0, 0, 0, 0, 0, 0, 0]
                       : values.values.toList(),
-                  // titles: values.isEmpty
-                  //     ? days
-                  //     : values.keys
-                  //         .map(
-                  //           (key) => (days[
-                  //               (DateTime.tryParse(key.toString())?.toUtc() ??
-                  //                           DateTime.now().toUtc())
-                  //                       .weekday -
-                  //                   1]),
-                  //         )
-                  //         .toList(),
                   dataType: ChartDataType.isCurrency,
                 ),
-                // ExpensesChart(
-                //   field: Expenses.houseIdConverter,
-                //   value: houseId,
-                //   token: userRepository.idToken ?? '',
-                // )
+                const MyTotalExpenses(),
+                CustomButton(
+                  text: 'View My Expenses',
+                  onTap: () {},
+                )
               ],
               'Expense Distribution': [
                 Center(
-                  child: state.expenseCategories.isEmpty
+                  child: expenseState.expenseCategories.isEmpty
                       ? const SizedBox(
-                          height: 100,
+                          height: 200,
                           width: double.infinity,
                           child: Center(child: CircularProgressIndicator()),
                         )
                       : CustomPieChart(
                           title: 'Expense Distribution',
-                          data:
-                              _formatCategoryResponse(state.expenseCategories),
+                          data: _formatCategoryResponse(
+                              expenseState.expenseCategories),
                         ),
                 )
               ],
             },
-            itemCount: state.expensesList.length,
+            itemCount: expenseState.expensesList.length,
             itemBuilder: (context, index) {
-              final expense = state.expensesList[index];
+              final expense = expenseState.expensesList[index];
               final splits = context
                   .read<ExpensesRepository>()
                   .extractSplits(expense.splits);
@@ -165,19 +166,19 @@ class ExpensesDashboard extends StatelessWidget {
                   context: context,
                   expense: expense,
                   splits: splits,
+                  members: userState.houseMembersList,
                 ),
                 child: ExpenseCard(
                   expense: expense,
-                  splits: splits,
                 ),
               );
             },
-            isLoading: state.isLoading,
+            isLoading: expenseState.isLoading,
             filter: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 CustomText(
-                  text: 'Expense List',
+                  text: 'My Expenses',
                   style: AppTextStyles.title,
                   color: context.theme.accentColor,
                 ),
@@ -188,7 +189,7 @@ class ExpensesDashboard extends StatelessWidget {
                     onSelect: () async => context
                         .read<ExpensesCubit>()
                         .fetchAllExpensesWithHouseId(
-                          houseId: houseId,
+                          houseId: userRepository.getHouseId,
                           token: userRepository.idToken ?? '',
                           orderBy: Expenses.totalAmountConverter,
                           ascending: false,
@@ -201,7 +202,7 @@ class ExpensesDashboard extends StatelessWidget {
                     onSelect: () async => context
                         .read<ExpensesCubit>()
                         .fetchAllExpensesWithHouseId(
-                          houseId: houseId,
+                          houseId: userRepository.getHouseId,
                           token: userRepository.idToken ?? '',
                           orderBy: Expenses.createdAtConverter,
                           ascending: false,
@@ -214,7 +215,7 @@ class ExpensesDashboard extends StatelessWidget {
                     onSelect: () async => context
                         .read<ExpensesCubit>()
                         .fetchAllExpensesWithHouseId(
-                          houseId: houseId,
+                          houseId: userRepository.getHouseId,
                           token: userRepository.idToken ?? '',
                           orderBy: Expenses.updatedAtConverter,
                           ascending: false,
@@ -227,7 +228,7 @@ class ExpensesDashboard extends StatelessWidget {
                     onSelect: () async => context
                         .read<ExpensesCubit>()
                         .fetchAllExpensesWithHouseId(
-                          houseId: houseId,
+                          houseId: userRepository.getHouseId,
                           token: userRepository.idToken ?? '',
                           orderBy: Expenses.expenseDateConverter,
                           ascending: false,

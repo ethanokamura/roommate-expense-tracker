@@ -16,6 +16,22 @@ ExpensesRouter.post(
 
 // Read
 ExpensesRouter.get(
+  "/my-expenses",
+  expensesValidators.myExpensesQuery,
+  validateRequest,
+  expensesController.findMyExpenses
+);
+
+// Read
+ExpensesRouter.get(
+  "/my-total-expenses",
+  expensesValidators.myExpensesQuery,
+  validateRequest,
+  expensesController.findMyTotalExpenses
+);
+
+// Read
+ExpensesRouter.get(
   "/this-week",
   expensesValidators.weeklyExpenseQuery,
   validateRequest,
@@ -32,18 +48,18 @@ ExpensesRouter.get(
 
 // Read
 ExpensesRouter.get(
-  "/:id",
-  expensesValidators.expensesId,
-  validateRequest,
-  expensesController.getExpenses
-);
-
-// Read
-ExpensesRouter.get(
   "/",
   expensesValidators.expensesQuery,
   validateRequest,
   expensesController.findExpenses
+);
+
+// Read
+ExpensesRouter.get(
+  "/:id",
+  expensesValidators.expensesId,
+  validateRequest,
+  expensesController.getExpenses
 );
 
 // Update

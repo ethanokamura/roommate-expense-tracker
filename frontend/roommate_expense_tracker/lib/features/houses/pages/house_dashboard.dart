@@ -74,10 +74,22 @@ class HouseDashboard extends StatelessWidget {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.center,
                                     children: [
-                                      const CustomText(
-                                        text: 'Invite Code',
-                                        style: AppTextStyles.primary,
-                                        maxLines: 1,
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          const CustomText(
+                                            text: 'Invite Code',
+                                            style: AppTextStyles.primary,
+                                            maxLines: 1,
+                                          ),
+                                          const HorizontalSpacer(),
+                                          defaultIconStyle(
+                                            context,
+                                            AppIcons.copy,
+                                            context.theme.textColor,
+                                          ),
+                                        ],
                                       ),
                                       CustomText(
                                         text: houseId,
@@ -133,6 +145,7 @@ class HouseDashboard extends StatelessWidget {
                   state.houseMemberUserInfoList[index].paymentLink ?? "";
               // get list of roommates
               return RoommateCard(
+                isLoading: state.isLoading,
                 key: ObjectKey(state.houseMembersList[index].userId),
                 profilePicture:
                     ProfilePicture(photoUrl: photoUrl, id: index + 500),
@@ -142,6 +155,7 @@ class HouseDashboard extends StatelessWidget {
               );
             },
             isLoading: state.isLoading,
+            loadingWidget: const SkeletonProfileList(lines: 5),
             emptyMessage: 'No roommates in house',
           );
         },

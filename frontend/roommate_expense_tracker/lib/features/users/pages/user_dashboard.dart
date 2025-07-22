@@ -5,6 +5,7 @@ import 'package:roommate_expense_tracker/features/houses/widgets/roommate_card.d
 import 'package:roommate_expense_tracker/features/users/cubit/users_cubit.dart';
 import 'package:roommate_expense_tracker/features/users/widgets/profile_picture.dart';
 import 'package:roommate_expense_tracker/features/users/widgets/user_cubit_wrapper.dart';
+import 'package:roommate_expense_tracker/theme/theme_button.dart';
 import 'package:users_repository/users_repository.dart';
 import 'package:roommate_expense_tracker/features/users/widgets/user_house_card.dart';
 
@@ -44,6 +45,7 @@ class UserDashboard extends StatelessWidget {
                   children: [
                     RoommateCard(
                       key: ObjectKey(userId),
+                      isLoading: state.isLoading,
                       profilePicture: ProfilePicture(
                         photoUrl: houseMemberUserInfo.photoUrl,
                         id: 500,
@@ -237,6 +239,7 @@ class UserDashboard extends StatelessWidget {
                   text: 'Sign Out',
                   icon: AppIcons.logOut,
                 ),
+                const ThemeButton(),
               ],
             },
             filter: Row(

@@ -17,7 +17,6 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     final houseId = context.read<UsersRepository>().getHouseId;
     final memberId = context.read<UsersRepository>().getMemberId;
-    debugPrint('loading house with ID $houseId');
     return ListenableProvider(
       create: (_) => NavBarController(),
       child: DefaultPageView(
@@ -53,12 +52,11 @@ class HomeBody extends StatelessWidget {
   Widget build(BuildContext context) {
     // final userEmail = context.read<UsersRepository>().currentUser!.email;
     final pageController = context.watch<NavBarController>();
-    debugPrint('user logged in with $houseId');
     return PageView(
       controller: pageController,
       physics: const NeverScrollableScrollPhysics(),
       children: [
-        ExpensesDashboard(houseId: houseId),
+        const ExpensesDashboard(),
         HouseDashboard(
           houseId: houseId,
           userId: context.read<UsersRepository>().users.userId ?? '',

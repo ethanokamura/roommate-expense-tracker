@@ -54,6 +54,24 @@ class SkeletonList extends StatelessWidget {
   }
 }
 
+class SkeletonProfileList extends StatelessWidget {
+  const SkeletonProfileList({required this.lines, super.key});
+  final int lines;
+  @override
+  Widget build(BuildContext context) {
+    return ClipRect(
+      clipper: TopClipper(),
+      child: ListView.separated(
+        clipBehavior: Clip.none,
+        physics: const NeverScrollableScrollPhysics(),
+        itemBuilder: (context, index) => const SkeletonProfileCard(lines: 3),
+        separatorBuilder: (context, index) => const VerticalSpacer(),
+        itemCount: lines,
+      ),
+    );
+  }
+}
+
 class SkeletonCard extends StatelessWidget {
   const SkeletonCard({
     required this.lines,
@@ -66,6 +84,35 @@ class SkeletonCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DefaultContainer(child: SkeletonRows(lines: lines));
+  }
+}
+
+class SkeletonProfileCard extends StatelessWidget {
+  const SkeletonProfileCard({
+    required this.lines,
+    this.hasTitle = true,
+    super.key,
+  });
+  final int lines;
+  final bool hasTitle;
+
+  @override
+  Widget build(BuildContext context) {
+    return DefaultContainer(
+        child: Row(
+      children: [
+        Container(
+          width: 64,
+          height: 64,
+          decoration: BoxDecoration(
+            borderRadius: defaultBorderRadius,
+            color: context.theme.subtextColor.withAlpha(25),
+          ),
+        ),
+        const HorizontalSpacer(),
+        Expanded(child: SkeletonRows(lines: lines)),
+      ],
+    ));
   }
 }
 

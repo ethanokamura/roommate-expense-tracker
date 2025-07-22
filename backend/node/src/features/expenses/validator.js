@@ -1,6 +1,12 @@
 const { body, query, param } = require("express-validator");
 
 const expensesValidators = {
+  myExpensesQuery: [
+    query("house_id").isUUID().withMessage("Valid house ID is required"),
+    query("house_member_id")
+      .isUUID()
+      .withMessage("Valid house member ID is required"),
+  ],
   expensesId: [
     param("expense_id").isUUID().withMessage("Valid expense ID is required"),
   ],

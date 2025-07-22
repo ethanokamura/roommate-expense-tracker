@@ -171,6 +171,36 @@ class ExpensesCubit extends Cubit<ExpensesState> {
   /// Fetch list of all [Expenses] objects from Rds.
   ///
   /// Requires the [houseMemberId] for lookup
+  /// Requires the [houseId] for lookup
+  Future<void> fetchMyExpenses({
+    required String houseMemberId,
+    required String houseId,
+    required String token,
+    bool forceRefresh = false,
+  }) async {
+    emit(state.fromLoading());
+    try {
+      // Retrieve new row after inserting
+      final expensesList = await _expensesRepository.fetchMyExpenses(
+        houseMemberId: houseMemberId,
+        houseId: houseId,
+        token: token,
+        forceRefresh: forceRefresh,
+      );
+      emit(
+        state.fromExpensesListLoaded(
+          expensesList: expensesList,
+        ),
+      );
+    } on ExpensesFailure catch (failure) {
+      debugPrint('Failure to create expenses: $failure');
+      emit(state.fromExpensesFailure(failure));
+    }
+  }
+
+  /// Fetch list of all [Expenses] objects from Rds.
+  ///
+  /// Requires the [houseMemberId] for lookup
   Future<void> fetchAllExpensesWithHouseMemberId({
     required String houseMemberId,
     required String token,

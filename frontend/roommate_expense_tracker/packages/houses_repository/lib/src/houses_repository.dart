@@ -66,7 +66,6 @@ extension Create on HousesRepository {
           'name': name,
         },
       );
-      debugPrint('Houses post response: $response');
       if (response['success'] != true) {
         throw HousesFailure.fromCreate();
       }
@@ -134,7 +133,6 @@ extension Read on HousesRepository {
           'Authorization': 'Bearer $token',
         },
       );
-      debugPrint('Houses GET all houses response: $response');
       if (response['success'] != true) {
         throw HousesFailure.fromGet();
       }
@@ -199,7 +197,6 @@ extension Read on HousesRepository {
           'Authorization': 'Bearer $token',
         },
       );
-      debugPrint('Houses GET response: $response');
       if (response['success'] != true) {
         throw HousesFailure.fromGet();
       }
@@ -255,8 +252,6 @@ extension Update on HousesRepository {
         payload: data,
       );
 
-      debugPrint('Houses PATCH response: $response');
-
       // Failure
       if (response['success'] != true) {
         throw HousesFailure.fromGet();
@@ -305,8 +300,6 @@ extension Delete on HousesRepository {
           'Authorization': 'Bearer $token',
         },
       );
-
-      debugPrint('Houses DELETE response: $response');
 
       // Failure
       if (response['success'] != true) {

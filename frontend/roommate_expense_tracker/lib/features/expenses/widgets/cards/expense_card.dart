@@ -5,12 +5,10 @@ import 'package:roommate_expense_tracker/features/expenses/page_data/page_data.d
 class ExpenseCard extends StatelessWidget {
   const ExpenseCard({
     required this.expense,
-    required this.splits,
     super.key,
   });
 
   final Expenses expense;
-  final List<ExpenseSplit> splits;
 
   @override
   Widget build(BuildContext context) {

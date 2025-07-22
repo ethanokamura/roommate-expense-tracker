@@ -160,6 +160,7 @@ class NestedPageBuilder extends StatelessWidget {
     required this.itemCount,
     required this.isLoading,
     required this.emptyMessage,
+    this.loadingWidget,
     this.filter,
     this.title = '',
     super.key,
@@ -171,6 +172,7 @@ class NestedPageBuilder extends StatelessWidget {
   final String emptyMessage;
   final bool isLoading;
   final int itemCount;
+  final Widget? loadingWidget;
   final Widget? Function(BuildContext context, int index) itemBuilder;
 
   @override
@@ -251,7 +253,7 @@ class NestedPageBuilder extends StatelessWidget {
       },
       body: Expanded(
         child: isLoading
-            ? const SkeletonList(lines: 7)
+            ? loadingWidget ?? const SkeletonList(lines: 7)
             : itemCount == 0
                 ? Padding(
                     padding: const EdgeInsets.symmetric(

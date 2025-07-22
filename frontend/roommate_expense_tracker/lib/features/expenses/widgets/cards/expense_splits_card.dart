@@ -3,8 +3,14 @@ import 'package:app_ui/app_ui.dart';
 import 'package:expenses_repository/expenses_repository.dart';
 
 class ExpenseSplitsCard extends StatelessWidget {
-  const ExpenseSplitsCard({required this.split, required this.paid, super.key});
+  const ExpenseSplitsCard({
+    required this.split,
+    required this.nickname,
+    required this.paid,
+    super.key,
+  });
   final ExpenseSplit split;
+  final String nickname;
   final bool paid;
   @override
   Widget build(BuildContext context) {
@@ -16,8 +22,7 @@ class ExpenseSplitsCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               CustomText(
-                text:
-                    '${split.memberId.length > 20 ? split.memberId.substring(0, 20) : split.memberId}...',
+                text: nickname,
                 style: AppTextStyles.primary,
               ),
               CustomText(

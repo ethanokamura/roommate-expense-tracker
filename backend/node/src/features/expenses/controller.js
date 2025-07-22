@@ -101,6 +101,125 @@ class ExpensesController {
    * @param {*} res - Express response object
    * @param {*} next - Express next function
    */
+  async findMyExpenses(req, res, next) {
+    const queryData = req.query;
+
+    const queryString = `
+    SELECT
+        e.expense_id,
+        e.house_id,
+        e.house_member_id,
+        e.title,
+        e.description,
+        e.splits,
+        e.total_amount,
+        e.expense_date,
+        e.category,
+        e.is_settled,
+        e.settled_at,
+        e.created_at,
+        e.updated_at
+    FROM
+        expenses e,
+        jsonb_array_elements(e.splits -> 'member_splits') AS split(value)
+    WHERE
+        e.house_id = $1
+    AND
+        split.value ->> 'member_id' = $2
+    AND
+        e.is_settled = false
+
+    `;
+
+    try {
+      console.log(queryString);
+      let result = await query(queryString, [
+        queryData.house_id,
+        queryData.house_member_id,
+      ]);
+      const data = result.rows;
+      if (!data) {
+        return res.status(404).json({
+          success: false,
+          error: "Expenses not found",
+          code: "EXPENSES_NOT_FOUND",
+        });
+      }
+      console.log(`🚀 Expenses found: ${data.length}`);
+      return res.status(200).json({
+        success: true,
+        data: data,
+      });
+    } catch (err) {
+      console.error(`Error getting expenses: ${err.message}`);
+      return res.status(500).json({
+        success: false,
+        error: "Internal server error while retrieving expenses",
+        code: "INTERNAL_ERROR",
+        details: err.message,
+      });
+    }
+  }
+
+  /**
+   * Handle GET /expenses with optional query filters
+   * @param {*} req - Express request object
+   * @param {*} res - Express response object
+   * @param {*} next - Express next function
+   */
+  async findMyTotalExpenses(req, res, next) {
+    const queryData = req.query;
+
+    const queryString = `
+      SELECT
+          SUM((split.value ->> 'amount_owed')::NUMERIC) AS total_amount_owed
+      FROM
+          expenses e,
+          jsonb_array_elements(e.splits -> 'member_splits') AS split(value)
+      WHERE
+          split.value ->> 'member_id' = $1
+      AND
+          e.house_id = $2
+      AND
+          e.is_settled = false
+    `;
+
+    try {
+      console.log(queryString);
+      let result = await query(queryString, [
+        queryData.house_member_id,
+        queryData.house_id,
+      ]);
+      const data = result.rows;
+      if (!data) {
+        return res.status(404).json({
+          success: false,
+          error: "Expenses not found",
+          code: "EXPENSES_NOT_FOUND",
+        });
+      }
+      console.log(`🚀 Expenses found: ${data.length}`);
+      return res.status(200).json({
+        success: true,
+        data: data,
+      });
+    } catch (err) {
+      console.error(`Error getting expenses: ${err.message}`);
+      return res.status(500).json({
+        success: false,
+        error: "Internal server error while retrieving expenses",
+        code: "INTERNAL_ERROR",
+        details: err.message,
+      });
+    }
+  }
+
+  /**
+   * Handle GET /expenses with optional query filters
+   * @param {*} req - Express request object
+   * @param {*} res - Express response object
+   * @param {*} next - Express next function
+   */
   async findExpenses(req, res, next) {
     const queryData = req.query;
     let queryString = `SELECT * FROM expenses `;
@@ -111,6 +230,15 @@ class ExpensesController {
     if (houseId) {
       queryString += ` WHERE house_id = $${queryParams.length + 1} `;
       queryParams.push(houseId);
+    }
+
+    // Add WHERE clauses for filtering
+    const houseMemberId = queryData.house_member_id;
+    if (houseMemberId) {
+      queryString += ` ${
+        queryParams.length > 0 ? "AND" : "WHERE"
+      } house_member_id = $${queryParams.length + 1} `;
+      queryParams.push(houseMemberId);
     }
 
     // Add ORDER BY clause

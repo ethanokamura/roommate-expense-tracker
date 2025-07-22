@@ -22,10 +22,9 @@ class ThemeCubit extends Cubit<ThemeState> {
   }
 
   /// Public getter for the current theme
-  ThemeData get themeData => darkMode;
-  // {
-  //   return state == ThemeState.light ? lightMode : darkMode;
-  // }
+  ThemeData get themeData {
+    return state == ThemeState.light ? lightMode : darkMode;
+  }
 
   /// Retrieves user preferences using the [SharedPreferences] library
   Future<void> _loadFromPrefs() async {

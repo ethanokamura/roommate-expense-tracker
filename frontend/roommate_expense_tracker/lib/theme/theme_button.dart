@@ -19,8 +19,9 @@ class ThemeButtonState extends State<ThemeButton> {
 
   @override
   Widget build(BuildContext context) {
-    return AppBarButton(
+    return CustomButton(
       icon: isDarkMode ? AppIcons.darkMode : AppIcons.lightMode,
+      text: isDarkMode ? 'Dark Mode' : 'Light Mode',
       onTap: () async {
         await context.read<ThemeCubit>().toggleTheme();
         setState(() {

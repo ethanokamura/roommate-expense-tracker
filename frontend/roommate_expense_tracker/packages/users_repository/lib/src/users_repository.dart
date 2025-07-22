@@ -214,8 +214,6 @@ extension Auth on UsersRepository {
             Users.photoUrlConverter: _credentials.user!.photoURL!,
           });
 
-          debugPrint(newUserData.toJson().toString());
-
           user = await updateUsers(
             userId: user.userId!,
             newUsersData: newUserData,
@@ -295,7 +293,6 @@ extension Create on UsersRepository {
           Users.photoUrlConverter: photoUrl,
         },
       );
-      debugPrint('Users post response: $response');
       if (response['success'] != true) {
         throw UsersFailure.fromCreate();
       }
@@ -375,7 +372,6 @@ extension Create on UsersRepository {
           'is_active': isActive,
         },
       );
-      debugPrint('Users post response: $response');
       if (response['success'] != true) {
         throw UsersFailure.fromCreate();
       }
@@ -516,7 +512,6 @@ extension Read on UsersRepository {
 
     // No valid cache, or forceRefresh is true, fetch from API
     try {
-      debugPrint('fetching users houses with userId $userId');
       final response = await dioRequest(
         dio: Dio(),
         apiEndpoint: '/user-houses/$userId',
@@ -525,7 +520,7 @@ extension Read on UsersRepository {
           'Authorization': 'Bearer $token',
         },
       );
-      debugPrint('Users GET all user houses response: $response');
+
       if (response['success'] != true) {
         throw UsersFailure.fromGet();
       }
@@ -593,7 +588,6 @@ extension Read on UsersRepository {
           'Authorization': 'Bearer $token',
         },
       );
-      debugPrint('Users GET all users response: $response');
       if (response['success'] != true) {
         throw UsersFailure.fromGet();
       }
@@ -658,7 +652,6 @@ extension Read on UsersRepository {
           'Authorization': 'Bearer $token',
         },
       );
-      debugPrint('Users GET response: $response');
       if (response['success'] != true) {
         throw UsersFailure.fromGet();
       }
@@ -723,8 +716,6 @@ extension Read on UsersRepository {
           'Authorization': 'Bearer $token',
         },
       );
-
-      debugPrint('Users GET response: $response');
 
       // Failure
       if (response['success'] != true) {
@@ -800,7 +791,6 @@ extension Read on UsersRepository {
           'Authorization': 'Bearer $token',
         },
       );
-      debugPrint('Users GET all house_members response: $response');
       if (response['success'] != true) {
         throw UsersFailure.fromGet();
       }
@@ -867,7 +857,6 @@ extension Read on UsersRepository {
           'Authorization': 'Bearer $token',
         },
       );
-      debugPrint('Users GET response: $response');
       if (response['success'] != true) {
         throw UsersFailure.fromGet();
       }
@@ -937,7 +926,6 @@ extension Read on UsersRepository {
           'Authorization': 'Bearer $token',
         },
       );
-      debugPrint('Users GET all house_members response: $response');
       if (response['success'] != true) {
         throw UsersFailure.fromGet();
       }
@@ -1009,7 +997,6 @@ extension Read on UsersRepository {
           'Authorization': 'Bearer $token',
         },
       );
-      debugPrint('Users GET all house_members response: $response');
       if (response['success'] != true) {
         throw UsersFailure.fromGet();
       }
@@ -1081,8 +1068,6 @@ extension Read on UsersRepository {
           'Authorization': 'Bearer $token',
         },
       );
-
-      debugPrint('Users GET response: $response');
 
       // Failure
       if (response['success'] != true) {
@@ -1156,8 +1141,6 @@ extension Read on UsersRepository {
         },
       );
 
-      debugPrint('Users GET response: $response');
-
       // Failure
       if (response['success'] != true) {
         throw UsersFailure.fromGet();
@@ -1215,8 +1198,6 @@ extension Update on UsersRepository {
         },
         payload: data,
       );
-
-      debugPrint('Users PATCH response: $response');
 
       // Failure
       if (response['success'] != true) {
@@ -1277,8 +1258,6 @@ extension Update on UsersRepository {
         payload: data,
       );
 
-      debugPrint('Users PATCH response: $response');
-
       // Failure
       if (response['success'] != true) {
         throw UsersFailure.fromGet();
@@ -1328,8 +1307,6 @@ extension Delete on UsersRepository {
         },
       );
 
-      debugPrint('Users DELETE response: $response');
-
       // Failure
       if (response['success'] != true) {
         throw UsersFailure.fromDelete();
@@ -1360,8 +1337,6 @@ extension Delete on UsersRepository {
           'Authorization': 'Bearer $token',
         },
       );
-
-      debugPrint('Users DELETE response: $response');
 
       // Failure
       if (response['success'] != true) {

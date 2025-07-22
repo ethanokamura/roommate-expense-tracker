@@ -7,6 +7,7 @@ class RoommateCard extends StatelessWidget {
     required this.name,
     required this.paymentMethod,
     required this.paymentLink,
+    required this.isLoading,
     super.key,
   });
 
@@ -14,80 +15,97 @@ class RoommateCard extends StatelessWidget {
   final String name;
   final String paymentMethod;
   final String paymentLink;
+  final bool isLoading;
 
   @override
   Widget build(BuildContext context) {
-    return DefaultContainer(
-      child: Row(
-        children: [
-          profilePicture,
-          const HorizontalSpacer(
-            multiple: 1.5,
-          ),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+    return isLoading
+        ? const SkeletonProfileCard(lines: 3)
+        : DefaultContainer(
+            child: Row(
               children: [
-                CustomText(
-                  text: name,
-                  style: AppTextStyles.primary,
+                profilePicture,
+                const HorizontalSpacer(
+                  multiple: 1.5,
                 ),
-                Row(
-                  children: [
-                    const CustomText(
-                      text: "Payment Method: ",
-                      style: AppTextStyles.primary,
-                    ),
-                    Expanded(
-                      child: CustomText(
-                        text: (paymentMethod == '') ? "NOT SET" : paymentMethod,
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      CustomText(
+                        text: name,
                         style: AppTextStyles.primary,
-                        color: (paymentMethod != '')
-                            ? context.theme.accentColor
-                            : context.theme.errorColor,
                       ),
-                    ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    const CustomText(
-                      text: "Payment Info: ",
-                      style: AppTextStyles.primary,
-                    ),
-                    Expanded(
-                      child: CustomText(
-                        text: (paymentLink == "") ? "NOT SET" : paymentLink,
-                        style: AppTextStyles.primary,
-                        color: (paymentLink != "")
-                            ? context.theme.accentColor
-                            : context.theme.errorColor,
-                      ),
-                    ),
-                    if (paymentLink != "")
-                      GestureDetector(
-                        onTap: () {
-                          Clipboard.setData(ClipboardData(text: paymentLink));
-                          ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                  content: Text("Copied To Dashboard")));
-                        },
-                        child: const Padding(
-                          padding: EdgeInsets.all(1), // Small padding
-                          child: Icon(
-                            Icons.copy,
-                            size: 12,
-                            color: CustomColors.lightPrimary,
+                      Row(
+                        children: [
+                          const CustomText(
+                            text: "Payment Method: ",
+                            style: AppTextStyles.primary,
                           ),
-                        ),
+                          const HorizontalSpacer(),
+                          Flexible(
+                            child: CustomText(
+                              text:
+                                  (paymentMethod == '') ? "N/A" : paymentMethod,
+                              style: AppTextStyles.primary,
+                              color: (paymentMethod != '')
+                                  ? context.theme.accentColor
+                                  : context.theme.subtextColor,
+                            ),
+                          ),
+                        ],
                       ),
-                  ],
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Flexible(
+                            child: Row(
+                              children: [
+                                const CustomText(
+                                  text: "Payment Info: ",
+                                  style: AppTextStyles.primary,
+                                ),
+                                const HorizontalSpacer(),
+                                Flexible(
+                                  child: CustomText(
+                                    text: (paymentLink == "")
+                                        ? "N/A"
+                                        : paymentLink,
+                                    style: AppTextStyles.primary,
+                                    color: (paymentLink != "")
+                                        ? context.theme.accentColor
+                                        : context.theme.subtextColor,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          if (paymentLink != "") ...[
+                            const HorizontalSpacer(),
+                            GestureDetector(
+                              onTap: () {
+                                Clipboard.setData(
+                                    ClipboardData(text: paymentLink));
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                        content: Text("Copied To Dashboard")));
+                              },
+                              child: defaultIconStyle(
+                                context,
+                                Icons.copy,
+                                context.theme.textColor,
+                                size: 16,
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
-          ),
-        ],
-      ),
-    );
+          );
   }
 }

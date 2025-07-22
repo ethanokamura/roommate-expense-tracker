@@ -3,11 +3,13 @@ import 'package:app_ui/app_ui.dart';
 import 'package:expenses_repository/expenses_repository.dart';
 import 'package:roommate_expense_tracker/features/expenses/widgets/widgets.dart';
 import 'package:roommate_expense_tracker/features/expenses/page_data/page_data.dart';
+import 'package:users_repository/users_repository.dart';
 
 Future<dynamic> expensePopUp({
   required BuildContext context,
   required Expenses expense,
   required List<ExpenseSplit> splits,
+  required List<HouseMembers> members,
 }) async {
   await context.showScrollControlledBottomSheet<void>(
     builder: (context) => Padding(
@@ -57,6 +59,10 @@ Future<dynamic> expensePopUp({
                 const VerticalBar(),
                 KeyValueGrid(
                   items: {
+                    'Created By': members
+                        .firstWhere(
+                            (el) => el.houseMemberId == expense.houseMemberId)
+                        .nickname,
                     'Category': expense.category.toTitleCase,
                     'Total': formatCurrency(expense.totalAmount),
                     'Created On': DateFormatter.formatTimestamp(
@@ -86,12 +92,14 @@ Future<dynamic> expensePopUp({
                 Column(
                   children: List.generate(
                     splits.length,
-                    (index) => Stack(children: [
-                      ExpenseSplitsCard(
-                        split: splits[index],
-                        paid: expense.isSettled,
-                      ),
-                    ]),
+                    (index) => ExpenseSplitsCard(
+                      nickname: members
+                          .firstWhere((el) =>
+                              el.houseMemberId == splits[index].memberId)
+                          .nickname,
+                      split: splits[index],
+                      paid: expense.isSettled,
+                    ),
                   ),
                 )
               ],

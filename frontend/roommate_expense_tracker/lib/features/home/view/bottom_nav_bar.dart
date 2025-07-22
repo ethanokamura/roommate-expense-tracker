@@ -53,7 +53,7 @@ class BottomNavBar extends StatelessWidget {
       items: const <BottomNavigationBarItem>[
         BottomNavigationBarItem(
           icon: Icon(AppIcons.money, size: 20),
-          label: 'Payments',
+          label: 'Expenses',
         ),
         BottomNavigationBarItem(
           icon: Icon(AppIcons.house, size: 20),

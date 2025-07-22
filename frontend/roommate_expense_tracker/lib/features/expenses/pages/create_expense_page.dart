@@ -1,9 +1,9 @@
 import 'package:app_core/app_core.dart';
 import 'package:app_ui/app_ui.dart';
 import 'package:expenses_repository/expenses_repository.dart';
-import 'package:roommate_expense_tracker/features/expenses/cubit/expenses_cubit.dart';
 import 'package:roommate_expense_tracker/features/expenses/widgets/widgets.dart';
 import 'package:roommate_expense_tracker/features/expenses/page_data/page_data.dart';
+import 'package:roommate_expense_tracker/features/users/cubit/users_cubit.dart';
 import 'package:users_repository/users_repository.dart';
 
 class CreateExpensePage extends StatefulWidget {
@@ -48,11 +48,16 @@ class _CreateExpensePageState extends State<CreateExpensePage> {
   Widget build(BuildContext context) {
     return DefaultPageView(
       title: 'Create Expense',
-      body: BlocProvider(
-        create: (context) => ExpensesCubit(
-          expensesRepository: context.read<ExpensesRepository>(),
-        ),
-        child: BlocBuilder<ExpensesCubit, ExpensesState>(
+      body: BlocProvider<UsersCubit>(
+        create: (context) =>
+            UsersCubit(usersRepository: context.read<UsersRepository>())
+              ..fetchAllHouseMembersWithHouseId(
+                houseId: widget.houseId,
+                token: context.read<UsersRepository>().idToken ?? '',
+                orderBy: HouseMembers.createdAtConverter,
+                ascending: false,
+              ),
+        child: BlocBuilder<UsersCubit, UsersState>(
           builder: (context, state) {
             return Padding(
               padding: const EdgeInsets.symmetric(horizontal: defaultPadding),
@@ -131,16 +136,18 @@ class _CreateExpensePageState extends State<CreateExpensePage> {
                             style: AppTextStyles.primary,
                           ),
                           DropDown(
-                            dropDownItems: List.generate(3, (index) {
+                            dropDownItems: List.generate(
+                                state.houseMembersList.length, (index) {
                               return DropDownItem(
                                 icon: AppIcons.user,
-                                text: 'User $index',
+                                text: state.houseMembersList[index].nickname,
                                 onSelect: () async {
                                   try {
                                     final newSplit =
                                         await _expenseSplitFormPopup(
                                       context: context,
-                                      memberId: 'user-231412$index',
+                                      memberId: state.houseMembersList[index]
+                                          .houseMemberId!,
                                     );
                                     setState(() {
                                       splitAmount = 0.0;
@@ -176,6 +183,14 @@ class _CreateExpensePageState extends State<CreateExpensePage> {
                             ),
                             children: [
                               ExpenseSplitsCard(
+                                nickname: state.houseMembersList
+                                    .firstWhere(
+                                      (el) =>
+                                          el.houseMemberId ==
+                                          ExpenseSplit.fromJson(splits[index])
+                                              .memberId,
+                                    )
+                                    .nickname,
                                 split: ExpenseSplit.fromJson(splits[index]),
                                 paid: false,
                               ),
