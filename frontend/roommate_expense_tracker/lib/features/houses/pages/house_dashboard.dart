@@ -11,10 +11,7 @@ import 'package:roommate_expense_tracker/features/houses/widgets/roommate_card.d
 import 'package:roommate_expense_tracker/features/users/widgets/profile_picture.dart';
 
 class HouseDashboard extends StatelessWidget {
-  const HouseDashboard(
-      {required this.houseId, required this.userId, super.key});
-  final String houseId;
-  final String userId;
+  const HouseDashboard({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -23,11 +20,14 @@ class HouseDashboard extends StatelessWidget {
     return BlocProvider<UsersCubit>(
       create: (context) => UsersCubit(
         usersRepository: userRepository,
-      )..fetchAllHouseData(houseId: houseId, userId: userId, token: token),
+      )..fetchAllHouseData(
+          houseId: userRepository.getHouseId,
+          userId: userRepository.users.userId!,
+          token: token),
       child: UsersCubitWrapper(
         builder: (context, state) {
           UserHouseData houseData = state.userHouseDataList.firstWhere(
-            (element) => element.houseId == houseId,
+            (element) => element.houseId == userRepository.getHouseId,
             orElse: () => UserHouseData.empty,
           );
           return NestedPageBuilder(
@@ -63,10 +63,9 @@ class HouseDashboard extends StatelessWidget {
                           ? const SkeletonCard(lines: 2)
                           : GestureDetector(
                               onTap: () {
-                                Clipboard.setData(ClipboardData(text: houseId));
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                        content: Text("Copied To Dashboard")));
+                                Clipboard.setData(ClipboardData(
+                                    text: userRepository.getHouseId));
+                                context.showSnackBar("Copied To Dashboard");
                               },
                               child: DefaultContainer(
                                 child: Expanded(
@@ -92,7 +91,7 @@ class HouseDashboard extends StatelessWidget {
                                         ],
                                       ),
                                       CustomText(
-                                        text: houseId,
+                                        text: userRepository.getHouseId,
                                         style: AppTextStyles.primary,
                                         color: context.theme.subtextColor,
                                         maxLines: 1,

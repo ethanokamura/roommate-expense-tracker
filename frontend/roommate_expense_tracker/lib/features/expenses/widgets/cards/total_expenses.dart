@@ -23,7 +23,7 @@ class MyTotalExpenses extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const CustomText(
-                text: 'My Total Expenses',
+                text: 'Amount I Owe:',
                 style: AppTextStyles.primary,
               ),
               CustomText(

@@ -87,9 +87,7 @@ class RoommateCard extends StatelessWidget {
                               onTap: () {
                                 Clipboard.setData(
                                     ClipboardData(text: paymentLink));
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                        content: Text("Copied To Dashboard")));
+                                context.showSnackBar("Copied To Dashboard");
                               },
                               child: defaultIconStyle(
                                 context,
