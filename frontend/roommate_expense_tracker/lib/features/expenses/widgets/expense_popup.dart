@@ -88,6 +88,38 @@ Future<dynamic> expensePopUp({
                     ),
                   ],
                 ),
+                if (expense.houseMemberId ==
+                        context.read<UsersRepository>().getMemberId &&
+                    expense.isSettled == false) ...[
+                  const VerticalSpacer(),
+                  CustomButton(
+                    text: 'Mark as resolved',
+                    onTap: () async {
+                      final List<Map<String, dynamic>> splitData =
+                          splits.map((split) => split.toJson()).toList();
+                      for (Map<String, dynamic> split in splitData) {
+                        split['paid_on'] = DateTime.now().toIso8601String();
+                      }
+                      final newExpenseData = Expenses.fromJson({
+                        ...expense.toJson(),
+                        Expenses.isSettledConverter: true,
+                        Expenses.settledAtConverter: DateTime.now(),
+                        Expenses.splitsConverter: {"member_splits": splitData},
+                      });
+                      debugPrint(
+                          'marking expense as resolved:${expense.expenseId}');
+                      await context.read<ExpensesRepository>().updateExpenses(
+                            expenseId: expense.expenseId ?? '',
+                            newExpensesData: newExpenseData,
+                            token:
+                                context.read<UsersRepository>().idToken ?? '',
+                          );
+                      if (!context.mounted) return;
+                      Navigator.pop(context);
+                    },
+                    color: context.theme.accentColor,
+                  ),
+                ],
                 const VerticalBar(),
                 Column(
                   children: List.generate(

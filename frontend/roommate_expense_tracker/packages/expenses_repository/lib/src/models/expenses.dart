@@ -145,12 +145,12 @@ class Expenses extends Equatable {
       description: description,
       splits: splits,
       totalAmount: totalAmount,
-      expenseDate: expenseDate,
+      expenseDate: expenseDate?.toIso8601String().substring(0, 10),
       category: category,
       isSettled: isSettled,
-      settledAt: settledAt,
-      createdAt: createdAt,
-      updatedAt: updatedAt,
+      settledAt: settledAt?.toIso8601String().substring(0, 10),
+      createdAt: createdAt?.toIso8601String().substring(0, 10),
+      updatedAt: updatedAt?.toIso8601String().substring(0, 10),
     );
   }
 
@@ -163,12 +163,12 @@ class Expenses extends Equatable {
     String? description,
     Map<String, dynamic>? splits,
     double? totalAmount,
-    DateTime? expenseDate,
+    String? expenseDate,
     String? category,
     bool? isSettled,
-    DateTime? settledAt,
-    DateTime? createdAt,
-    DateTime? updatedAt,
+    String? settledAt,
+    String? createdAt,
+    String? updatedAt,
   }) {
     return {
       if (expenseId != null) expenseIdConverter: expenseId,

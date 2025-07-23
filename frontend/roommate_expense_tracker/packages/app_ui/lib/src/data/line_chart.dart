@@ -60,7 +60,7 @@ class CustomLineChartView extends StatelessWidget {
         padding: const EdgeInsets.all(defaultPadding),
         child: LineChart(
           duration: const Duration(milliseconds: 1000),
-          curve: Curves.ease,
+          // curve: Curves.ease,
           hasLoaded && values.isNotEmpty
               ? _mainData(
                   context,
@@ -157,8 +157,8 @@ LineChartData _mainData(
           spots: getSpots(values),
           isCurved: true,
           barWidth: 3,
-          curveSmoothness: 0.5,
-          preventCurveOverShooting: true,
+          curveSmoothness: 0.15,
+          preventCurveOverShooting: false,
           color: values[values.length - 1] - values[0] < 0
               ? context.theme.errorColor
               : context.theme.accentColor,
@@ -200,7 +200,7 @@ LineChartData _mainData(
           LineChartBarData(
             spots: avgLine(avg, values.length),
             barWidth: 3,
-            preventCurveOverShooting: true,
+            preventCurveOverShooting: false,
             color: context.theme.accentColor.withAlpha(150),
             isStrokeCapRound: true,
             dotData: const FlDotData(show: false),
@@ -243,7 +243,7 @@ LineChartData _dummyData(
           spots: _dummyValues(values.length),
           isCurved: true,
           barWidth: 6,
-          curveSmoothness: 0.5,
+          curveSmoothness: 0.15,
           preventCurveOverShooting: true,
           color: values[values.length - 1] - values[0] < 0
               ? context.theme.errorColor

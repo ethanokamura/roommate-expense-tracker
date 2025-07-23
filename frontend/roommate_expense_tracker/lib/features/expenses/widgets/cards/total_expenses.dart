@@ -24,11 +24,11 @@ class MyTotalExpenses extends StatelessWidget {
             children: [
               const CustomText(
                 text: 'My Total Expenses',
-                style: AppTextStyles.title,
+                style: AppTextStyles.primary,
               ),
               CustomText(
                 text: formatCurrency(snapshot.data ?? 0.0),
-                style: AppTextStyles.title,
+                style: AppTextStyles.primary,
                 color: context.theme.accentColor,
               ),
             ],

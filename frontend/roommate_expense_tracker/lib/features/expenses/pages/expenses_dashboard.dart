@@ -2,6 +2,7 @@ import 'package:app_ui/app_ui.dart';
 import 'package:app_core/app_core.dart';
 import 'package:expenses_repository/expenses_repository.dart';
 import 'package:roommate_expense_tracker/features/expenses/cubit/expenses_cubit.dart';
+import 'package:roommate_expense_tracker/features/expenses/pages/expense_manager.dart';
 import 'package:roommate_expense_tracker/features/expenses/widgets/cards/total_expenses.dart';
 import 'package:roommate_expense_tracker/features/expenses/widgets/widgets.dart';
 import 'package:roommate_expense_tracker/features/users/users.dart';
@@ -134,9 +135,14 @@ class ExpensesDashboard extends StatelessWidget {
                   dataType: ChartDataType.isCurrency,
                 ),
                 const MyTotalExpenses(),
-                CustomButton(
-                  text: 'View My Expenses',
-                  onTap: () {},
+                const TransitionContainer(
+                  page: ExpenseManager(),
+                  child: DefaultContainer(
+                    child: CustomText(
+                      text: 'View My Expenses',
+                      style: AppTextStyles.primary,
+                    ),
+                  ),
                 )
               ],
               'Expense Distribution': [

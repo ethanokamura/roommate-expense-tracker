@@ -146,7 +146,7 @@ List<PieChartSectionData> getPieChartSections(
         showTitle: true,
         title: '${values[i].floor()}%',
         titleStyle: TextStyle(
-          color: context.theme.backgroundColor,
+          color: context.theme.textColor,
         ),
       ),
     );

@@ -45,7 +45,7 @@ class ExpenseSplit {
     return _generateMap(
       memberId: memberId,
       amountOwed: amountOwed,
-      paidOn: paidOn,
+      paidOn: paidOn?.toIso8601String(),
     );
   }
 
@@ -53,7 +53,7 @@ class ExpenseSplit {
   static Map<String, dynamic> _generateMap({
     String? memberId,
     double? amountOwed,
-    DateTime? paidOn,
+    String? paidOn,
   }) =>
       {
         if (memberId != null) memberIdConverter: memberId,

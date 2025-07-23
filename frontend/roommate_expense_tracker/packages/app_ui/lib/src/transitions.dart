@@ -36,7 +36,7 @@ class TransitionContainer extends StatelessWidget {
       openBuilder: (BuildContext context, VoidCallback _) {
         return page;
       },
-      closedElevation: defaultElevation,
+      closedElevation: 0,
       openColor: context.theme.backgroundColor,
       closedColor: context.theme.backgroundColor,
       closedBuilder: (BuildContext context, VoidCallback openContainer) {

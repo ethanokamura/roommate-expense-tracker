@@ -8,7 +8,7 @@ const expensesValidators = {
       .withMessage("Valid house member ID is required"),
   ],
   expensesId: [
-    param("expense_id").isUUID().withMessage("Valid expense ID is required"),
+    param("id").isUUID().withMessage("Valid expense ID is required"),
   ],
   weeklyExpenseQuery: [
     query("key").isString().withMessage("Valid key is required"),
@@ -47,16 +47,42 @@ const expensesValidators = {
       .withMessage("Limit must be an integer between 1 and 100"),
   ],
   updateExpenses: [
-    body("description")
+    body("house_id")
       .optional()
-      .isString()
-      .withMessage("Description must be a string"),
+      .notEmpty()
+      .isUUID()
+      .withMessage("Value required for houseId")
+      .withMessage("Valid houseId is required"),
+    body("house_member_id")
+      .optional()
+      .notEmpty()
+      .isUUID()
+      .withMessage("Value required for houseMemberId")
+      .withMessage("Valid houseMemberId is required"),
     body("total_amount")
       .optional()
       .isDecimal()
       .withMessage("Total amount must be a decimal"),
+    body("expense_date")
+      .optional()
+      .isDate()
+      .withMessage("Expense date at must be a timestamp"),
+    body("title")
+      .optional()
+      .notEmpty()
+      .withMessage("Value required for title")
+      .isString()
+      .withMessage("Title must be a string"),
+    body("description")
+      .notEmpty()
+      .optional()
+      .withMessage("Value required for description")
+      .isString()
+      .withMessage("Description must be a string"),
     body("category")
       .optional()
+      .notEmpty()
+      .withMessage("Value required for category")
       .isString()
       .withMessage("Category must be a string"),
     body("is_settled")

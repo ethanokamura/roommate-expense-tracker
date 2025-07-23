@@ -407,41 +407,79 @@ class ExpensesController {
    */
   async updateExpenses(req, res, next) {
     const { id } = req.params;
-    const { description, total_amount, category, is_settled, settled_at } =
-      req.body;
+    const {
+      house_id,
+      house_member_id,
+      title,
+      description,
+      splits,
+      total_amount,
+      expense_date,
+      category,
+      is_settled,
+      settled_at,
+      updated_at,
+    } = req.body;
 
+    let fields = [];
     let queryParams = [];
-    let setString = "";
 
+    if (house_id) {
+      fields.push(`house_id = $${fields.length + 1}`);
+      queryParams.push(house_id);
+    }
+    if (house_member_id) {
+      fields.push(`house_member_id = $${fields.length + 1}`);
+      queryParams.push(house_member_id);
+    }
+    if (title) {
+      fields.push(`title = $${fields.length + 1}`);
+      queryParams.push(title);
+    }
     if (description) {
-      setString += `description = $${queryParams.length + 1}`;
+      fields.push(`description = $${fields.length + 1}`);
       queryParams.push(description);
     }
+    if (splits) {
+      fields.push(`splits = $${fields.length + 1}`);
+      queryParams.push(splits);
+    }
     if (total_amount) {
-      setString += `total_amount = $${queryParams.length + 1}`;
+      fields.push(`total_amount = $${fields.length + 1}`);
       queryParams.push(total_amount);
     }
-    if (category) {
-      setString += `category = $${queryParams.length + 1}`;
-      queryParams.push(category);
+    if (expense_date) {
+      fields.push(`expense_date = $${fields.length + 1}`);
+      queryParams.push(expense_date);
     }
     if (is_settled) {
-      setString += `is_settled = $${queryParams.length + 1}`;
+      fields.push(`is_settled = $${fields.length + 1}`);
       queryParams.push(is_settled);
     }
+    if (category) {
+      fields.push(`category = $${fields.length + 1}`);
+      queryParams.push(category);
+    }
     if (settled_at) {
-      setString += `settled_at = $${queryParams.length + 1}`;
+      fields.push(`settled_at = $${fields.length + 1}`);
       queryParams.push(settled_at);
     }
-
-    queryParams.push(id);
+    if (updated_at) {
+      fields.push(`updated_at = $${fields.length + 1}`);
+      queryParams.push(updated_at);
+    }
 
     const queryString = `
-      UPDATE expenses
-      SET ${setString}
-      WHERE expense_id = $${queryParams.length + 1}
+      UPDATE
+        expenses
+      SET 
+        ${fields.join(", ")}
+      WHERE 
+        expense_id = $${queryParams.length + 1}
       RETURNING *
     `;
+    queryParams.push(id);
+    console.log(queryString);
 
     try {
       let result = await query(queryString, queryParams);
