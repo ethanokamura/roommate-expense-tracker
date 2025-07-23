@@ -30,11 +30,13 @@ extension Create on HousesRepository {
   Future<Houses> createHouses({
     required String name,
     required String token,
+    required String userId,
     bool forceRefresh = true,
   }) async {
     // Get cache key
     final cacheKey = generateCacheKey({
       'object': 'houses',
+      'user_id': userId,
       Houses.nameConverter: name,
     });
 
@@ -64,6 +66,7 @@ extension Create on HousesRepository {
         },
         payload: {
           'name': name,
+          'user_id': userId,
         },
       );
       if (response['success'] != true) {

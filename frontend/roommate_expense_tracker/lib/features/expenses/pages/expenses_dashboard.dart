@@ -147,17 +147,15 @@ class ExpensesDashboard extends StatelessWidget {
               ],
               'Expense Distribution': [
                 Center(
-                  child: expenseState.expenseCategories.isEmpty
-                      ? const SizedBox(
-                          height: 200,
-                          width: double.infinity,
-                          child: Center(child: CircularProgressIndicator()),
-                        )
-                      : CustomPieChart(
-                          title: 'Expense Distribution',
-                          data: _formatCategoryResponse(
-                              expenseState.expenseCategories),
-                        ),
+                  child: CustomPieChart(
+                    title: 'Expense Distribution',
+                    data: _formatCategoryResponse(
+                        expenseState.expenseCategories.isEmpty
+                            ? [
+                                {"category": "N/A", "total": 100.0}
+                              ]
+                            : expenseState.expenseCategories),
+                  ),
                 )
               ],
             },

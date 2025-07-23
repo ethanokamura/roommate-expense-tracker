@@ -142,7 +142,9 @@ class UserDashboard extends StatelessWidget {
                                 );
                                 if (updated != null) {
                                   Users newUsersData = state.users.copyWith(
-                                      paymentMethod: updated["Payment Method"]);
+                                    paymentMethod: updated["Payment Method"],
+                                    paymentLink: paymentLink,
+                                  );
                                   await usersCubit.updateUsers(
                                     userId: userId,
                                     newUsersData: newUsersData,
@@ -202,7 +204,9 @@ class UserDashboard extends StatelessWidget {
                                 );
                                 if (updated != null) {
                                   Users newUsersData = state.users.copyWith(
-                                      paymentLink: updated["Payment Info"]);
+                                    paymentLink: updated["Payment Info"],
+                                    paymentMethod: paymentMethod,
+                                  );
                                   await usersCubit.updateUsers(
                                     userId: userId,
                                     newUsersData: newUsersData,

@@ -326,8 +326,8 @@ extension Create on UsersRepository {
   Future<HouseMembers> createHouseMembers({
     required String userId,
     required String houseId,
-    required String isAdmin,
-    required String isActive,
+    required bool isAdmin,
+    required bool isActive,
     required String token,
     bool forceRefresh = true,
   }) async {
@@ -336,8 +336,8 @@ extension Create on UsersRepository {
       'object': 'house_members',
       HouseMembers.userIdConverter: userId,
       HouseMembers.houseIdConverter: houseId,
-      HouseMembers.isAdminConverter: isAdmin,
-      HouseMembers.isActiveConverter: isActive,
+      HouseMembers.isAdminConverter: isAdmin.toString(),
+      HouseMembers.isActiveConverter: isActive.toString(),
     });
 
     // Check cache if not forcing refresh

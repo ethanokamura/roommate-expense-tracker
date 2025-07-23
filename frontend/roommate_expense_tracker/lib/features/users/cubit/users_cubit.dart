@@ -26,8 +26,8 @@ class UsersCubit extends Cubit<UsersState> {
   Future<void> createHouseMembers({
     required String userId,
     required String houseId,
-    required String isAdmin,
-    required String isActive,
+    required bool isAdmin,
+    required bool isActive,
     required String token,
     bool forceRefresh = true,
   }) async {
