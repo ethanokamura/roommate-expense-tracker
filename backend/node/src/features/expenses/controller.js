@@ -367,6 +367,10 @@ class ExpensesController {
           split.value ->> 'member_id' = $1
       AND 
           e.house_id = $2
+      AND 
+          e.created_at >= (CURRENT_DATE - INTERVAL '6 day')
+      AND 
+          e.created_at < (CURRENT_DATE + INTERVAL '1 day')
       GROUP BY
           LOWER(e.category)
       ORDER BY
