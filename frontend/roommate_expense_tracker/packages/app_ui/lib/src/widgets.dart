@@ -43,7 +43,15 @@ class DefaultContainer extends StatelessWidget {
                 color: context.theme.primaryColor.withAlpha(96),
                 width: 0.5,
               ),
-          boxShadow: boxShadow,
+          boxShadow: boxShadow ??
+              [
+                BoxShadow(
+                  color: context.theme.textColor.withAlpha(20),
+                  blurRadius: 5,
+                  offset: const Offset(0, 0),
+                  spreadRadius: 1,
+                ),
+              ],
         ),
         child: Padding(
           padding: EdgeInsets.symmetric(
