@@ -7,28 +7,31 @@ Future<dynamic> createHousePopup({
   required BuildContext context,
   required Future<void> Function() onCreate,
 }) async {
-  await context.showScrollControlledBottomSheet<void>(
-    builder: (context) => Padding(
-      padding: const EdgeInsets.only(top: defaultPadding),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(
-              top: defaultPadding * 2,
-              left: defaultPadding * 2,
-              right: defaultPadding * 2,
-              bottom: 100,
+  await showDialog<Map<String, dynamic>>(
+    context: context,
+    builder: (context) => AlertDialog(
+      content: Padding(
+        padding: const EdgeInsets.only(top: defaultPadding),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(
+                top: defaultPadding * 2,
+                left: defaultPadding * 2,
+                right: defaultPadding * 2,
+                bottom: 100,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [CreateHouseForm(onCreate: onCreate)],
+              ),
             ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [CreateHouseForm(onCreate: onCreate)],
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     ),
   );
@@ -76,7 +79,7 @@ class _CreateHouseFormState extends State<CreateHouseForm> {
           context: context,
           label: 'Enter A House Name',
           controller: controller,
-          onBackground: true,
+          onBackground: false,
           onChanged: (name) => setState(() {
             if (name.trim().isNotEmpty) {
               houseName = name;

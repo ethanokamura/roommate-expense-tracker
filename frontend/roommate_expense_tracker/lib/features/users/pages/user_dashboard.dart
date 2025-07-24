@@ -104,8 +104,7 @@ class UserDashboard extends StatelessWidget {
                               padding: EdgeInsets.all(1), // Small padding
                               child: Icon(
                                 Icons.edit,
-                                size: 12,
-                                color: CustomColors.lightPrimary,
+                                size: 16,
                               ),
                             ),
                           ),
@@ -166,8 +165,7 @@ class UserDashboard extends StatelessWidget {
                               padding: EdgeInsets.all(1), // Small padding
                               child: Icon(
                                 Icons.edit,
-                                size: 12,
-                                color: CustomColors.lightPrimary,
+                                size: 16,
                               ),
                             ),
                           ),
@@ -228,8 +226,7 @@ class UserDashboard extends StatelessWidget {
                               padding: EdgeInsets.all(1), // Small padding
                               child: Icon(
                                 Icons.edit,
-                                size: 12,
-                                color: CustomColors.lightPrimary,
+                                size: 16,
                               ),
                             ),
                           ),
