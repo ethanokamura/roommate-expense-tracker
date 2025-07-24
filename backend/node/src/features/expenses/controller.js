@@ -105,37 +105,23 @@ class ExpensesController {
     const queryData = req.query;
 
     const queryString = `
-    SELECT
-        e.expense_id,
-        e.house_id,
-        e.house_member_id,
-        e.title,
-        e.description,
-        e.splits,
-        e.total_amount,
-        e.expense_date,
-        e.category,
-        e.is_settled,
-        e.settled_at,
-        e.created_at,
-        e.updated_at
-    FROM
-        expenses e,
-        jsonb_array_elements(e.splits -> 'member_splits') AS split(value)
-    WHERE
-        e.house_id = $1
-    AND
-        split.value ->> 'member_id' = $2
-    AND
-        e.is_settled = false
-
+      SELECT *
+      FROM
+          expenses e,
+          jsonb_array_elements(e.splits -> 'member_splits') AS split(value)
+      WHERE
+          split.value ->> 'member_id' = $1
+      AND
+          e.house_id = $2
+      AND
+          e.is_settled = false
     `;
 
     try {
       console.log(queryString);
       let result = await query(queryString, [
-        queryData.house_id,
         queryData.house_member_id,
+        queryData.house_id,
       ]);
       const data = result.rows;
       if (!data) {
@@ -318,17 +304,22 @@ class ExpensesController {
    * @param {*} next - Express next function
    */
   async getWeeklyExpenses(req, res, next) {
-    const { key, value } = req.query;
+    const queryData = req.query;
     const queryString = `
       SELECT
           created_at::DATE AS day,
-          SUM(total_amount) AS total
+          SUM((split.value ->> 'amount_owed')::NUMERIC) AS total
       FROM
-          expenses
+          expenses e,
+          jsonb_array_elements(e.splits -> 'member_splits') AS split(value)
       WHERE
-          ${key} = $1
-          AND created_at >= (CURRENT_DATE - INTERVAL '6 day')
-          AND created_at < (CURRENT_DATE + INTERVAL '1 day')
+          split.value ->> 'member_id' = $1
+      AND 
+          e.house_id = $2
+      AND 
+          e.created_at >= (CURRENT_DATE - INTERVAL '6 day')
+      AND 
+          e.created_at < (CURRENT_DATE + INTERVAL '1 day')
       GROUP BY
           day
       ORDER BY
@@ -336,8 +327,10 @@ class ExpensesController {
     `;
 
     try {
-      console.log(`fetching weekly expenses given ${key} and ${value}`);
-      let result = await query(queryString, [value]);
+      let result = await query(queryString, [
+        queryData.house_member_id,
+        queryData.house_id,
+      ]);
       const data = result.rows;
       console.log(`Week of expenses fetched successfully`);
       return res.status(201).json({
@@ -362,26 +355,29 @@ class ExpensesController {
    * @param {*} next - Express next function
    */
   async getExpenseCategories(req, res, next) {
-    const { key, value } = req.query;
+    const queryData = req.query;
     const queryString = `
       SELECT
           LOWER(category) AS category,
           SUM(total_amount) AS total
       FROM
-          expenses
+          expenses e,
+          jsonb_array_elements(e.splits -> 'member_splits') AS split(value)
       WHERE
-          ${key} = $1
+          split.value ->> 'member_id' = $1
+      AND 
+          e.house_id = $2
       GROUP BY
-          LOWER(category)
+          LOWER(e.category)
       ORDER BY
-          LOWER(category); 
+          LOWER(e.category); 
     `;
 
     try {
-      console.log(
-        `fetching weekly expense categories given ${key} and ${value}`
-      );
-      let result = await query(queryString, [value]);
+      let result = await query(queryString, [
+        queryData.house_member_id,
+        queryData.house_id,
+      ]);
       const data = result.rows;
       console.log(`Week of expense categories fetched successfully`);
       return res.status(201).json({

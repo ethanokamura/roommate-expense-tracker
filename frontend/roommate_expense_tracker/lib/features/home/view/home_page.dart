@@ -55,16 +55,10 @@ class HomeBody extends StatelessWidget {
     return PageView(
       controller: pageController,
       physics: const NeverScrollableScrollPhysics(),
-      children: [
-        const ExpensesDashboard(),
-        HouseDashboard(
-          houseId: houseId,
-          userId: context.read<UsersRepository>().users.userId ?? '',
-        ),
-        UserDashboard(
-          houseId: houseId,
-          userId: context.read<UsersRepository>().users.userId ?? '',
-        ),
+      children: const [
+        ExpensesDashboard(),
+        HouseDashboard(),
+        UserDashboard(),
       ],
     );
   }

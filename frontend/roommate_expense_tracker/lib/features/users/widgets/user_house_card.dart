@@ -14,10 +14,13 @@ class UsersHouseCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () async => context.read<AppCubit>().selectedHouse(
-            houseId: userHouse.houseId,
-            memberId: userHouse.houseMemberId,
-          ),
+      onTap: () async {
+        context.showSnackBar('Selected to ${userHouse.houseName}');
+        await context.read<AppCubit>().selectedHouse(
+              houseId: userHouse.houseId,
+              memberId: userHouse.houseMemberId,
+            );
+      },
       child: DefaultContainer(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

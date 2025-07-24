@@ -14,12 +14,13 @@ extension BuildContextExtensions on BuildContext {
       ..hideCurrentSnackBar()
       ..showSnackBar(
         SnackBar(
-          backgroundColor: theme.surfaceColor,
+          backgroundColor: theme.textColor,
           content: CustomText(
             text: text,
             style: AppTextStyles.primary,
+            color: theme.backgroundColor,
           ),
-          behavior: SnackBarBehavior.floating,
+          // behavior: SnackBarBehavior.floating,
         ),
       );
   }

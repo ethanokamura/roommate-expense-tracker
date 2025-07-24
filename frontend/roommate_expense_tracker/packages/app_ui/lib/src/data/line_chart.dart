@@ -158,7 +158,7 @@ LineChartData _mainData(
           isCurved: true,
           barWidth: 3,
           curveSmoothness: 0.15,
-          preventCurveOverShooting: false,
+          preventCurveOverShooting: true,
           color: values[values.length - 1] - values[0] < 0
               ? context.theme.errorColor
               : context.theme.accentColor,
@@ -302,7 +302,7 @@ Widget bottomTitleWidgets(
   List<String> titles,
 ) {
   final dates = getDatesList(DateTime.now(), len);
-  final weekDays = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+  final weekDays = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
   return SideTitleWidget(
     meta: meta,
     child: CustomText(

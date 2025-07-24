@@ -10,9 +10,7 @@ import 'package:users_repository/users_repository.dart';
 import 'package:roommate_expense_tracker/features/users/widgets/user_house_card.dart';
 
 class UserDashboard extends StatelessWidget {
-  const UserDashboard({required this.houseId, required this.userId, super.key});
-  final String houseId;
-  final String userId;
+  const UserDashboard({super.key});
   @override
   Widget build(BuildContext context) {
     final userRepository = context.read<UsersRepository>();
@@ -21,17 +19,18 @@ class UserDashboard extends StatelessWidget {
     return BlocProvider<UsersCubit>(
       create: (context) => usersCubit
         ..fetchAllHouseData(
-          houseId: houseId,
-          userId: userId,
+          houseId: userRepository.getHouseId,
+          userId: userRepository.users.userId!,
           token: token,
         ),
       child: UsersCubitWrapper(
         builder: (context, state) {
           final houseMemberUserInfo = state.houseMemberUserInfoList.firstWhere(
-              (m) => m.userId == userId,
-              orElse: () => HouseMembersUserInfo(userId: userId));
+              (m) => m.userId == userRepository.users.userId!,
+              orElse: () =>
+                  HouseMembersUserInfo(userId: userRepository.users.userId!));
           final houseMember = state.houseMembersList.firstWhere(
-              (m) => m.userId == userId,
+              (m) => m.userId == userRepository.users.userId!,
               orElse: () => const HouseMembers());
           String? paymentMethod = houseMemberUserInfo.paymentMethod ?? '';
           String? paymentLink = houseMemberUserInfo.paymentLink ?? '';
@@ -44,7 +43,7 @@ class UserDashboard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     RoommateCard(
-                      key: ObjectKey(userId),
+                      key: ObjectKey(userRepository.users.userId!),
                       isLoading: state.isLoading,
                       profilePicture: ProfilePicture(
                         photoUrl: houseMemberUserInfo.photoUrl,
@@ -90,8 +89,8 @@ class UserDashboard extends StatelessWidget {
                                   );
                                   if (!context.mounted) return;
                                   await usersCubit.fetchAllHouseData(
-                                    houseId: houseId,
-                                    userId: userId,
+                                    houseId: userRepository.getHouseId,
+                                    userId: userRepository.users.userId!,
                                     token: token,
                                   );
                                 }
@@ -145,14 +144,14 @@ class UserDashboard extends StatelessWidget {
                                     paymentLink: paymentLink,
                                   );
                                   await usersCubit.updateUsers(
-                                    userId: userId,
+                                    userId: userRepository.users.userId!,
                                     newUsersData: newUsersData,
                                     token: token,
                                   );
                                   if (!context.mounted) return;
                                   await usersCubit.fetchAllHouseData(
-                                    houseId: houseId,
-                                    userId: userId,
+                                    houseId: userRepository.getHouseId,
+                                    userId: userRepository.users.userId!,
                                     token: token,
                                   );
                                 }
@@ -206,14 +205,14 @@ class UserDashboard extends StatelessWidget {
                                     paymentMethod: paymentMethod,
                                   );
                                   await usersCubit.updateUsers(
-                                    userId: userId,
+                                    userId: userRepository.users.userId!,
                                     newUsersData: newUsersData,
                                     token: token,
                                   );
                                   if (!context.mounted) return;
                                   await usersCubit.fetchAllHouseData(
-                                    houseId: houseId,
-                                    userId: userId,
+                                    houseId: userRepository.getHouseId,
+                                    userId: userRepository.users.userId!,
                                     token: token,
                                   );
                                 }

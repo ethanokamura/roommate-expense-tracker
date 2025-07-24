@@ -33,7 +33,7 @@ ExpensesRouter.get(
 // Read
 ExpensesRouter.get(
   "/this-week",
-  expensesValidators.weeklyExpenseQuery,
+  expensesValidators.myExpensesQuery,
   validateRequest,
   expensesController.getWeeklyExpenses
 );
@@ -41,7 +41,7 @@ ExpensesRouter.get(
 // Read
 ExpensesRouter.get(
   "/categories",
-  expensesValidators.weeklyExpenseQuery,
+  expensesValidators.myExpensesQuery,
   validateRequest,
   expensesController.getExpenseCategories
 );

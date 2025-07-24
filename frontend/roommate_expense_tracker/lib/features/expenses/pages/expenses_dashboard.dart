@@ -27,14 +27,16 @@ class ExpensesDashboard extends StatelessWidget {
               forceRefresh: true,
             )
             ..fetchWeeklyExpenses(
-              key: Expenses.houseIdConverter,
-              value: userRepository.getHouseId,
+              houseMemberId: userRepository.getMemberId,
+              houseId: userRepository.getHouseId,
               token: userRepository.idToken ?? '',
+              forceRefresh: true,
             )
             ..fetchWeeklyExpenseCategories(
-              key: Expenses.houseIdConverter,
-              value: userRepository.getHouseId,
+              houseMemberId: userRepository.getMemberId,
+              houseId: userRepository.getHouseId,
               token: userRepository.idToken ?? '',
+              forceRefresh: true,
             ),
         ),
         BlocProvider<UsersCubit>(
@@ -146,17 +148,18 @@ class ExpensesDashboard extends StatelessWidget {
                 )
               ],
               'Expense Distribution': [
-                Center(
-                  child: CustomPieChart(
-                    title: 'Expense Distribution',
-                    data: _formatCategoryResponse(
-                        expenseState.expenseCategories.isEmpty
-                            ? [
-                                {"category": "N/A", "total": 100.0}
-                              ]
-                            : expenseState.expenseCategories),
-                  ),
-                )
+                expenseState.expenseCategories.isEmpty
+                    ? const CustomText(
+                        text: 'No Expenses Yet.',
+                        style: AppTextStyles.secondary,
+                      )
+                    : Center(
+                        child: CustomPieChart(
+                          title: 'Expense Distribution',
+                          data: _formatCategoryResponse(
+                              expenseState.expenseCategories),
+                        ),
+                      )
               ],
             },
             itemCount: expenseState.expensesList.length,
@@ -190,54 +193,46 @@ class ExpensesDashboard extends StatelessWidget {
                   DropDownItem(
                     icon: AppIcons.money,
                     text: 'Total Amount',
-                    onSelect: () async => context
-                        .read<ExpensesCubit>()
-                        .fetchAllExpensesWithHouseId(
-                          houseId: userRepository.getHouseId,
-                          token: userRepository.idToken ?? '',
-                          orderBy: Expenses.totalAmountConverter,
-                          ascending: false,
-                          forceRefresh: true,
-                        ),
+                    onSelect: () async =>
+                        context.read<ExpensesCubit>().fetchMyExpenses(
+                              houseId: userRepository.getHouseId,
+                              houseMemberId: userRepository.getMemberId,
+                              token: userRepository.idToken ?? '',
+                              forceRefresh: true,
+                            ),
                   ),
                   DropDownItem(
                     icon: AppIcons.calendar,
                     text: 'Created At',
-                    onSelect: () async => context
-                        .read<ExpensesCubit>()
-                        .fetchAllExpensesWithHouseId(
-                          houseId: userRepository.getHouseId,
-                          token: userRepository.idToken ?? '',
-                          orderBy: Expenses.createdAtConverter,
-                          ascending: false,
-                          forceRefresh: true,
-                        ),
+                    onSelect: () async =>
+                        context.read<ExpensesCubit>().fetchMyExpenses(
+                              houseId: userRepository.getHouseId,
+                              houseMemberId: userRepository.getMemberId,
+                              token: userRepository.idToken ?? '',
+                              forceRefresh: true,
+                            ),
                   ),
                   DropDownItem(
                     icon: AppIcons.calendar,
                     text: 'Updated At',
-                    onSelect: () async => context
-                        .read<ExpensesCubit>()
-                        .fetchAllExpensesWithHouseId(
-                          houseId: userRepository.getHouseId,
-                          token: userRepository.idToken ?? '',
-                          orderBy: Expenses.updatedAtConverter,
-                          ascending: false,
-                          forceRefresh: true,
-                        ),
+                    onSelect: () async =>
+                        context.read<ExpensesCubit>().fetchMyExpenses(
+                              houseId: userRepository.getHouseId,
+                              houseMemberId: userRepository.getMemberId,
+                              token: userRepository.idToken ?? '',
+                              forceRefresh: true,
+                            ),
                   ),
                   DropDownItem(
                     icon: AppIcons.calendar,
                     text: 'Due Date',
-                    onSelect: () async => context
-                        .read<ExpensesCubit>()
-                        .fetchAllExpensesWithHouseId(
-                          houseId: userRepository.getHouseId,
-                          token: userRepository.idToken ?? '',
-                          orderBy: Expenses.expenseDateConverter,
-                          ascending: false,
-                          forceRefresh: true,
-                        ),
+                    onSelect: () async =>
+                        context.read<ExpensesCubit>().fetchMyExpenses(
+                              houseId: userRepository.getHouseId,
+                              houseMemberId: userRepository.getMemberId,
+                              token: userRepository.idToken ?? '',
+                              forceRefresh: true,
+                            ),
                   ),
                 ])
               ],
@@ -252,10 +247,20 @@ class ExpensesDashboard extends StatelessWidget {
 
 Map<String, double> _formatResponse(List<Map<String, dynamic>> response) {
   Map<String, double> values = {};
-  for (int i = 0; i < response.length; i++) {
-    values[response[i]["day"].toString()] =
-        double.tryParse(response[i]["total"].toString()) ?? 0.0;
+  for (int i = 5; i >= 0; i--) {
+    DateTime date = today.subtract(Duration(days: i));
+    String formattedDate =
+        "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
+    values[formattedDate] = 0.0;
   }
+
+  for (int i = 0; i < response.length; i++) {
+    String responseDayRaw = response[i]["day"].toString();
+    String responseDay = responseDayRaw.split('T')[0];
+    double total = double.tryParse(response[i]["total"].toString()) ?? 0.0;
+    values[responseDay] = total;
+  }
+
   return values;
 }
 
