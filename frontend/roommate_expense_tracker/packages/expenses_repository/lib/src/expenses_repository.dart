@@ -564,8 +564,8 @@ extension Read on ExpensesRepository {
 
   /// Fetch list of all [Expenses] objects from Rds.
   Future<List<Map<String, dynamic>>> fetchWeeklyExpenseCategories({
-    required String key,
-    required String value,
+    required String houseId,
+    required String houseMemberId,
     required String token,
     bool forceRefresh = false,
     bool useTestData = false,
@@ -573,7 +573,8 @@ extension Read on ExpensesRepository {
     // Get cache key
     final cacheKey = generateCacheKey({
       'object': 'weekly_expense_categories',
-      key: value,
+      'house_id': houseId,
+      'house_member_id': houseMemberId,
     });
 
     if (!forceRefresh) {
@@ -593,7 +594,8 @@ extension Read on ExpensesRepository {
     try {
       final response = await dioRequest(
         dio: Dio(),
-        apiEndpoint: '/expenses/categories?key=$key&value=$value',
+        apiEndpoint:
+            '/expenses/categories?house_member_id=$houseMemberId&house_id=$houseId',
         method: 'GET',
         headers: {
           'Authorization': 'Bearer $token',
@@ -635,8 +637,8 @@ extension Read on ExpensesRepository {
 
   /// Fetch list of all [Expenses] objects from Rds.
   Future<List<Map<String, dynamic>>> fetchWeeklyExpenses({
-    required String key,
-    required String value,
+    required String houseMemberId,
+    required String houseId,
     required String token,
     bool forceRefresh = false,
     bool useTestData = false,
@@ -644,7 +646,8 @@ extension Read on ExpensesRepository {
     // Get cache key
     final cacheKey = generateCacheKey({
       'object': 'weekly_expenses',
-      key: value,
+      'house_id': houseId,
+      'house_member_id': houseMemberId,
     });
 
     if (!forceRefresh) {
@@ -664,7 +667,8 @@ extension Read on ExpensesRepository {
     try {
       final response = await dioRequest(
         dio: Dio(),
-        apiEndpoint: '/expenses/this-week?key=$key&value=$value',
+        apiEndpoint:
+            '/expenses/this-week?house_member_id=$houseMemberId&house_id=$houseId',
         method: 'GET',
         headers: {
           'Authorization': 'Bearer $token',

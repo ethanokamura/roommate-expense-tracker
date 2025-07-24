@@ -124,16 +124,16 @@ class ExpensesCubit extends Cubit<ExpensesState> {
   }
 
   Future<void> fetchWeeklyExpenses({
-    required String key,
-    required String value,
+    required String houseId,
+    required String houseMemberId,
     required String token,
     bool forceRefresh = false,
   }) async {
     emit(state.fromLoading());
     try {
       final expenses = await _expensesRepository.fetchWeeklyExpenses(
-        key: key,
-        value: value,
+        houseId: houseId,
+        houseMemberId: houseMemberId,
         token: token,
         forceRefresh: forceRefresh,
       );
@@ -146,8 +146,8 @@ class ExpensesCubit extends Cubit<ExpensesState> {
   }
 
   Future<void> fetchWeeklyExpenseCategories({
-    required String key,
-    required String value,
+    required String houseId,
+    required String houseMemberId,
     required String token,
     bool forceRefresh = false,
   }) async {
@@ -155,8 +155,8 @@ class ExpensesCubit extends Cubit<ExpensesState> {
     try {
       final expenseCategories =
           await _expensesRepository.fetchWeeklyExpenseCategories(
-        key: key,
-        value: value,
+        houseId: houseId,
+        houseMemberId: houseMemberId,
         token: token,
         forceRefresh: forceRefresh,
       );
