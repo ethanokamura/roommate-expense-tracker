@@ -203,6 +203,7 @@ class ExpensesCubit extends Cubit<ExpensesState> {
   /// Requires the [houseMemberId] for lookup
   Future<void> fetchAllExpensesWithHouseMemberId({
     required String houseMemberId,
+    required String houseId,
     required String token,
     required String orderBy,
     required bool ascending,
@@ -214,6 +215,7 @@ class ExpensesCubit extends Cubit<ExpensesState> {
       final expensesList =
           await _expensesRepository.fetchAllExpensesWithHouseMemberId(
         houseMemberId: houseMemberId,
+        houseId: houseId,
         token: token,
         orderBy: orderBy,
         ascending: ascending,

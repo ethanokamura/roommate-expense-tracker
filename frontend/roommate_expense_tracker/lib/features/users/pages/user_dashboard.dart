@@ -99,12 +99,10 @@ class UserDashboard extends StatelessWidget {
                                     'Failure editing $key ${e.toString()}');
                               }
                             },
-                            child: const Padding(
-                              padding: EdgeInsets.all(1), // Small padding
-                              child: Icon(
-                                Icons.edit,
-                                size: 16,
-                              ),
+                            child: defaultIconStyle(
+                              context,
+                              AppIcons.edit,
+                              context.theme.textColor,
                             ),
                           ),
                         ],
@@ -160,12 +158,10 @@ class UserDashboard extends StatelessWidget {
                                     'Failure editing $key ${e.toString()}');
                               }
                             },
-                            child: const Padding(
-                              padding: EdgeInsets.all(1), // Small padding
-                              child: Icon(
-                                Icons.edit,
-                                size: 16,
-                              ),
+                            child: defaultIconStyle(
+                              context,
+                              AppIcons.edit,
+                              context.theme.textColor,
                             ),
                           ),
                         ],
@@ -221,12 +217,10 @@ class UserDashboard extends StatelessWidget {
                                     'Failure editing $key ${e.toString()}');
                               }
                             },
-                            child: const Padding(
-                              padding: EdgeInsets.all(1), // Small padding
-                              child: Icon(
-                                Icons.edit,
-                                size: 16,
-                              ),
+                            child: defaultIconStyle(
+                              context,
+                              AppIcons.edit,
+                              context.theme.textColor,
                             ),
                           ),
                         ],

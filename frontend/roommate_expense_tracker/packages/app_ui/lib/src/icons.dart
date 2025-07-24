@@ -51,6 +51,7 @@ class AppIcons {
   static const IconData money = FontAwesomeIcons.moneyBillTransfer;
   static const IconData sort = Icons.sort_sharp;
   static const IconData letters = FontAwesomeIcons.a;
+  static const IconData edit = FontAwesomeIcons.pencil;
   static const IconData link = FontAwesomeIcons.link;
   static const IconData cancel = FontAwesomeIcons.xmark;
   static const IconData confirm = FontAwesomeIcons.check;

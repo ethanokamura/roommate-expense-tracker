@@ -233,7 +233,7 @@ LineChartData _dummyData(
   String dataType,
 ) =>
     LineChartData(
-      maxX: (values.length - 1).toDouble(),
+      maxX: (values.length).toDouble(),
       maxY: maxValue * 1.1,
       minY: 0,
       minX: 0,
