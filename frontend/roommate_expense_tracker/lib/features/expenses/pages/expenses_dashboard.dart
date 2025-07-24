@@ -3,6 +3,7 @@ import 'package:app_core/app_core.dart';
 import 'package:expenses_repository/expenses_repository.dart';
 import 'package:roommate_expense_tracker/features/expenses/cubit/expenses_cubit.dart';
 import 'package:roommate_expense_tracker/features/expenses/pages/expense_manager.dart';
+import 'package:roommate_expense_tracker/features/expenses/pages/my_expenses_page.dart';
 import 'package:roommate_expense_tracker/features/expenses/widgets/cards/total_expenses.dart';
 import 'package:roommate_expense_tracker/features/expenses/widgets/widgets.dart';
 import 'package:roommate_expense_tracker/features/users/users.dart';
@@ -56,13 +57,15 @@ class ExpensesDashboard extends StatelessWidget {
           final userState = context.watch<UsersCubit>().state;
           final values = _formatResponse(expenseState.weeklyExpenses);
           final total = totalExpenses(expenseState.weeklyExpenses);
-          final min = minExpenses(expenseState.weeklyExpenses);
+          final min = expenseState.weeklyExpenses.length < 6
+              ? 0.0
+              : minExpenses(expenseState.weeklyExpenses);
           final max = maxExpenses(expenseState.weeklyExpenses);
 
-          return NestedPageBuilder(
+          return ModularPageBuilder(
             title: 'Expense Dashboard',
             sectionsData: {
-              'Cost Analysis': [
+              'Cost Analysis - Last 7 Days': [
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -97,10 +100,22 @@ class ExpensesDashboard extends StatelessWidget {
                               text: 'Lowest Day',
                               style: AppTextStyles.primary,
                             ),
-                            CustomText(
-                              text: formatCurrency(min),
-                              style: AppTextStyles.primary,
-                              color: context.theme.successColor,
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                CustomText(
+                                  text: formatCurrency(min),
+                                  style: AppTextStyles.primary,
+                                  color: context.theme.successColor,
+                                ),
+                                const HorizontalSpacer(multiple: 0.5),
+                                defaultIconStyle(
+                                  context,
+                                  AppIcons.downTrend,
+                                  context.theme.successColor,
+                                ),
+                              ],
                             ),
                           ],
                         ),
@@ -117,10 +132,22 @@ class ExpensesDashboard extends StatelessWidget {
                               text: 'Highest Day',
                               style: AppTextStyles.primary,
                             ),
-                            CustomText(
-                              text: formatCurrency(max),
-                              style: AppTextStyles.primary,
-                              color: context.theme.errorColor,
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                CustomText(
+                                  text: formatCurrency(max),
+                                  style: AppTextStyles.primary,
+                                  color: context.theme.errorColor,
+                                ),
+                                const HorizontalSpacer(multiple: 0.5),
+                                defaultIconStyle(
+                                  context,
+                                  AppIcons.upTrend,
+                                  context.theme.errorColor,
+                                ),
+                              ],
                             ),
                           ],
                         ),
@@ -129,115 +156,116 @@ class ExpensesDashboard extends StatelessWidget {
                   ],
                 ),
                 LargeCustomLineChart(
-                  title: 'Expenses This Week',
+                  title: 'My Expenses',
                   unit: formatCurrency(total),
                   values: values.isEmpty
                       ? [0, 0, 0, 0, 0, 0, 0]
                       : values.values.toList(),
                   dataType: ChartDataType.isCurrency,
                 ),
-                const MyTotalExpenses(),
-                const TransitionContainer(
-                  page: ExpenseManager(),
-                  child: DefaultContainer(
-                    child: CustomText(
-                      text: 'View My Expenses',
-                      style: AppTextStyles.primary,
-                    ),
-                  ),
-                )
-              ],
-              'Expense Distribution': [
                 expenseState.expenseCategories.isEmpty
                     ? const CustomText(
                         text: 'No Expenses Yet.',
                         style: AppTextStyles.secondary,
                       )
-                    : Center(
-                        child: CustomPieChart(
-                          title: 'Expense Distribution',
-                          data: _formatCategoryResponse(
-                              expenseState.expenseCategories),
+                    : DefaultContainer(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const CustomText(
+                              text: 'Expense Distribution',
+                              style: AppTextStyles.primary,
+                            ),
+                            const VerticalSpacer(),
+                            Center(
+                              child: CustomPieChart(
+                                title: 'Expense Distribution',
+                                data: _formatCategoryResponse(
+                                    expenseState.expenseCategories),
+                              ),
+                            ),
+                          ],
                         ),
-                      )
+                      ),
+                const VerticalSpacer(),
+              ],
+              "Expenses I Am Owed:": [
+                DefaultContainer(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      CustomText(
+                        text: 'Total:',
+                        style: AppTextStyles.primary,
+                        color: context.theme.textColor,
+                      ),
+                      CustomText(
+                        text: formatCurrency(0),
+                        style: AppTextStyles.primary,
+                        color: context.theme.successColor,
+                      ),
+                    ],
+                  ),
+                ),
+                TransitionContainer(
+                  page: const ExpenseManager(),
+                  child: DefaultContainer(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        const CustomText(
+                          text: 'View Expenses',
+                          style: AppTextStyles.primary,
+                        ),
+                        defaultIconStyle(
+                          context,
+                          AppIcons.goTo,
+                          context.theme.textColor,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+              "Expenses I Owe:": [
+                DefaultContainer(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      CustomText(
+                        text: 'Total:',
+                        style: AppTextStyles.primary,
+                        color: context.theme.textColor,
+                      ),
+                      const MyTotalExpenses(),
+                    ],
+                  ),
+                ),
+                TransitionContainer(
+                  page: const ExpensesOwedPage(),
+                  child: DefaultContainer(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        const CustomText(
+                          text: 'View Expenses',
+                          style: AppTextStyles.primary,
+                        ),
+                        defaultIconStyle(
+                          context,
+                          AppIcons.goTo,
+                          context.theme.textColor,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               ],
             },
-            itemCount: expenseState.expensesList.length,
-            itemBuilder: (context, index) {
-              final expense = expenseState.expensesList[index];
-              final splits = context
-                  .read<ExpensesRepository>()
-                  .extractSplits(expense.splits);
-              return GestureDetector(
-                onTap: () async => expensePopUp(
-                  context: context,
-                  expense: expense,
-                  splits: splits,
-                  members: userState.houseMembersList,
-                ),
-                child: ExpenseCard(
-                  expense: expense,
-                ),
-              );
-            },
-            isLoading: expenseState.isLoading,
-            filter: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                CustomText(
-                  text: 'My Expenses',
-                  style: AppTextStyles.title,
-                  color: context.theme.accentColor,
-                ),
-                DropDown(dropDownItems: [
-                  DropDownItem(
-                    icon: AppIcons.money,
-                    text: 'Total Amount',
-                    onSelect: () async =>
-                        context.read<ExpensesCubit>().fetchMyExpenses(
-                              houseId: userRepository.getHouseId,
-                              houseMemberId: userRepository.getMemberId,
-                              token: userRepository.idToken ?? '',
-                              forceRefresh: true,
-                            ),
-                  ),
-                  DropDownItem(
-                    icon: AppIcons.calendar,
-                    text: 'Created At',
-                    onSelect: () async =>
-                        context.read<ExpensesCubit>().fetchMyExpenses(
-                              houseId: userRepository.getHouseId,
-                              houseMemberId: userRepository.getMemberId,
-                              token: userRepository.idToken ?? '',
-                              forceRefresh: true,
-                            ),
-                  ),
-                  DropDownItem(
-                    icon: AppIcons.calendar,
-                    text: 'Updated At',
-                    onSelect: () async =>
-                        context.read<ExpensesCubit>().fetchMyExpenses(
-                              houseId: userRepository.getHouseId,
-                              houseMemberId: userRepository.getMemberId,
-                              token: userRepository.idToken ?? '',
-                              forceRefresh: true,
-                            ),
-                  ),
-                  DropDownItem(
-                    icon: AppIcons.calendar,
-                    text: 'Due Date',
-                    onSelect: () async =>
-                        context.read<ExpensesCubit>().fetchMyExpenses(
-                              houseId: userRepository.getHouseId,
-                              houseMemberId: userRepository.getMemberId,
-                              token: userRepository.idToken ?? '',
-                              forceRefresh: true,
-                            ),
-                  ),
-                ])
-              ],
-            ),
-            emptyMessage: 'No expenses have been posted',
           );
         },
       ),

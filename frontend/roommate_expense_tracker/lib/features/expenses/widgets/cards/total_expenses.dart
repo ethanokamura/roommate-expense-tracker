@@ -18,21 +18,12 @@ class MyTotalExpenses extends StatelessWidget {
           ),
       builder: (context, snapshot) {
         debugPrint(snapshot.data.toString());
-        return DefaultContainer(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const CustomText(
-                text: 'Amount I Owe:',
-                style: AppTextStyles.primary,
-              ),
-              CustomText(
-                text: formatCurrency(snapshot.data ?? 0.0),
-                style: AppTextStyles.primary,
-                color: context.theme.accentColor,
-              ),
-            ],
-          ),
+        return CustomText(
+          text: formatCurrency(snapshot.data ?? 0.0),
+          style: AppTextStyles.primary,
+          color: snapshot.data == 0
+              ? context.theme.successColor
+              : context.theme.errorColor,
         );
       },
     );

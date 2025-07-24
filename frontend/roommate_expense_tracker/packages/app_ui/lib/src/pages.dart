@@ -50,6 +50,7 @@ class ModularPageBuilder extends StatelessWidget {
                 ],
               );
             }),
+            const VerticalSpacer(multiple: 8),
           ],
         ),
       ),

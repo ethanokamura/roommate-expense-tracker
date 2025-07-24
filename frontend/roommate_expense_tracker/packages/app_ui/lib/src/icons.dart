@@ -44,6 +44,8 @@ class AppIcons {
   static const IconData send = FontAwesomeIcons.paperPlane;
   static const IconData calendar = FontAwesomeIcons.calendar;
   static const IconData downTrend = FontAwesomeIcons.arrowTrendDown;
+  static const IconData upTrend = FontAwesomeIcons.arrowTrendUp;
+  static const IconData chart = FontAwesomeIcons.chartBar;
   static const IconData contract = FontAwesomeIcons.fileContract;
   static const IconData user = FontAwesomeIcons.solidCircleUser;
   static const IconData notificationBell = FontAwesomeIcons.bell;
@@ -59,6 +61,7 @@ class AppIcons {
   static const IconData house = FontAwesomeIcons.house;
   static const IconData darkMode = FontAwesomeIcons.moon;
   static const IconData lightMode = FontAwesomeIcons.sun;
+  static const IconData goTo = FontAwesomeIcons.arrowUpRightFromSquare;
 
   /// APP ICONS
   static const IconData groceries = Icons.fastfood_outlined;
