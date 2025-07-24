@@ -263,6 +263,7 @@ extension Read on ExpensesRepository {
   /// Requires the [houseMemberId] for lookup
   Future<List<Expenses>> fetchAllExpensesWithHouseMemberId({
     required String houseMemberId,
+    required String houseId,
     required String token,
     required String orderBy,
     required bool ascending,
@@ -274,6 +275,7 @@ extension Read on ExpensesRepository {
       'order_by': orderBy,
       'ascending': ascending.toString(),
       'house_member_id': houseMemberId,
+      'house_id': houseId,
     });
 
     if (!forceRefresh) {
@@ -298,7 +300,7 @@ extension Read on ExpensesRepository {
       final response = await dioRequest(
         dio: Dio(),
         apiEndpoint:
-            '/expenses?house_member_id=$houseMemberId&sort_by=$orderBy&sort_order=$ascendingQuery',
+            '/expenses?house_member_id=$houseMemberId&house_id=$houseId&sort_by=$orderBy&sort_order=$ascendingQuery',
         method: 'GET',
         headers: {
           'Authorization': 'Bearer $token',

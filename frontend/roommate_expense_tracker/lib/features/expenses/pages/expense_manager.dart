@@ -20,6 +20,7 @@ class ExpenseManager extends StatelessWidget {
             create: (context) => ExpensesCubit(
               expensesRepository: context.read<ExpensesRepository>(),
             )..fetchAllExpensesWithHouseMemberId(
+                houseId: userRepository.getHouseId,
                 houseMemberId: userRepository.getMemberId,
                 token: userRepository.idToken ?? '',
                 orderBy: Expenses.createdAtConverter,
@@ -103,7 +104,7 @@ class ExpenseManager extends StatelessWidget {
                       onSelect: () async => context
                           .read<ExpensesCubit>()
                           .fetchAllExpensesWithHouseMemberId(
-                            // houseId: userRepository.getHouseId,
+                            houseId: userRepository.getHouseId,
                             houseMemberId: userRepository.getMemberId,
                             token: userRepository.idToken ?? '',
                             orderBy: Expenses.totalAmountConverter,
@@ -117,7 +118,7 @@ class ExpenseManager extends StatelessWidget {
                       onSelect: () async => context
                           .read<ExpensesCubit>()
                           .fetchAllExpensesWithHouseMemberId(
-                            // houseId: userRepository.getHouseId,
+                            houseId: userRepository.getHouseId,
                             houseMemberId: userRepository.getMemberId,
                             token: userRepository.idToken ?? '',
                             orderBy: Expenses.createdAtConverter,
@@ -131,7 +132,7 @@ class ExpenseManager extends StatelessWidget {
                       onSelect: () async => context
                           .read<ExpensesCubit>()
                           .fetchAllExpensesWithHouseMemberId(
-                            // houseId: userRepository.getHouseId,
+                            houseId: userRepository.getHouseId,
                             houseMemberId: userRepository.getMemberId,
                             token: userRepository.idToken ?? '',
                             orderBy: Expenses.updatedAtConverter,
@@ -145,7 +146,7 @@ class ExpenseManager extends StatelessWidget {
                       onSelect: () async => context
                           .read<ExpensesCubit>()
                           .fetchAllExpensesWithHouseMemberId(
-                            // houseId: userRepository.getHouseId,
+                            houseId: userRepository.getHouseId,
                             houseMemberId: userRepository.getMemberId,
                             token: userRepository.idToken ?? '',
                             orderBy: Expenses.expenseDateConverter,
