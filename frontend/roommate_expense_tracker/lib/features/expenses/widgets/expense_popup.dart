@@ -121,19 +121,25 @@ Future<dynamic> expensePopUp({
                   ),
                 ],
                 const VerticalBar(),
-                Column(
-                  children: List.generate(
-                    splits.length,
-                    (index) => ExpenseSplitsCard(
-                      nickname: members
-                          .firstWhere((el) =>
-                              el.houseMemberId == splits[index].memberId)
-                          .nickname,
-                      split: splits[index],
-                      paid: expense.isSettled,
+                if (splits.isNotEmpty)
+                  const CustomText(
+                    text: 'No Splits.',
+                    style: AppTextStyles.secondary,
+                  )
+                else
+                  Column(
+                    children: List.generate(
+                      splits.length,
+                      (index) => ExpenseSplitsCard(
+                        nickname: members
+                            .firstWhere((el) =>
+                                el.houseMemberId == splits[index].memberId)
+                            .nickname,
+                        split: splits[index],
+                        paid: expense.isSettled,
+                      ),
                     ),
-                  ),
-                )
+                  )
               ],
             ),
           ),
