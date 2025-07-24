@@ -189,7 +189,7 @@ class ExpensesDashboard extends StatelessWidget {
                         color: context.theme.textColor,
                       ),
                       CustomText(
-                        text: formatCurrency(0),
+                        text: formatCurrency(202.54),
                         style: AppTextStyles.primary,
                         color: context.theme.successColor,
                       ),
