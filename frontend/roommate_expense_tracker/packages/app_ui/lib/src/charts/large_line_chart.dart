@@ -57,8 +57,9 @@ class LargeCustomLineChart extends StatelessWidget {
                     ),
                     CustomText(
                       autoSize: true,
-                      text:
-                          '(${diff > 0 ? '+' : diff == 0 ? '' : '-'}${formatPercentChange(stat)})',
+                      text: current == 0
+                          ? '(N/A)'
+                          : '(${diff > 0 ? '+' : diff == 0 ? '' : '-'}${formatPercentChange(stat)})',
                       style: AppTextStyles.secondary,
                       color: diff > 0
                           ? context.theme.accentColor
