@@ -68,7 +68,7 @@ Future<dynamic> expensePopUp({
                     'Created On': DateFormatter.formatTimestamp(
                       expense.createdAt ?? DateTime.now(),
                     ),
-                    'Splits': (expense.splits.length + 1).toString(),
+                    'Splits': (splits.length).toString(),
                   },
                 ),
                 Row(
@@ -121,7 +121,7 @@ Future<dynamic> expensePopUp({
                   ),
                 ],
                 const VerticalBar(),
-                if (splits.isNotEmpty)
+                if (splits.isEmpty)
                   const CustomText(
                     text: 'No Splits.',
                     style: AppTextStyles.secondary,

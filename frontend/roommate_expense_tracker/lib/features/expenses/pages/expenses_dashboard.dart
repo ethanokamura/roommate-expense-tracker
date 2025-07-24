@@ -5,8 +5,6 @@ import 'package:roommate_expense_tracker/features/expenses/cubit/expenses_cubit.
 import 'package:roommate_expense_tracker/features/expenses/pages/expense_manager.dart';
 import 'package:roommate_expense_tracker/features/expenses/pages/my_expenses_page.dart';
 import 'package:roommate_expense_tracker/features/expenses/widgets/cards/total_expenses.dart';
-import 'package:roommate_expense_tracker/features/expenses/widgets/widgets.dart';
-import 'package:roommate_expense_tracker/features/users/users.dart';
 import 'package:users_repository/users_repository.dart';
 
 class ExpensesDashboard extends StatelessWidget {
@@ -15,52 +13,36 @@ class ExpensesDashboard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final userRepository = context.read<UsersRepository>();
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider<ExpensesCubit>(
-          create: (context) => ExpensesCubit(
-            expensesRepository: context.read<ExpensesRepository>(),
-          )
-            ..fetchMyExpenses(
-              houseMemberId: userRepository.getMemberId,
-              houseId: userRepository.getHouseId,
-              token: userRepository.idToken ?? '',
-              forceRefresh: true,
-            )
-            ..fetchWeeklyExpenses(
-              houseMemberId: userRepository.getMemberId,
-              houseId: userRepository.getHouseId,
-              token: userRepository.idToken ?? '',
-              forceRefresh: true,
-            )
-            ..fetchWeeklyExpenseCategories(
-              houseMemberId: userRepository.getMemberId,
-              houseId: userRepository.getHouseId,
-              token: userRepository.idToken ?? '',
-              forceRefresh: true,
-            ),
-        ),
-        BlocProvider<UsersCubit>(
-          create: (context) =>
-              UsersCubit(usersRepository: context.read<UsersRepository>())
-                ..fetchAllHouseMembersWithHouseId(
-                  houseId: userRepository.getHouseId,
-                  token: userRepository.idToken ?? '',
-                  orderBy: HouseMembers.createdAtConverter,
-                  ascending: false,
-                ),
+    return BlocProvider<ExpensesCubit>(
+      create: (context) => ExpensesCubit(
+        expensesRepository: context.read<ExpensesRepository>(),
+      )
+        ..fetchMyExpenses(
+          houseMemberId: userRepository.getMemberId,
+          houseId: userRepository.getHouseId,
+          token: userRepository.idToken ?? '',
+          forceRefresh: true,
         )
-      ],
-      child: Builder(
-        builder: (context) {
-          final expenseState = context.watch<ExpensesCubit>().state;
-          final userState = context.watch<UsersCubit>().state;
-          final values = _formatResponse(expenseState.weeklyExpenses);
-          final total = totalExpenses(expenseState.weeklyExpenses);
-          final min = expenseState.weeklyExpenses.length < 6
+        ..fetchWeeklyExpenses(
+          houseMemberId: userRepository.getMemberId,
+          houseId: userRepository.getHouseId,
+          token: userRepository.idToken ?? '',
+          forceRefresh: true,
+        )
+        ..fetchWeeklyExpenseCategories(
+          houseMemberId: userRepository.getMemberId,
+          houseId: userRepository.getHouseId,
+          token: userRepository.idToken ?? '',
+          forceRefresh: true,
+        ),
+      child: BlocBuilder<ExpensesCubit, ExpensesState>(
+        builder: (context, state) {
+          final values = _formatResponse(state.weeklyExpenses);
+          final total = totalExpenses(state.weeklyExpenses);
+          final min = state.weeklyExpenses.length < 6
               ? 0.0
-              : minExpenses(expenseState.weeklyExpenses);
-          final max = maxExpenses(expenseState.weeklyExpenses);
+              : minExpenses(state.weeklyExpenses);
+          final max = maxExpenses(state.weeklyExpenses);
 
           return ModularPageBuilder(
             title: 'Expense Dashboard',
@@ -163,7 +145,7 @@ class ExpensesDashboard extends StatelessWidget {
                       : values.values.toList(),
                   dataType: ChartDataType.isCurrency,
                 ),
-                expenseState.expenseCategories.isEmpty
+                state.expenseCategories.isEmpty
                     ? const CustomText(
                         text: 'No Expenses Yet.',
                         style: AppTextStyles.secondary,
@@ -181,7 +163,7 @@ class ExpensesDashboard extends StatelessWidget {
                               child: CustomPieChart(
                                 title: 'Expense Distribution',
                                 data: _formatCategoryResponse(
-                                    expenseState.expenseCategories),
+                                    state.expenseCategories),
                               ),
                             ),
                           ],
