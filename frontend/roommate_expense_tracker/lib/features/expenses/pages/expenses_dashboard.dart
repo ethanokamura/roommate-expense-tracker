@@ -87,15 +87,18 @@ class ExpensesDashboard extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 CustomText(
+                                  autoSize: true,
                                   text: formatCurrency(min),
                                   style: AppTextStyles.primary,
                                   color: context.theme.successColor,
                                 ),
                                 const HorizontalSpacer(multiple: 0.5),
-                                defaultIconStyle(
-                                  context,
-                                  AppIcons.downTrend,
-                                  context.theme.successColor,
+                                Flexible(
+                                  child: defaultIconStyle(
+                                    context,
+                                    AppIcons.downTrend,
+                                    context.theme.successColor,
+                                  ),
                                 ),
                               ],
                             ),
@@ -119,15 +122,18 @@ class ExpensesDashboard extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 CustomText(
+                                  autoSize: true,
                                   text: formatCurrency(max),
                                   style: AppTextStyles.primary,
                                   color: context.theme.errorColor,
                                 ),
                                 const HorizontalSpacer(multiple: 0.5),
-                                defaultIconStyle(
-                                  context,
-                                  AppIcons.upTrend,
-                                  context.theme.errorColor,
+                                Flexible(
+                                  child: defaultIconStyle(
+                                    context,
+                                    AppIcons.upTrend,
+                                    context.theme.errorColor,
+                                  ),
                                 ),
                               ],
                             ),
